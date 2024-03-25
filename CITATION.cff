@@ -1,0 +1,31 @@
+# -----------------------------------------------------------
+# CITATION file created with {cffr} R package, v0.5.0
+# See also: https://docs.ropensci.org/cffr/
+# -----------------------------------------------------------
+ 
+cff-version: 1.2.0
+message: 'To cite package "Slides23RodoHonsMult" in publications use:'
+type: software
+title: 'Slides23RodoHonsMult: Slides for statistics honours multivariate course'
+version: 0.0.0-1
+abstract: Slides for statistics honours multivariate course
+authors:
+- family-names: Rodo
+  given-names: Miguel
+  email: miguel.rodo@uct.ac.za
+preferred-citation:
+  type: generic
+  title: 'Slides23RodoHonsMult: Slides for statistics honours multivariate course'
+  authors:
+  - family-names: Rodo
+    given-names: Miguel
+    email: miguel.rodo@uct.ac.za
+  url: https://github.com/MiguelRodo/Slides23RodoHonsMult/#readme
+  abstract: Slides for statistics honours multivariate course
+  version: 0.0.0-1
+repository-code: https://github.com/MiguelRodo/Slides23RodoHonsMult
+url: https://github.com/MiguelRodo/Slides23RodoHonsMult/#readme
+contact:
+- family-names: Rodo
+  given-names: Miguel
+  email: miguel.rodo@uct.ac.za

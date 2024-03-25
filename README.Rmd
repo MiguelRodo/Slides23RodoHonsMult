@@ -29,3 +29,17 @@ You can install the development version of {{ Package }} like so:
 ```
 The purpose of Slides23RodoHonsMult is to create slides for the statistics honours course.
 
+
+## Citation
+
+
+## Citation
+
+To cite `Slides23RodoHonsMult` in publications use:
+@Misc{rodo,
+  title = {Slides23RodoHonsMult: Slides for statistics honours multivariate course},
+  author = {Miguel Rodo},
+  url = {https://github.com/MiguelRodo/Slides23RodoHonsMult/#readme},
+  abstract = {Slides for statistics honours multivariate course},
+  version = {0.0.0-1},
+}

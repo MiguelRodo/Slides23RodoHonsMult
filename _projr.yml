@@ -1,27 +1,31 @@
-# default directory settings:
 directories:
   data-raw:
     path: _data_raw
-  cache: 
+  cache:
     path: _tmp
-  output: 
+  output:
     path: _output
   docs:
     path: docs
-
 build:
   local:
-    "archive":
+    archive:
       path: _archive
-      content: [data-raw, output, docs]
+      content:
+      - data-raw
+      - output
+      - docs
       structure: version
   github:
-    "@version":
+    '@version':
       content: code
-      description: "Latest source code"
+      description: Latest source code
     input:
-      content: [data-raw]
-      description: "Project inputs"
+      content: data-raw
+      description: Project inputs
     output:
-      content: [output, docs]
-      description: "Project outputs"
+      content:
+      - output
+      - docs
+      description: Project outputs
+

@@ -1,0 +1,10 @@
+citHeader("To cite `Slides23RodoHonsMult` in publications use:")
+
+bibentry(bibtype = "Misc",
+         key = "rodo",
+         title = "Slides23RodoHonsMult: Slides for statistics honours multivariate course",
+         author = person(given = "Miguel",
+                         family = "Rodo"),
+         url = "https://github.com/MiguelRodo/Slides23RodoHonsMult/#readme",
+         abstract = "Slides for statistics honours multivariate course",
+         version = "0.0.0-1")
