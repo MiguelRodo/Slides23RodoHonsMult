@@ -1,8 +1,7 @@
 Package: Slides23RodoHonsMult
 Title: Slides for statistics honours multivariate course
 Version: 0.0.0-1
-Authors@R: 
-    person("Miguel", "Rodo", , "miguel.rodo@uct.ac.za", role = c("aut", "cre"))
+Authors@R: person("Miguel", "Rodo", , "miguel.rodo@uct.ac.za", role = c("aut", "cre"))
 Maintainer: Miguel Rodo <miguel.rodo@uct.ac.za>
 Description: Slides for statistics honours multivariate course
 License: {{ License }}

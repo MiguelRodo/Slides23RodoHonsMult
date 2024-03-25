@@ -1,0 +1,52 @@
+---
+title: Principal component analysis
+subtitle: Modern multivariate statistical techniques
+author: Miguel Rodo
+date: "2024-02-12"
+bibliography: zotero.bib
+format:
+  beamer:
+    embed-resources: true
+    aspectratio: 169
+    urlcolor: cyan
+    linkcolor: blue
+    filecolor: magenta
+    include-in-header:
+      file: preamble.tex
+---
+
+# Context
+
+- Multivariate analysis helps us uncover patterns and relationships within datasets containing multiple variables.
+- **Example**: Meteorologists analyze temperature, humidity, wind speed, and more to understand weather systems.
+
+# Basis of appraoch
+
+- **Linear combinations**:
+
+$$
+\mathbf{x}_1\mathbf{u}_1 + \mathbf{x}_2\mathbf{u}_2 + \ldots + \mathbf{x}_p\mathbf{u}_p
+$$
+
+- Why linear combinations?
+  - Simplicity >> strong theoretical results >> robustness, speed and flexibility
+
+# Example applications
+
+- **Market analysis**: Identify correlated stocks to ensure a diversified portfolio
+- **Image compression**: Represent images with fewer pixels while preserving accuracy
+- **Bioinformatics**: Identify co-expressed genes associated with disease
+
+# Types of multivariate analysis
+
+- $\symbf{X} \sim \symbf{X}$: PCA, factor analysis, correspondence analysis (count data)
+  - **Examples**: identify correlates sets of variables
+- $\symbf{Y} \sim \symbf{X}$: Multiple/multivariate regression, canonical correlation analysis, discrimination and classification
+
+# Principal component analysis
+
+- Principal components analysis (PCA) identifies the directions of greatest variation, allowing you to:
+  - Represent data more compactly, and
+  - Interpret relationships between variables.
+
+- PCA is a linear technique with an algebraic solution meaning that it is fast and (in some senses) robust.

@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.3.2",
+    "Version": "4.3.3",
     "Repositories": [
       {
         "Name": "BioCsoft",
@@ -41,6 +41,30 @@
         "R"
       ],
       "Hash": "470851b6d5d0ac559e9d01bb352b4021"
+    },
+    "Rcpp": {
+      "Package": "Rcpp",
+      "Version": "1.0.12",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "methods",
+        "utils"
+      ],
+      "Hash": "5ea2700d21e038ace58269ecdbeb9ec0"
+    },
+    "V8": {
+      "Package": "V8",
+      "Version": "4.4.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "Rcpp",
+        "curl",
+        "jsonlite",
+        "utils"
+      ],
+      "Hash": "ca98390ad1cef2a5a609597b49d3d042"
     },
     "base64enc": {
       "Package": "base64enc",
@@ -84,6 +108,21 @@
       ],
       "Hash": "c35768291560ce302c0a6589f92e837d"
     },
+    "cffr": {
+      "Package": "cffr",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "desc",
+        "jsonlite",
+        "jsonvalidate",
+        "yaml"
+      ],
+      "Hash": "b68befbb3ac834115f1ad590839f1b9f"
+    },
     "cli": {
       "Package": "cli",
       "Version": "3.6.2",
@@ -94,6 +133,30 @@
         "utils"
       ],
       "Hash": "1216ac65ac55ec0058a6f75d7ca0fd52"
+    },
+    "codemeta": {
+      "Package": "codemeta",
+      "Version": "0.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "desc",
+        "jsonlite",
+        "methods",
+        "utils"
+      ],
+      "Hash": "81048af0d716143bb5dc44d076279538"
+    },
+    "curl": {
+      "Package": "curl",
+      "Version": "5.2.0",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "ce88d13c0b10fe88a37d9c59dba2d7f9"
     },
     "desc": {
       "Package": "desc",
@@ -230,6 +293,16 @@
       ],
       "Hash": "e1b9c55281c5adc4dd113652d9e26768"
     },
+    "jsonvalidate": {
+      "Package": "jsonvalidate",
+      "Version": "1.3.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "V8"
+      ],
+      "Hash": "cdc2843ef7f44f157198bb99aea7552d"
+    },
     "knitr": {
       "Package": "knitr",
       "Version": "1.45",
@@ -245,6 +318,17 @@
         "yaml"
       ],
       "Hash": "1ec462871063897135c1bcbe0fc8f07d"
+    },
+    "later": {
+      "Package": "later",
+      "Version": "1.3.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "Rcpp",
+        "rlang"
+      ],
+      "Hash": "a3e051d405326b8b0012377434c62b37"
     },
     "lifecycle": {
       "Package": "lifecycle",
@@ -290,25 +374,70 @@
       ],
       "Hash": "18e9c28c1d3ca1560ce30658b22ce104"
     },
+    "processx": {
+      "Package": "processx",
+      "Version": "3.8.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "R6",
+        "ps",
+        "utils"
+      ],
+      "Hash": "0c90a7d71988856bad2a2a45dd871bb9"
+    },
     "projr": {
       "Package": "projr",
-      "Version": "0.1.0-25",
+      "Version": "0.1.10-2",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "projr",
       "RemoteUsername": "SATVILab",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "0198e0c7ea0265c1021789d9a6dbffd4bec4523d",
+      "RemoteRepo": "projr",
+      "RemoteRef": "main",
+      "RemoteSha": "ac18119b86d59e86d23a447581842be09ed6ef94",
       "Requirements": [
         "desc",
         "digest",
         "fs",
+        "jsonlite",
         "renv",
         "rprojroot",
         "yaml"
       ],
-      "Hash": "a064d357852050d419c2a750f21e17ce"
+      "Hash": "c710b49e2994d1b11b9f5753ac8c9c84"
+    },
+    "ps": {
+      "Package": "ps",
+      "Version": "1.7.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "utils"
+      ],
+      "Hash": "dd2b9319ee0656c8acf45c7f40c59de7"
+    },
+    "quarto": {
+      "Package": "quarto",
+      "Version": "1.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "cli",
+        "jsonlite",
+        "later",
+        "processx",
+        "rlang",
+        "rmarkdown",
+        "rstudioapi",
+        "tools",
+        "utils",
+        "yaml"
+      ],
+      "Hash": "c94c271f9b998d116186a78b2a9b23c1"
     },
     "rappdirs": {
       "Package": "rappdirs",
@@ -322,13 +451,13 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.0.3",
+      "Version": "1.0.5",
       "Source": "Repository",
-      "Repository": "RSPM",
+      "Repository": "CRAN",
       "Requirements": [
         "utils"
       ],
-      "Hash": "41b847654f567341725473431dd0d5ab"
+      "Hash": "32c3f93e8360f667ca5863272ec8ba6a"
     },
     "rlang": {
       "Package": "rlang",
@@ -374,6 +503,13 @@
         "R"
       ],
       "Hash": "4c8415e0ec1e29f3f4f6fc108bef0144"
+    },
+    "rstudioapi": {
+      "Package": "rstudioapi",
+      "Version": "0.15.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "5564500e25cffad9e22244ced1379887"
     },
     "sass": {
       "Package": "sass",
