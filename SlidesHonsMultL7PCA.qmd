@@ -15,6 +15,13 @@ format:
       file: preamble.tex
 ---
 
+```{r }
+#| include: false
+library(tibble)
+library(ggplot2)
+
+```
+
 # Context
 
 - Multivariate analysis helps us uncover patterns and relationships within datasets containing multiple variables.
@@ -29,7 +36,7 @@ $$
 $$
 
 - Why linear combinations?
-  - Simplicity >> strong theoretical results >> robustness, speed and flexibility
+  - Simplicity >> strong theoretical results >> robustness, speed and interpretability
 
 # Example applications
 
@@ -50,3 +57,399 @@ $$
   - Interpret relationships between variables.
 
 - PCA is a linear technique with an algebraic solution meaning that it is fast and (in some senses) robust.
+
+# Projection onto a line
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+- Suppose that we wish to project the vector $\symbf{b}$ onto the vector $\symbf{a}$.
+  - The projection is the nearest point to $\symbf{b}$ on the line spanned by $\symbf{a}$.
+- The projection of $\symbf{b}$ onto $\symbf{a}$ is given by:
+
+$$
+\text{proj}_{\symbf{a}}(\symbf{b}) = \frac{\symbf{a}^T \symbf{b}}{\symbf{a}^T \symbf{a}} \symbf{a}
+$$
+
+- Here is a diagram of such a projection. Suppose that we want to project the vector $\begin{pmatrix} 2 \\ 1 \end{pmatrix}$ onto the vector $\begin{pmatrix} 1 \\ 1 \end{pmatrix}$.
+
+:::
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: false
+a <- c(2, 2)
+b <- c(2, 1)
+proj <- as.numeric((a %*% b) / (a %*% a)) * a
+plot_tbl <- tibble::tibble(
+  x = c(0, a[1], 0, b[1], 0, proj[1]),
+  y = c(0, a[2], 0, b[2], 0, proj[2]),
+  label = rep(c("a", "b", "proj(a, b)"), each = 2)
+)
+plot_tbl <- tibble::tibble(
+  x_start = rep(0, 3),
+  y_start = rep(0, 3),
+  x_end = c(a[1], b[1], proj[1]),
+  y_end = c(a[2], b[2], proj[2]),
+  label = rep(c("a", "b", "proj(a, b)"), each = 1)
+)
+plot_tbl_error <- tibble::tibble(
+  x_start = b[1],
+  y_start = b[2],
+  x_end = proj[1],
+  y_end = proj[2],
+  label = "error"
+)
+p <- ggplot(
+  plot_tbl,
+  aes(x = x, y = y, label = label, group = label)
+) +
+  ggrepel::geom_text_repel(
+    data = plot_tbl |> dplyr::filter(label %in% c("a", "b")),
+    mapping = aes(x = x_end, y = y_end),
+    nudge_x = -0.25, nudge_y = 0.15,
+    col = "gray25", min.segment.length = 2
+  ) +
+  ggrepel::geom_text_repel(
+    data = plot_tbl |> dplyr::filter(label == "proj(a, b)"),
+    mapping = aes(x = x_end, y = y_end),
+    nudge_x = -0.33, nudge_y = 0.23,
+    col = "gray25", min.segment.length = 2
+  ) +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  geom_segment(
+    data = plot_tbl |> dplyr::filter(label != "proj(a, b)"),
+    aes(x = x_start, y = y_start, xend = x_end, yend = y_end),
+    arrow = grid::arrow(length = unit(0.3, "cm"))
+  ) +
+  geom_segment(
+    data = plot_tbl |> dplyr::filter(label == "proj(a, b)"),
+    aes(x = x_start, y = y_start, xend = x_end, yend = y_end),
+    arrow = grid::arrow(length = unit(0.3, "cm")), col = "dodgerblue"
+  ) +
+  geom_segment(
+    data = plot_tbl_error,
+    aes(x = x_start, y = y_start, xend = x_end, yend = y_end),
+    col = "red", linetype = "dotted"
+  ) +
+  theme( 
+    panel.background = element_rect(fill = "white"), 
+    plot.background = element_rect(fill = "white"),
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+  ) +
+  coord_equal()
+path_p_proj <- projr::projr_path_get("cache", "fig", "p-proj.png")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_proj,
+  units = "cm",
+  base_height = 6,
+  base_width = 6
+)
+```
+
+\centering
+```{r}
+knitr::include_graphics(path_p_proj)
+```
+
+:::
+
+::::
+
+# Projecting onto a unit vector
+
+- If $\symbf{a}$ is a unit vector, then the projection of $\symbf{b}$ onto $\symbf{a}$ is given by:
+
+$$
+\text{proj}_{\symbf{a}}(\symbf{b}) = (\symbf{a}^T \symbf{b})\symbf{a}.
+$$
+
+# Projection onto a vector (sub)space
+
+- **Generalization**: Suppose that we wish to project the vector $\symbf{b}$ onto the vector space spanned by $\symbf{a}_1, \symbf{a}_2, \ldots, \symbf{a}_p$.
+  - The projection is the nearest point to $\symbf{b}$ on the subspace spanned by $\symbf{a}_1, \symbf{a}_2, \ldots, \symbf{a}_p$.
+- If $p=2$, then we are projecting onto a plane.
+- Let $\symbf{A} = [\symbf{a}_1, \symbf{a}_2, \ldots, \symbf{a}_p]$ be the matrix with columns $\symbf{a}_1, \symbf{a}_2, \ldots, \symbf{a}_p$.
+- Then the projection of $\symbf{b}$ onto the subspace spanned by $\symbf{a}_1, \symbf{a}_2, \ldots, \symbf{a}_p$ is given by:
+
+$$
+\text{proj}_{\symbf{A}}(\symbf{b}) = \symbf{A}(\symbf{A}^T\symbf{A})^{-1}\symbf{A}^T\symbf{b}
+$$
+
+- From those of you who have taken STA2005S (and maybe others?), you'll recognise this as the hat matrix from linear regression. Linear regression, then, projects the response variable onto the column space of the design matrix.
+
+# Two-variable example
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Suppose we have a dataset with two correlated variables, perhaps weight and height.
+- Then, the scatterplot of these may look something like this:
+
+```{r}
+set.seed(2106)
+plot_tbl <- tibble::tibble(
+  height = rnorm(100, 160, 10)
+) |>
+  dplyr::mutate(
+    weight = height / 2.5 + rnorm(100, 0, 3.5 * height / 160)
+  ) |>
+  dplyr::mutate(
+    across(everything(), scale)
+  )
+p <- ggplot(
+  aes(x = height, y = weight),
+  data = plot_tbl
+) +
+  geom_point(alpha = 0.85, col = "dodgerblue") +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  theme( 
+    panel.background = element_rect(fill = "white"), 
+    plot.background = element_rect(fill = "white")
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  ) +
+  labs(
+    x = "Height",
+    y = "Weight"
+  )
+path_p_height_weight <- projr::projr_path_get("cache", "fig", "p-height-weight.png")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_height_weight,
+  units = "cm",
+  base_height = 5,
+  base_width = 5
+)
+```
+
+\centering
+
+```{r}
+knitr::include_graphics(path_p_height_weight)
+```
+
+:::
+
+::: {.column width="50%"}
+
+- We could combine these two variables into a single variable, representing size.
+- Height and weight increase together, so we would weight them positively.
+- A reasonable guess might be a 50-50 weighting:
+
+:::
+
+::::
+
+# The first principal component
+
+- Assume that our data $\symbf{X} \in \mathcal{R}^p$ are distributed with mean $\symbf{\symbf{\mu}}$ and covariance matrix $\symbf{\Sigma}$.
+- We seek to find the linear combination of the variables that captures the most variation.
+- For the first principal component, we seek to find $\symbf{a}_1$ such that
+
+$$
+\text{Var}(\symbf{X}\symbf{a}_1) = \symbf{a}_1^T\symbf{\Sigma}\symbf{a}_1
+$$
+
+- is maximized, subject to the constraint that $||\symbf{a}|| = 1$.
+- Applied to the previous example, the first principal component would be a linear combination of height and weight that captures the most variation.
+
+# The second principal component
+
+- The second principal component is the linear combination of the variables that captures the most variation, subject to the constraint that it is orthogonal to the first principal component.
+- In other words, for the second principal component we seek to find $\symbf{a}_2$ such that
+
+$$
+\text{Var}(\symbf{X}\symbf{a}_2) = \symbf{a}_2^T\symbf{\Sigma}\symbf{a}_2
+$$
+
+- is maximized, subject to the constraints that $||\symbf{a}_2|| = 1$ and $\symbf{a}_2^T\symbf{a}_1 = 0$.
+\pause
+
+# Objective function
+
+- For the $k$-th principal component (for $k\leq p$), we seek to find $\symbf{a}_k$ such that
+
+$$
+\text{Var}(\symbf{X}\symbf{a}_k) = \symbf{a}_k^T\symbf{\Sigma}\symbf{a}_k
+$$
+
+- is maximized, subject to the constraints that $||\symbf{a}_k|| = 1$ and $\symbf{a}_k^T\symbf{a}_j = 0$ for $j < k$.
+
+# Maximising the objective function
+
+- Going to back to the example of the weight and height, for the first principal component we are looking for a linear combination of the two that captures the most variation.
+  - This, at its root, means finding the direction in which the data varies the most.
+  - This is the line to project onto.
+- For the second principal component, we are looking for the direction in which the data varies the most, subject to the constraint that it is orthogonal to the first principal component.
+- We'll now see how to find these directions algebraically, and start by showing a more general result.
+
+
+
+# Theorem 1: Maximisation of quadratic forms for points on the unit sphere
+
+Let $\mathbf{B}:p\times p$ be a positive semi-definite matrix with the $i$-th largest eigenvalue $\lambda_i$ and associated eigenvector $\mathbf{e}_i$. Then we have that 
+
+$$
+\max_{\mathbf{x}\neq \mathbf{0}} \frac{\mathbf{x}'\mathbf{B}\mathbf{x}}{\mathbf{x}'\mathbf{x}}=\lambda_1 \; (\mathrm{attained}\; \mathrm{when} \; \mathbf{x}=\mathbf{e}_1)
+$$
+
+and that
+
+$$
+\max_{\mathbf{x}\neq \mathbf{0},\mathbf{x}\perp \mathbf{e}_1, \mathbf{e}_2, \ldots, \mathbf{e}_{i-1}} \frac{\mathbf{x}'\mathbf{B}\mathbf{x}}{\mathbf{x}'\mathbf{x}}=\lambda_i \; (\mathrm{attained}\; \mathrm{when} \; \mathbf{x}=\mathbf{e}_{i})
+$$
+
+for $i\in\{2,3, \ldots, p\}$.
+
+## Proof of Theorem 1 {.smaller}
+
+:::{.proof}
+
+Let $\mathbf{P}:p\times p$ be the orthogonal matrix whose $i$-th column is the $i$-th eigenvector and $\Lambda$ be the diagonal matrix with ordered eigenvalues along the diagonal. Let $\mathbf{B}^{1/2}=\mathbf{P}\mathbf{\Lambda}^{1/2}\mathbf{P}'$ and $\mathbf{y}=\mathbf{P}'\mathbf{x}$.
+
+First, we show that the quadratic form can never be larger than $\lambda_1$:
+
+$$
+\begin{align*} 
+\frac{\mathbf{x}'\mathbf{B}\mathbf{x}}{\mathbf{x}'\mathbf{x}} &=  \frac{\mathbf{x}'\mathbf{B}^{1/2}\mathbf{B}^{1/2}\mathbf{x}}{\mathbf{x}'\mathbf{P}\mathbf{P}'\mathbf{x}} 
+= \frac{\mathbf{x}'\mathbf{P}\mathbf{\Lambda}^{1/2}\mathbf{P}'\mathbf{P}\mathbf{\Lambda}^{1/2}\mathbf{P}'\mathbf{x}}{\mathbf{y}'\mathbf{y}}
+=  \frac{\mathbf{y}'\mathbf{\Lambda}\mathbf{y}}{\mathbf{y}'\mathbf{y}} \\ 
+ &=  \frac{\sum_{i=1}^p\lambda_iy_i^2}{\sum_{i=1}^py_i^2} 
+ \leq \lambda_1 \frac{\sum_{i=1}^py_i^2}{\sum_{i=1}^py_i^2}
+ = \lambda_1 
+\end{align*}
+$$
+
+:::
+
+## Proof of Theorem 1 (cont.) {.smaller}
+
+Now we show that this is actually attained for $\mathbf{x}=\mathbf{e}_1$. Since eigenvectors are by convention length 1, we consider $\mathbf{e}_1'\mathbf{B}\mathbf{e}_1$.
+
+First, let $\mathbf{c}_i$ be the unit vector with a 1 in the $i$-th position (and 0's everywhere else).
+
+Expanding $\mathbf{B}$ by the eigen decomposition, we have that
+
+$$
+\mathbf{e}_1'\mathbf{B}\mathbf{e}_1=\mathbf{e}_1'\mathbf{P}\mathbf{\Lambda}\mathbf{P}'\mathbf{e}_1.
+$$
+
+Since $B$ is symmetric, the eigenvectors can be chosen orthogonal.
+We do so, which implies that $\mathbf{e}_i'P=\mathbf{c}_i'$, where $\mathbf{c}_i$ is the unit vector with a 1 in the $i$-th position (and 0 everwhere else).
+Consequently,
+
+$$
+\mathbf{e}_i'\mathbf{P}\mathbf{\Lambda}\mathbf{P}'\mathbf{e}_i
+= \mathbf{c}_i'\mathbf{\Lambda}\mathbf{c}_i=\lambda_i,
+$$
+
+and so $\mathbf{e}_1'\mathbf{P}\mathbf{\Lambda}\mathbf{P}'\mathbf{e}_1=\lambda_1$.
+
+## Proof of Theorem 1 (cont.) {.smaller}
+
+Now, we consider the case where $\mathbf{x}$ is orthogonal to $\mathbf{e}_1, \mathbf{e}_2, \ldots, \mathbf{e}_{i-1}$.
+
+Each component in the vector $\mathbf{y}$ is the dot product of $x$ and an eigenvector $\mathbf{e}_i$.
+Since we choose $x$ orthogonal to the first $i-1$ eigenvectors, the first $i-1$ entries of $\mathbf{y}$ are zero.
+
+Returning to considering the quadratic form, we have that
+
+$$
+\begin{align}
+\frac{\mathbf{x}'\mathbf{B}\mathbf{x}}{\mathbf{x}'\mathbf{x}} 
+&= \frac{\sum_{j=1}^p\lambda_jy_j^2}{\sum_{j=1}^py_j^2} \\
+&= \frac{\sum_{j=i}^p\lambda_jy_j^2}{\sum_{j=i}^py_j^2} 
+ \leq \lambda_i \frac{\sum_{j=i}^py_j^2}{\sum_{j=i}^py_j^2} 
+ = \lambda_i
+\end{align}
+$$
+
+Using the same argument as before, we can show that this is actually attained for $\mathbf{x}=\mathbf{e}_i$.
+
+# Connection with principal components
+
+- @thm-max_quad_form has already done the heavy lifting, as we can simply set $\mathbf{B}=\mathbf{\Sigma}$.
+- All that's left to do is place Theorem 1 in a probabilistic context, and relate it to the variance and covariance of linear combinations of a random vector.
+
+# Selecting principal components {.smaller}
+
+:::{#thm-princ_eig}
+## Identifying successive variance-maximising and orthogonal linear combinations
+Let $\mathbf{\Sigma}:p\times p$ be the variance-covariance matrix with the $i$-th largest eigenvalue $\lambda_i$ and associated eigenvector $\mathbf{e}_i$. Then the $i$-th principal component (defined as before) is given by 
+
+$$
+Y_i = \mathbf{e}_i'\mathbf{X},
+$$
+
+implying that
+
+\begin{align*}
+
+\mathrm{Var}[Y_i] &= \lambda_i \;\forall \; i \in \{1,2, \ldots, p\}, \; \mathrm{and} \\
+\mathrm{Cov}[Y_i, Y_j] &= 0 \; \mathrm{for} \; i\neq j.
+\end{align*}
+
+:::
+
+# Proof of Theorem 2 {.smaller}
+
+:::{.proof}
+
+From @thm-max_quad_form, we know that 
+
+$$
+\max_{\mathbf{x}} \frac{\mathbf{x}'\mathbf{\Sigma}\mathbf{x}}{\mathbf{x}'\mathbf{x}} = \lambda_1,
+$$
+
+which we achieve by setting $\mathbf{x}=\mathbf{e}_1$.
+
+Since $||\mathbf{e}_1||=1$, $\frac{\mathbf{e}_1'\mathbf{\Sigma}\mathbf{e}_1}{\mathbf{e}_1'\mathbf{e}_1}=\mathbf{e}_1'\mathbf{\Sigma}\mathbf{e}_1$, which is equal to $\mathrm{Var}[\mathbf{a}'\mathrm{X}]=\mathrm{Var}[Y_1]$ if we set $\mathbf{a}=\mathbf{e}_1$. This implies that $\mathbf{a}=\mathbf{e}_1$ maximises the variance, which is $\lambda_1$.
+
+Analagous reasoning shows that $\mathrm{Var}[\mathbf{a}_i'\mathbf{X}]$ has a maximum value $\lambda_i$ for $i\in\{2,3,\ldots,p\}$ that is attained when we set $\mathbf{a}_i=\mathbf{e}_i$, under the restriction $\mathbf{a}_i$ to be orthogonal to $\mathbf{a}_1, \mathbf{a}_2, \ldots, \mathbf{a}_{i-1}$.
+
+For $i\neq j$, $\mathrm{Cov}[\mathbf{e}_i'\mathbf{X},\mathbf{e}_j'\mathbf{X}] = \mathbf{e}_i'\mathbf{\Sigma}\mathbf{e}_j = 0$.
+
+:::
+
+# A note on terminology
+
+- Principal components (the $\mathbf{Y}_i$'s) may also be referred to as "scores".
+- The coefficient vectors $\mathbf{a}_i$ may also be referred to as "loadings" (thinking algebraically) or as "principal axes"/"principal directions" (thinking geometrically).
+
+# Theorem three: Total variance {.smaller}
+
+:::{#thm-total_var}
+Let $X' = [X_1, X_2, \ldots, X_p]$ be a data matrix with covariance matrix $\Sigma$ and eigenvalue-eigenvector pairs $(\lambda_1, e_1), \ldots, (\lambda_p, e_p)$, ordered such that $\lambda_1 \geq \lambda_2 \geq \ldots \geq \lambda_p \geq 0$. Define the principal components $Y_i = e'_iX'$ for $i = 1, \ldots, p$. Then, the sum of variances of the original variables is equal to the sum of the eigenvalues of $\Sigma$, which is also equal to the sum of variances of the principal components:
+$$
+\sum_{i=1}^{p} \sigma_{ii} = \sum_{i=1}^{p} \text{Var}(X_i) = \sum_{i=1}^{p} \lambda_i = \sum_{i=1}^{p} \text{Var}(Y_i).
+$$
+:::
+
+# Proof of theorem three {.smaller}
+
+:::{.proof}
+The trace of the covariance matrix $\Sigma$, which is the sum of its diagonal elements, equals the sum of its eigenvalues due to the properties of the trace operator and the orthogonality of eigenvectors:
+$$
+\text{trace}(\Sigma) = \sum_{i=1}^{p} \sigma_{ii} = \sum_{i=1}^{p} \lambda_i.
+$$
+Since $\Sigma$ can be decomposed as $\Sigma = PDP'$, where $D$ is the diagonal matrix of eigenvalues and $P$ is the matrix of eigenvectors, we have:
+$$
+\text{trace}(\Sigma) = \text{trace}(PDP') = \text{trace}(D) = \sum_{i=1}^{p} \lambda_i.
+$$
+Therefore, the total variance accounted for by the $k$-th principal component is given by the proportion:
+$$
+p_k = \frac{\lambda_k}{\sum_{i=1}^{p} \lambda_i},
+$$
+for $k = 1, \ldots, p$.
+:::
