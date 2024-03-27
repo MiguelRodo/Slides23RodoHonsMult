@@ -8,14 +8,6 @@ directories:
   docs:
     path: docs
 build:
-  local:
-    archive:
-      path: _archive
-      content:
-      - data-raw
-      - output
-      - docs
-      structure: version
   github:
     latest-2024:
       content:
