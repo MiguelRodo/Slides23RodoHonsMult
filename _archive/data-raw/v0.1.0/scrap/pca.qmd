@@ -1,0 +1,45 @@
+:::{.hide}
+
+# Projection onto a vector (sub)space
+
+- **Generalization**: Suppose that we wish to project the vector $\symbf{b}$ onto the vector space spanned by $\symbf{a}_1, \symbf{a}_2, \ldots, \symbf{a}_p$.
+  - The projection is the nearest point to $\symbf{b}$ on the subspace spanned by $\symbf{a}_1, \symbf{a}_2, \ldots, \symbf{a}_p$.
+- If $p=2$, then we are projecting onto a plane.
+- Let $\symbf{A} = [\symbf{a}_1, \symbf{a}_2, \ldots, \symbf{a}_p]$ be the matrix with columns $\symbf{a}_1, \symbf{a}_2, \ldots, \symbf{a}_p$.
+- Then the projection of $\symbf{b}$ onto the subspace spanned by $\symbf{a}_1, \symbf{a}_2, \ldots, \symbf{a}_p$ is given by:
+
+$$
+\text{proj}_{\symbf{A}}(\symbf{b}) = \symbf{A}(\symbf{A}^T\symbf{A})^{-1}\symbf{A}^T\symbf{b}
+$$
+
+- From those of you who have taken STA2005S (and maybe others?), you'll (immediately and with absolute clarity) recognise this as the hat matrix from linear regression. Linear regression, then, projects the response variable onto the column space of the design matrix.
+
+:::
+
+Suppose that $\symbf{X}$ is a matrix of size $n \times p$ with rank $t$ and SVD $\symbf{X} = \symbf{U}\symbf{D}\symbf{V}'$. Then the best rank $s$ approximation to $\symbf{X}$ is given by
+
+$$
+\hat{\symbf{X}} = \symbf{U}\symbf{D}\symbf{J}_s\symbf{V}',
+$$
+
+where $\symbf{J}_s$ is the matrix of size $p \times p$ with the first $s$ diagonal elements equal to 1 and the rest equal to 0.
+
+
+From Theorem 5a, we know that the best rank $k$ approximation of $\symbf{X}$ is given by $\hat{\symbf{X}}=\symbf{U}\symbf{D}\symbf{J}_kV'$. 
+
+We wish to show that the matrix approximation $\hat{X}$ constructed from the first $k$ principal components is the same. Letting $Y:n\times p$ be the matrix of scores and $\symbf{P}:p\times p$ be the matrix of loadings, we have that
+
+$$
+\symbf{Y} =\symbf{X}\symbf{P} 
+\implies \symbf{Y}\symbf{P}^{-1} =\symbf{X}.
+$$
+
+
+
+We can make us of only the first $k$ principal components by inserting the matrix $\symbf{J}_k$:
+
+$$
+\symbf{Y}\symbf{J}_k\symbf{P}^{-1} =\tilde{\symbf{X}},
+$$
+
+where $\symbf{J}_k$ is the matrix of size $p \times p$ with the first $k$ diagonal elements equal to 1 and the rest equal to 0.

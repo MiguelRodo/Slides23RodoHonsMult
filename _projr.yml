@@ -17,12 +17,10 @@ build:
       - docs
       structure: version
   github:
-    input:
-      content: data-raw
-      description: Project inputs
-    output:
+    latest-2024:
       content:
-      - output
+      - data-raw
       - docs
-      description: Project outputs
+      - output
+      structure: latest
 
