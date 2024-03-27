@@ -17,9 +17,6 @@ build:
       - docs
       structure: version
   github:
-    '@version':
-      content: code
-      description: Latest source code
     input:
       content: data-raw
       description: Project inputs
