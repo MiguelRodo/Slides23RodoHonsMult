@@ -264,6 +264,8 @@ $$
 - is maximized, subject to the constraint that $||\symbf{a}|| = 1$.
 - Applied to the previous example, the first principal component would be a linear combination of height and weight that captures the most variation.
 
+
+
 # The second principal component
 
 - The second principal component is the linear combination of the variables that captures the most variation, subject to the constraint that it is orthogonal to the first principal component.
@@ -294,8 +296,6 @@ $$
 - For the second principal component, we are looking for the direction in which the data varies the most, subject to the constraint that it is orthogonal to the first principal component.
 - We'll now see how to find these directions algebraically, and start by showing a more general result.
 
-
-
 # Theorem 1: Maximisation of quadratic forms for points on the unit sphere
 
 Let $\mathbf{B}:p\times p$ be a positive semi-definite matrix with the $i$-th largest eigenvalue $\lambda_i$ and associated eigenvector $\mathbf{e}_i$. Then we have that 
@@ -314,13 +314,10 @@ for $i\in\{2,3, \ldots, p\}$.
 
 ## Proof of Theorem 1 {.smaller}
 
-:::{.proof}
-
 Let $\mathbf{P}:p\times p$ be the orthogonal matrix whose $i$-th column is the $i$-th eigenvector and $\Lambda$ be the diagonal matrix with ordered eigenvalues along the diagonal. Let $\mathbf{B}^{1/2}=\mathbf{P}\mathbf{\Lambda}^{1/2}\mathbf{P}'$ and $\mathbf{y}=\mathbf{P}'\mathbf{x}$.
 
 First, we show that the quadratic form can never be larger than $\lambda_1$:
 
-$$
 \begin{align*} 
 \frac{\mathbf{x}'\mathbf{B}\mathbf{x}}{\mathbf{x}'\mathbf{x}} &=  \frac{\mathbf{x}'\mathbf{B}^{1/2}\mathbf{B}^{1/2}\mathbf{x}}{\mathbf{x}'\mathbf{P}\mathbf{P}'\mathbf{x}} 
 = \frac{\mathbf{x}'\mathbf{P}\mathbf{\Lambda}^{1/2}\mathbf{P}'\mathbf{P}\mathbf{\Lambda}^{1/2}\mathbf{P}'\mathbf{x}}{\mathbf{y}'\mathbf{y}}
@@ -329,9 +326,6 @@ $$
  \leq \lambda_1 \frac{\sum_{i=1}^py_i^2}{\sum_{i=1}^py_i^2}
  = \lambda_1 
 \end{align*}
-$$
-
-:::
 
 ## Proof of Theorem 1 (cont.) {.smaller}
 
@@ -365,7 +359,6 @@ Since we choose $x$ orthogonal to the first $i-1$ eigenvectors, the first $i-1$ 
 
 Returning to considering the quadratic form, we have that
 
-$$
 \begin{align}
 \frac{\mathbf{x}'\mathbf{B}\mathbf{x}}{\mathbf{x}'\mathbf{x}} 
 &= \frac{\sum_{j=1}^p\lambda_jy_j^2}{\sum_{j=1}^py_j^2} \\
@@ -373,7 +366,6 @@ $$
  \leq \lambda_i \frac{\sum_{j=i}^py_j^2}{\sum_{j=i}^py_j^2} 
  = \lambda_i
 \end{align}
-$$
 
 Using the same argument as before, we can show that this is actually attained for $\mathbf{x}=\mathbf{e}_i$.
 
@@ -382,10 +374,9 @@ Using the same argument as before, we can show that this is actually attained fo
 - @thm-max_quad_form has already done the heavy lifting, as we can simply set $\mathbf{B}=\mathbf{\Sigma}$.
 - All that's left to do is place Theorem 1 in a probabilistic context, and relate it to the variance and covariance of linear combinations of a random vector.
 
-# Selecting principal components {.smaller}
 
-:::{#thm-princ_eig}
-## Identifying successive variance-maximising and orthogonal linear combinations
+# Theorem 2: Selecting principal components {.smaller}
+
 Let $\mathbf{\Sigma}:p\times p$ be the variance-covariance matrix with the $i$-th largest eigenvalue $\lambda_i$ and associated eigenvector $\mathbf{e}_i$. Then the $i$-th principal component (defined as before) is given by 
 
 $$
@@ -395,16 +386,12 @@ $$
 implying that
 
 \begin{align*}
-
 \mathrm{Var}[Y_i] &= \lambda_i \;\forall \; i \in \{1,2, \ldots, p\}, \; \mathrm{and} \\
 \mathrm{Cov}[Y_i, Y_j] &= 0 \; \mathrm{for} \; i\neq j.
 \end{align*}
 
-:::
 
 # Proof of Theorem 2 {.smaller}
-
-:::{.proof}
 
 From @thm-max_quad_form, we know that 
 
@@ -420,8 +407,6 @@ Analagous reasoning shows that $\mathrm{Var}[\mathbf{a}_i'\mathbf{X}]$ has a max
 
 For $i\neq j$, $\mathrm{Cov}[\mathbf{e}_i'\mathbf{X},\mathbf{e}_j'\mathbf{X}] = \mathbf{e}_i'\mathbf{\Sigma}\mathbf{e}_j = 0$.
 
-:::
-
 # A note on terminology
 
 - Principal components (the $\mathbf{Y}_i$'s) may also be referred to as "scores".
@@ -429,27 +414,28 @@ For $i\neq j$, $\mathrm{Cov}[\mathbf{e}_i'\mathbf{X},\mathbf{e}_j'\mathbf{X}] = 
 
 # Theorem three: Total variance {.smaller}
 
-:::{#thm-total_var}
 Let $X' = [X_1, X_2, \ldots, X_p]$ be a data matrix with covariance matrix $\Sigma$ and eigenvalue-eigenvector pairs $(\lambda_1, e_1), \ldots, (\lambda_p, e_p)$, ordered such that $\lambda_1 \geq \lambda_2 \geq \ldots \geq \lambda_p \geq 0$. Define the principal components $Y_i = e'_iX'$ for $i = 1, \ldots, p$. Then, the sum of variances of the original variables is equal to the sum of the eigenvalues of $\Sigma$, which is also equal to the sum of variances of the principal components:
 $$
 \sum_{i=1}^{p} \sigma_{ii} = \sum_{i=1}^{p} \text{Var}(X_i) = \sum_{i=1}^{p} \lambda_i = \sum_{i=1}^{p} \text{Var}(Y_i).
 $$
-:::
 
 # Proof of theorem three {.smaller}
 
-:::{.proof}
 The trace of the covariance matrix $\Sigma$, which is the sum of its diagonal elements, equals the sum of its eigenvalues due to the properties of the trace operator and the orthogonality of eigenvectors:
+
 $$
 \text{trace}(\Sigma) = \sum_{i=1}^{p} \sigma_{ii} = \sum_{i=1}^{p} \lambda_i.
 $$
+
 Since $\Sigma$ can be decomposed as $\Sigma = PDP'$, where $D$ is the diagonal matrix of eigenvalues and $P$ is the matrix of eigenvectors, we have:
+
 $$
 \text{trace}(\Sigma) = \text{trace}(PDP') = \text{trace}(D) = \sum_{i=1}^{p} \lambda_i.
 $$
+
 Therefore, the total variance accounted for by the $k$-th principal component is given by the proportion:
+
 $$
 p_k = \frac{\lambda_k}{\sum_{i=1}^{p} \lambda_i},
 $$
 for $k = 1, \ldots, p$.
-:::
