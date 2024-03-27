@@ -5,6 +5,8 @@
 .Ruserdata
 _projr-local.yml
 _environment.local
+SCRATCH.qmd
+Test.qmd
 
 # Start of projr section: do not edit by hand (until `# End of projr section`)
 _data_raw/**
@@ -18,3 +20,4 @@ docs/**
 *.tex
 
 Rplots.pdf
+
