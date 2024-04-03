@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Patch (v0.2.1): Miguel Julio Rodo (14:23:45)
+  - Update PCA sldies
 - *Minor* (v0.2.0): Miguel Julio Rodo (22:58:40)
   - Archive
 
