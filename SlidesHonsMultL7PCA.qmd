@@ -13,6 +13,8 @@ format:
     filecolor: magenta
     include-in-header:
       file: preamble.tex
+nocite: |
+    @johnson_wichern07
 ---
 
 ```{r }
@@ -43,8 +45,6 @@ $$
 
 - Why linear combinations?
   - Simplicity >> strong theoretical results >> robustness, speed and interpretability
-
-
 
 # Types of multivariate analysis
 
@@ -264,7 +264,7 @@ knitr::include_graphics(path_p_height_weight)
 
 ::: {.column width="50%"}
 
-- The new variable is then the *length of the projection*.
+- The new variable is then the *length and sign of the projection*.
 - For example, suppose we have the point $[1.2, 0.3]$:
 
 ```{r}
@@ -658,7 +658,7 @@ cowplot::save_plot(
 
 ::: {.column width="50%"}
 - The variability of the (lengths of the) projections is 1.3 (0.5, 2), 0.3 (1, -1) and 1.7 (1, 1), respectively.
--The projection onto $[1, 1]$ captures the most variation.
+- The projection onto $[1, 1]$ captures the most variation.
 :::
 
 ::::
@@ -680,10 +680,10 @@ cowplot::save_plot(
 - For the first principal component, we seek to find $\symbf{a}_1$ such that
 
 $$
-\text{Var}(\symbf{X}\symbf{a}_1) = \symbf{a}_1^T\symbf{\Sigma}\symbf{a}_1
+\text{Var}(\symbf{a}_1'\symbf{X}) = \symbf{a}_1^T\symbf{\Sigma}\symbf{a}_1
 $$
 
-- is maximized, subject to the constraint that $||\symbf{a}|| = 1$.
+- is maximized, subject to the constraint that $||\symbf{a}_1|| = 1$.
   - This is necessary as otherwise we could meaninglessly increase the variation without bound by making $\symbf{a}_1$ longer.
 - Applied to the previous example, the first principal component would be a linear combination of height and weight that captures the most variation.
 
@@ -778,12 +778,12 @@ knitr::include_graphics(path_p_height_weight_ex_1)
 - In other words, for the second principal component we seek to find $\symbf{a}_2$ such that
 
 $$
-\text{Var}(\symbf{X}\symbf{a}_2) = \symbf{a}_2^T\symbf{\Sigma}\symbf{a}_2
+\text{Var}(\symbf{a}_2'\symbf{X}) = \symbf{a}_2^T\symbf{\Sigma}\symbf{a}_2
 $$
 
 - is maximized, subject to the constraints that $||\symbf{a}_2|| = 1$ and $\symbf{a}_2^T\symbf{a}_1 = 0$.
 
-# First principal component for health and weight data
+# Second principal component for health and weight data
 
 ```{r}
 set.seed(2106)
@@ -873,15 +873,15 @@ knitr::include_graphics(path_p_height_weight_ex_2)
 - For the $k$-th principal component (for $k\leq p$), we seek to find $\symbf{a}_k$ such that
 
 $$
-\text{Var}(\symbf{X}\symbf{a}_k) = \symbf{a}_k^T\symbf{\Sigma}\symbf{a}_k
+\text{Var}(\symbf{a}_k'\symbf{X}) = \symbf{a}_k^T\symbf{\Sigma}\symbf{a}_k
 $$
 
 - is maximized, subject to the constraints that $||\symbf{a}_k|| = 1$ and $\symbf{a}_k^T\symbf{a}_j = 0$ for $j < k$.
 
 \pause
 
-- Up until this point, we've explored various options for $\symbf{a}_1$ and $\symbf{a}_2$ without any method. We'll now discuss how to compute these principal components.
-- First, we'll discuss a more general results.
+- Up until this point, we've explored various options for $\symbf{a}_k$ without any method. We'll now discuss how to compute these principal components.
+- First, we'll discuss a more general result.
 
 # Theorem 1: Maximisation of quadratic forms for points on the unit sphere
 
@@ -897,7 +897,7 @@ $$
 \max_{\symbf{x}\neq \symbf{0},\symbf{x}\perp \symbf{e}_1, \symbf{e}_2, \ldots, \symbf{e}_{i-1}} \frac{\symbf{x}'\symbf{B}\symbf{x}}{\symbf{x}'\symbf{x}}=\lambda_i \; (\mathrm{attained}\; \mathrm{when} \; \symbf{x}=\symbf{e}_{i})
 $$
 
-for $i\in\{2,3, \ldots, p\}$.
+for $i\in\{2,3, \ldots, p\}$, where $\lambda_i$ is the $i$-th largest eigenvalue and $\symbf{e}_i$ is the associated eigenvector.
 
 # Proof of Theorem 1 {.smaller}
 
@@ -959,6 +959,7 @@ Using the same argument as before, we can show that this is actually attained fo
 # Connection with principal components
 
 - Theorem 1 has already done the heavy lifting, as we can simply set $\symbf{B}=\symbf{\Sigma}$.
+  - To see this, consider that $\frac{\symbf{x}'\symbf{\Sigma}\symbf{x}}{\symbf{x}'\symbf{x}}=\frac{\symbf{x}'\symbf{\Sigma}\symbf{x}}{||\symbf{x}||^2} = (\symbf{x}/||\symbf{x}||)'\symbf{\Sigma}(\symbf{x}/||\symbf{x}||)$, so implicitly the constraint $||\symbf{x}||=1$ is already present.
 - All that's left to do is place Theorem 1 in a probabilistic context, and relate it to the variance and covariance of linear combinations of a random vector.
 
 # Theorem 2: Selecting principal components {.smaller}
@@ -977,7 +978,6 @@ implying that
 \mathrm{Var}[Y_i] &= \lambda_i \;\forall \; i \in \{1,2, \ldots, p\}, \; \mathrm{and} \\
 \mathrm{Cov}[Y_i, Y_j] &= 0 \; \mathrm{for} \; i\neq j.
 \end{align*}
-
 
 # Proof of Theorem 2 {.smaller}
 
@@ -1000,101 +1000,287 @@ For $i\neq j$, $\mathrm{Cov}[\symbf{e}_i'\symbf{X},\symbf{e}_j'\symbf{X}] = \sym
 - Principal components (the $\symbf{Y}_i$'s) may also be referred to as "scores".
 - The coefficient vectors $\symbf{a}_i$ may also be referred to as "loadings" (thinking algebraically) or as "principal axes"/"principal directions" (thinking geometrically).
 
-# Theorem three: Total variance {.smaller}
-
-Let $X' = [X_1, X_2, \ldots, X_p]$ be a data matrix with covariance matrix $\Sigma$ and eigenvalue-eigenvector pairs $(\lambda_1, e_1), \ldots, (\lambda_p, e_p)$, ordered such that $\lambda_1 \geq \lambda_2 \geq \ldots \geq \lambda_p \geq 0$. Define the principal components $Y_i = e'_iX'$ for $i = 1, \ldots, p$. Then, the sum of variances of the original variables is equal to the sum of the eigenvalues of $\Sigma$, which is also equal to the sum of variances of the principal components:
-$$
-\sum_{i=1}^{p} \sigma_{ii} = \sum_{i=1}^{p} \text{Var}(X_i) = \sum_{i=1}^{p} \lambda_i = \sum_{i=1}^{p} \text{Var}(Y_i).
-$$
-
-# Proof of theorem three {.smaller}
-
-The trace of the covariance matrix $\Sigma$, which is the sum of its diagonal elements, equals the sum of its eigenvalues due to the properties of the trace operator and the orthogonality of eigenvectors:
-
-$$
-\text{trace}(\Sigma) = \sum_{i=1}^{p} \sigma_{ii} = \sum_{i=1}^{p} \lambda_i.
-$$
-
-Since $\Sigma$ can be decomposed as $\Sigma = PDP'$, where $D$ is the diagonal matrix of eigenvalues and $P$ is the matrix of eigenvectors, we have:
-
-$$
-\text{trace}(\Sigma) = \text{trace}(PDP') = \text{trace}(D) = \sum_{i=1}^{p} \lambda_i.
-$$
-
-Therefore, the total variance accounted for by the $k$-th principal component is given by the proportion:
-
-$$
-p_k = \frac{\lambda_k}{\sum_{i=1}^{p} \lambda_i},
-$$
-
-for $k = 1, \ldots, p$.
-
-
-
-# Theorem 4: Correlation with original variables
-
-If $Y_1 = e_1'X, Y_2 = e_2'X, \ldots, Y_p = e_p'X$ are the principal components obtained from the covariance matrix $\Sigma$, then
-$\rho_{Y_iX_k} = \frac{e_{ik}\sqrt{\lambda_i}}{\sqrt{\sigma_{kk}}} , \quad i,k = 1,2,\ldots,p$
-are the correlation coefficients between the components $Y_i$ and variable $X_k$, where $(\lambda_1,e_1),\ldots,(\lambda_p,e_p)$ are eigenvalue-eigenvector pairs of $\Sigma$.
-
-\textbf{Proof:}
-Let $a_k' = [0,\ldots,0,1,0,\ldots,0]$ so that $X_k = a_k'X$ and $\text{Cov}(X_k,Y_i) = \text{Cov}(a_k'e_i',e_i')=a_k'e_i'e_i'$.
-Since $\Sigma e_i= \lambda_ie_i$ it follows that
-
-$$\text{Cov}(X_k,Y_i)=a_k'e_i'=a_k'\lambda_ie_i=e_{ik}.$$
-
-We know that $\text{Var}(Y_i)= \lambda_i$ and $\text{Var}(X_k)=\sigma_{kk}$ so
-
-$$
-\rho_{Y_iX_k}=\frac{\text{Cov}(Y_i,X_k)}{\sqrt{\text{Var}(Y_i)}\sqrt{\text{Var}
-(X_k)}}= \frac{\lambda_ie_{ik}}{e_{ik}\sqrt{\lambda_i}\sqrt{\sigma_{kk}}}
-$$
-
 # Example {.smaller}
 
 ::::{.columns}
 
 :::{.column width="50%"}
 
-Suppose three random variables $X_1$, $X_2$, and $X_3$ are thus correlated:
+Suppose that we have the following variance-covariance matrix:
 
 ```{r}
 #| echo: true
-sigma_mat <- matrix(
-  c(1, -2, 0,
-    -2, 5, 0,
-    0, 0, 2),
+vcov_mat <- matrix(
+  c(1, 0.9, 0.9, 0, 0, 0, 0,
+    0.9, 1, 0.9, 0, 0, 0, 0,
+    0.9, 0.9, 1, 0, 0, 0, 0,
+    0, 0, 0, 1, 0.9, 0.9, 0.9,
+    0, 0, 0, 0.9, 1, 0.9, 0.9,
+    0, 0, 0, 0.9, 0.9, 1, 0.9,
+    0, 0, 0, 0.9, 0.9, 0.9, 1),
   byrow = TRUE,
-  nrow = 3
+  nrow = 7
 )
-sigma_mat
+colnames(vcov_mat) <- paste0("V", 1:7)
+rownames(vcov_mat) <- paste0("V", 1:7)
 ```
 
 :::
 
 :::{.column width="50%"}
 
-We apply the eigen decomposition to the covariance matrix:
-
 ```{r}
-#| echo: true
-eig_obj <- eigen(sigma_mat)
-```
-
-to obtain the eigenvalues:
-
-```{r}
-eig_obj$values |> signif(3)
-```
-
-and the eigenvectors:
-
-```{r}
-#| echo: true
-eig_obj$vectors |> signif(3)
+#| results: asis
+knitr::kable(vcov_mat)
 ```
 
 :::
+
+::::
+
+# Example (cont.) {.smaller}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+- We apply the eigen decomposition to the variance-covariance matrix:
+
+```{r}
+#| echo: true
+eig_obj <- eigen(vcov_mat)
+```
+
+- to obtain the following eigenvectors:
+
+```{r}
+#| echo: true
+eig_vec_mat <- eig_obj$vectors
+rownames(eig_vec_mat) <- paste0("V", 1:7)
+colnames(eig_vec_mat) <- paste0("PC", 1:7)
+```
+
+:::
+
+:::{.column width="50%"}
+
+```{r}
+eig_vec_mat |> signif(2)
+```
+
+:::
+
+::::
+
+# Example (cont.) {.smaller}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+- By the variance formula, these linear combinations have the following variances:
+
+```{r}
+#| echo: true
+(eig_vec_mat |> t()) %*%
+  vcov_mat %*%
+  (eig_vec_mat) |>
+  diag() |>
+  signif(2)
+```
+
+:::
+
+:::{.column width="50%"}
+
+- These are the same as the eigenvalues (by theorem 2):
+
+```{r}
+#| echo: true
+eig_obj$values |>
+  signif(2) |>
+  setNames(paste0("PC", 1:7))
+```
+
+- Clearly, due to the correlation structure, the orthogonality constraint implies that only two PCs have meaningful variance.
+
+:::
+
+::::
+
+# Theorem three: Total variance {.smaller}
+
+Let $\symbf{X}' = [X_1, X_2, \ldots, X_p]'$ be a random vector with covariance matrix $\symbf{\Sigma}$ that has eigenvalue-eigenvector pairs $(\lambda_1, \symbf{e}_1), \ldots, (\lambda_p, \symbf{e}_p)$, ordered such that $\lambda_1 \geq \lambda_2 \geq \ldots \geq \lambda_p \geq 0$. Define the principal components $Y_i = \symbf{e}'_i\symbf{X}$ for $i = 1, \ldots, p$. Then, the sum of variances of the original variables is equal to the sum of the eigenvalues of $\symbf{\Sigma}$, which is also equal to the sum of variances of the principal components:
+
+$$
+\sum_{i=1}^{p} \sigma_{ii} = \sum_{i=1}^{p} \text{Var}(X_i) = \sum_{i=1}^{p} \lambda_i = \sum_{i=1}^{p} \text{Var}(Y_i).
+$$
+
+# Proof of theorem three {.smaller}
+
+The trace of the covariance matrix $\symbf{\Sigma}$, which is the sum of the variances of the original variables.
+
+Since $\symbf{\Sigma}$ can be decomposed as $\symbf{\Sigma} = \symbf{PDP}'$, where $\symbf{D}$ is the diagonal matrix of eigenvalues and $\symbf{P}$ is the matrix of eigenvectors, we have:
+
+$$
+\text{trace}(\symbf{\Sigma}) = \text{trace}(\symbf{PDP}') = \text{trace}(\symbf{D}) = \sum_{i=1}^{p} \lambda_i = \sum_{i=1}^{p} \text{Var}(Y_i).
+$$
+
+# Contribution per component
+
+Theorem 2 showed that
+
+$$
+\text{trace}(\symbf{\Sigma}) = \sum \lambda_i = \sum \text{Var}(Y_i).
+$$
+
+This implies that the proportion of the total variance due to the $k^{th}$ principal component is
+
+$$
+\frac{\lambda_k}{\sum \lambda_i },\quad k=1,...p,
+$$
+
+and (due to being uncorrelated) the proportion of variance accounted for by the first $r$ principal components is given by
+
+$$
+\frac{\sum_{i=1}^r \lambda_i }{\sum \lambda_i }.
+$$
+
+# The scree plot
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- The scree plot is a graphical representation of the proportion of variance accounted for by each principal component.
+- It plots $(i, \lambda_i/\sum_{j=1}^{p} \lambda_j)$ for $i = 1, \ldots, p$.
+- Typically, we look for the "elbow" in the plot, which indicates the number of principal components to retain.
+- Beyond this point, each additional principal component captures little additional variation.
+
+:::
+
+::: {.column width="50%"}
+
+```{r}
+plot_tbl <- tibble::tibble(
+  pc = 1:7,
+  prop_var = eig_obj$values / sum(eig_obj$values)
+)
+plot_tbl_point <- purrr::map_df(
+  seq(5.5, 5.502, length.out = 9), function(x) {
+    plot_tbl |>
+      dplyr::filter(pc == 2) |>
+      dplyr::mutate(size_point = x)
+  }
+)
+p <-  ggplot(
+  data = plot_tbl
+  ) +
+    geom_line(
+      aes(x = pc, y = prop_var),
+      stat = "identity",
+      colour = "dodgerblue"
+    ) +
+    geom_point(
+      data = plot_tbl_point |> dplyr::slice(5:9),
+      aes(x = pc, y = prop_var, size = size_point),
+      colour = "mediumseagreen",
+      alpha = 0.9,
+      shape = 1,
+      show.legend = FALSE
+    ) +
+    geom_point(
+      aes(x = pc, y = prop_var),
+      colour = "dodgerblue",
+      alpha = 0.9,
+      size = 1.5
+    ) +
+    labs(
+      x = "Principal component index",
+      y = "Proportion of variance"
+    ) +
+    cowplot::theme_cowplot() +
+    cowplot::background_grid(major = "xy") +
+    theme(
+      panel.background = element_rect(fill = "white"),
+      plot.background = element_rect(fill = "white")
+    ) +
+    scale_x_continuous(
+      breaks = 1:7
+    )
+path_p_scree <- projr::projr_path_get("cache", "fig", "p-scree.pdf")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_scree,
+  units = "cm",
+  base_height = 7,
+  base_width = 8 * (7/6)
+)
+```
+
+```{r}
+#| results: asis
+knitr::include_graphics(path_p_scree)
+```
+
+:::
+
+::::
+
+# Theorem 4: Correlation with original variables
+
+For $Y_i$ and $X_i$ the $i$-th principal component and the $k$-th original variable, respectively, we have that
+
+$$
+\rho_{Y_i,X_i} = \frac{\sqrt{\lambda_i}e_{ik}}{\sqrt{\sigma_{kk}}}.
+$$
+
+
+# Proof of theorem 3
+
+Let $\symbf{a}_k'$ equal 1 in position $k$ and 0 otherwise, so that $X_k = a_k'\symbf{X}$. We note that
+
+$$
+\text{Cov}(X_k,Y_i) = \text{Cov}(\symbf{a}_k'\symbf{X},\symbf{e}_i'\symbf{X})=\symbf{a}_k'\symbf{\Sigma}\symbf{e}_i=\symbf{a}_k'\symbf{PDP'}\symbf{e}_i=\lambda_i\symbf{a}_k'\symbf{e}_i=\lambda_ie_{ik}.
+$$
+
+We know that $\text{Var}(Y_i)= \lambda_i$ and $\text{Var}(X_k)=\sigma_{kk}$, so
+
+$$
+\rho_{Y_i,X_k}=\frac{\text{Cov}(Y_i,X_k)}{\sqrt{\text{Var}(Y_i)}\sqrt{\text{Var}
+(X_k)}}= \frac{\sqrt{\lambda_i}e_{ik}}{\sqrt{\sigma_{kk}}}
+$$
+
+# Example {.smaller}
+
+::::{.columns}
+
+:::{.column width="70%"}
+
+- From our previous example where we had two sets of correlated variables, we obtain the following correlation matrix: 
+
+```{r}
+#| results: asis
+P <- eig_obj$vectors
+D <- diag(eig_obj$values)
+var_mat <- diag(diag(vcov_mat))
+numerator <- P %*% sqrt(D)
+corr_mat <- var_mat %*% numerator
+rownames(corr_mat) <- paste0("V", 1:7)
+colnames(corr_mat) <- paste0("PC", 1:7)
+corr_mat |> signif(2) |> knitr::kable()
+```
+
+:::
+
+:::{.column width="30%"}
+
+- As all variables have unit variance, the only things that matter are the eigenvalue and the eigenvector.
+  - High loading and high eigenvalue $\rightarrow$ high correlation.
+- Higher variance (hypothetically) decorrelates PCs and original variables.
+
+:::
+
 ::::
 
 # Constant-density contours I {.smaller}
@@ -1105,19 +1291,19 @@ $$
 (\symbf{x} - \mu)'\Sigma^{-1}(\symbf{x} - \mu) = c^2.
 $$
 
-This ellipsoid's shape, size and orientation is determined by the eigendecomposition of $\Sigma$.
+The ellipsoid's shape, size and orientation are determined by the eigendecomposition of $\symbf{\Sigma}$.
 
-WLOG, we assume $\mu = 0$. Then, the ellipsoid is defined by
+WLOG, we assume $\symbf{\mu} = \symbf{0}$. Then, the ellipsoid is defined by
 
 $$
-c^2 = x'\Sigma^{-1}x = \frac{1}{\lambda_1}(e_1'x)^2 + \frac{1}{\lambda_2}(e_2'x)^2 + \ldots + \frac{1}{\lambda_p}(e_p'x)^2,
+c^2 = x'\Sigma^{-1}x = \frac{1}{\lambda_1}(\symbf{e}_1'\symbf{x})^2 + \frac{1}{\lambda_2}(\symbf{e}_2'\symbf{x})^2 + \ldots + \frac{1}{\lambda_p}(\symbf{e}_p'\symbf{x})^2
 $$
 
-by orthogonality of the eigenvectors.
+after multiplying out.
 
-# Constant-density contours II {.smaller}
+# Constant-density contours (cont.) {.smaller}
 
-As the eigenvectors are orthogonal, the axes are given by
+The axes of the ellipse are then given by
 
 $$
 \pm c\sqrt{\lambda_i}\symbf{e}_i, \quad i = 1,2,\ldots,p.
@@ -1188,26 +1374,56 @@ The eigenvectors are in very different directions.
 
 ::::
 
-# Sample principal components I {.smaller}
+# Sample principal components {.smaller}
+
+::::{.columns}
+
+:::{.column width="50%"}
 
 In practice, we do not know $\symbf{\Sigma}$ and must estimate it by the sample covariance matrix $\symbf{S}=n^{-1}\symbf{X}'\symbf{X}$.
 
-For example, the eigen-decomposition of the sample covariance matrix of the height and weight data is:
+For example, sample covariance matrix of the height and weight data is:
 
 ```{r}
+#| echo: true
+#| results: asis
 cov_mat <- hw_tbl |>
-  dplyr::select(height, weight) |>
   as.matrix() |>
   cov()
-eigen(cov_mat) |> lapply(function(x) signif(x, 2))
+cov_mat |> signif(2) |> knitr::kable()
+```
+
+:::
+
+:::{.column width="50%"}
+
+- The eigen decomposition is then:
+
+```{r}
+#| echo: true
+eigen(cov_mat) |>
+  lapply(function(x) signif(x, 2))
 ```
 
 So, the first principal component is given by projections onto $[1, 1]$.
 
-If $\symbf{X} \sim \mathcal{N}(\symbf{\mu}, \symbf{\Sigma})$, then we have that that
+:::
+
+::::
+
+
+# Sample principal components (cont.) {.smaller}
+
+If $\symbf{X} \sim \mathcal{N}(\symbf{0}, \symbf{\Sigma})$, then we have that that
 
 $$
 Y_i \sim \mathcal{N}(0, \lambda_i) \quad \text{and} \quad \symbf{Y} \sim \mathcal{N}_p(\symbf{0}, \symbf{\Lambda}).
+$$
+
+In the height and weight example then, we estimate this to be
+
+$$
+\symbf{Y} \sim \mathcal{N}_p(\symbf{0}, \begin{bmatrix} 1.71 & 0 \\ 0 & 0.31 \end{bmatrix}).
 $$
 
 # Approximating a matrix $\symbf{X}$
@@ -1244,7 +1460,7 @@ $$
 
 We therefore have a "rule" for mapping size onto weight and height.
 
-# Approximation example cont. {.smaller}
+# Approximation example (cont.) {.smaller}
 
 Suppose that a given observation has height 0.7 and weight 0.5.
 
@@ -1264,8 +1480,13 @@ Considering the standard deviation is (by construction) 1, the error (0.1 in bot
 
 If weight and height were very different, the error would be larger (why?).
 
-Whether or not PCA is a good approximation matters because a) we may actually want to reconstitute the original data after compression (e.g. image compression) and b) we want to know we're not losing too much information.
+# Why are about approximation?
 
+Whether or not PCA is a good approximation matters because
+
+a) we may actually want to reconstitute the original data after compression (e.g. image compression),
+b) we want to know we're not losing too much information and
+c) it helps provide some intuition about what we're doing.
 
 # Minimising the least squares error of the approximation
 
@@ -1313,7 +1534,6 @@ where $\symbf{u}_i$ and $\symbf{v}_i$ are the left- and right-singular vectors a
 & \Rightarrow UB'V^* = \Lambda_s \text{ or } B \Rightarrow \sum_{i=1}^{s} \lambda_i u_i v_i^*.
 \end{align*}
 
-
 # Theorem 5b: PCA leads to same approximation as the SVD {.smaller}
 
 The PCA approximation to $\symbf{X}$ is given by $\tilde{\symbf{X}}=\symbf{Y}\symbf{J}_k\symbf{P}'$, where $\symbf{J}_k$ is the matrix of size $p \times p$ with the first $k$ diagonal elements equal to 1 and the rest equal to 0.
@@ -1323,7 +1543,6 @@ This is the same as the SVD approximation, i.e.
 $$
 \hat{\symbf{X}} = \symbf{U}\symbf{D}\symbf{J}_k\symbf{V}' = \tilde{\symbf{X}} = \symbf{Y}\symbf{J}_k\symbf{P}'.
 $$
-
 
 # Theorom 5b: proof {.smaller}
 
@@ -1340,34 +1559,7 @@ $$
 \symbf{Y}=\symbf{U}\symbf{D}\symbf{V}'\symbf{V}=\symbf{U}\symbf{D}=\hat{\symbf{X}}.
 $$
 
-# Contribution per component
-
-Theorem 2 showed that
-\begin{align*}
-tr(\Sigma) &= tr(P\Lambda P') = tr(\Lambda PP') = tr(\Lambda) \\
-&= \lambda_1 + \lambda_2 + ... + \lambda_p = \sum Var(Y_i).
-\end{align*}
-
-This implies that the proportion of the total variance due to the $k^{th}$ principal component is
-
-$$
-\frac{\lambda_k}{\lambda_1+\lambda_2+...+\lambda_p}, k=1,...p,
-$$
-
-and the proportion of variance accounted for by the first $r$ principal components is given by
-
-$$
-\frac{\lambda_1+\lambda_2+\ldots+\lambda_r}{\lambda_1+\lambda_2+...+\lambda_p}.
-$$
-
-# Scree plot
-
-A scree plot of eigenvalues ($\lambda_i$) against indices $i$ can be used to determine the number of principal components to retain.
-
-The point at which the plot levels off is the number of principal components to retain.
-This point is typically referred to as an "elbow".
-
-# Final example
+# Example
 
 :::: {.columns}
 
@@ -1593,15 +1785,17 @@ The right-singular vectors are the eigenvectors of the covariance matrix, and he
 
 # Biplots
 
-- The axes of principal components are linear combinations of the original variables.
-- This makes interpreting the principal components in terms of the original points more difficult.
-- To alleviate this problem, we can plot the principal components and the original variables on the same plot.
-- This is called a biplot.
+- Since each data point has many variables, graphical display is cumbersome.
+- However, we may use PCA to provide an approximate graphical display of the data.
+- It will show both:
+  - Each observation, and
+  - Each variable.
+- Hence, "bi"plot.
 
 # Definition of a biplot
 
 Suppose we have a rank $s$ matrix $\hat{\symbf{X}}:n\times p$.
-Then we write
+Then we can write
 
 $$
 \hat{\symbf{X}} = \symbf{A}\symbf{B},
@@ -1618,10 +1812,12 @@ Typically, we plot the rows as points and the columns as vectors.
 The PCA approximation to a matrix $\symbf{X}$ is given by
 
 $$
-\symbf{Y}\symbf{J}_k\symbf{P}'.
+\symbf{Y}\symbf{J}_k\symbf{P}'=\symbf{Y}\symbf{J}_k\symbf{J}_k\symbf{P}'=\symbf{A}\symbf{B},
 $$
 
-Typically, we take the first two columns of $\symbf{Y}$ and the first two columns of $\symbf{P}$ to form the biplot.
+where $\symbf{A}=\symbf{Y}\symbf{J}_k$ and $\symbf{B}=\symbf{J}_k\symbf{P}'$.
+
+Typically, we set $k=2$ and ignore the all-zero columns/rows of $\symbf{A}$ and $\symbf{B}$.
 
 The rows of $\symbf{Y}$ are the scores (representing the observations) and the rows of $\symbf{P}'$ are the loadings (representing the variables).
 
@@ -1634,3 +1830,11 @@ The rows of $\symbf{Y}$ are the scores (representing the observations) and the r
 \centering
 
 \includegraphics[width=0.65\textwidth]{_data_raw/img/biplot.png}
+
+# Resources
+
+- Source code is on [GitHub](https://github.com/MiguelRodo/Slides23RodoHonsMult/blob/2024/SlidesHonsMultL7PCA.qmd).
+  - Suppressed code (e.g. to create figures) is available there.
+
+## References
+
