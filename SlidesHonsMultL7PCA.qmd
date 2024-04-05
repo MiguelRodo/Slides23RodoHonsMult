@@ -1527,10 +1527,10 @@ where $\symbf{u}_i$ and $\symbf{v}_i$ are the left- and right-singular vectors a
 & = \text{tr}[U'(A - B)VV'(A - B)U] \text{ (by cyclic trace property)}, \\
 & = \text{tr}[U'(A - B)V(U'(A - B)V)'] \text{ (as }\mathrm{tr}(AB)=B'A'\text{)},\\
 & = \text{tr}[(U'AV-U'BV)(U'AV-U'BV)^*] \text{ (multiplying in)}. \\
-& \text{As } U'AV=U'UDV'V=D \text{ and letting } C = U'BV, \text{ we have that} \\
+& \text{As } U'AV=U'UDV'V=D \text{ and letting } C = U'BV, \text{ from above we have that} \\
 & \text{tr}[(A - B)(A - B)'] = \text{tr}[(D - C)(D - C)'] \\
 & = \sum_{i,j=1}^{m} (d_{ij} - c_{ij})^2, \\
-&= \sum_{i=1}^{m} (d_i - c_{ii})^2 + \sum_{i\neq j} c_{ij}^2 \text{ (as D is diagonal).}
+& = \sum_{i=1}^{m} (d_i - c_{ii})^2 + \sum_{i\neq j} c_{ij}^2 \text{ (as D is diagonal).}
 \end{align*}
 
 # Proof of Theorem 5a (cont.) {.smaller} 
