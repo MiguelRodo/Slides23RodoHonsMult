@@ -18,6 +18,6 @@ docs/**
 *_files
 *.log
 *.tex
-
+!*preamble.tex
 Rplots.pdf
 

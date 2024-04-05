@@ -1229,16 +1229,16 @@ knitr::include_graphics(path_p_scree)
 
 # Theorem 4: Correlation with original variables
 
-For $Y_i$ and $X_i$ the $i$-th principal component and the $k$-th original variable, respectively, we have that
+For $Y_i$ and $X_k$ the $i$-th principal component and the $k$-th original variable, respectively, we have that
 
 $$
-\rho_{Y_i,X_i} = \frac{\sqrt{\lambda_i}e_{ik}}{\sqrt{\sigma_{kk}}}.
+\rho_{Y_i,X_k} = \frac{\sqrt{\lambda_i}e_{ik}}{\sqrt{\sigma_{kk}}}.
 $$
 
 
 # Proof of theorem 3
 
-Let $\symbf{a}_k'$ equal 1 in position $k$ and 0 otherwise, so that $X_k = a_k'\symbf{X}$. We note that
+Let $\symbf{a}_k'$ equal 1 in position $k$ and 0 otherwise, so that $X_k = \symbf{f}_k'\symbf{X}$. We note that
 
 $$
 \text{Cov}(X_k,Y_i) = \text{Cov}(\symbf{a}_k'\symbf{X},\symbf{e}_i'\symbf{X})=\symbf{a}_k'\symbf{\Sigma}\symbf{e}_i=\symbf{a}_k'\symbf{PDP'}\symbf{e}_i=\lambda_i\symbf{a}_k'\symbf{e}_i=\lambda_ie_{ik}.
@@ -1380,7 +1380,7 @@ The eigenvectors are in very different directions.
 
 :::{.column width="50%"}
 
-In practice, we do not know $\symbf{\Sigma}$ and must estimate it by the sample covariance matrix $\symbf{S}=n^{-1}\symbf{X}'\symbf{X}$.
+In practice, we do not know $\symbf{\Sigma}$ and must estimate it by the sample covariance matrix $\symbf{S}=n^{-1}\symbf{X}'\symbf{X}$ (assuming $\symbf{X}$ is mean-centred; adjust otherwise).
 
 For example, sample covariance matrix of the height and weight data is:
 
@@ -1523,16 +1523,30 @@ where $\symbf{u}_i$ and $\symbf{v}_i$ are the left- and right-singular vectors a
 
 \begin{align*}
 & \text{We use } UU^* = I_m \text{ and } VV^* = I_k \text{ to write the sum of squares as} \\
-& \text{tr}[(A - B)(A - B)^*] = \text{tr}[U^*(A - B)V^*(A - B)VU] \\
-& = \text{tr}[U^*(A - BV)(A - BV)^*U] \\
-& = \text{tr}[U^*(A - BV)U(U^*A - BV^*)] \\
-& = \text{tr}[(UA-BV)(UA-BV)^*] \\
-& \text{If we let } A' = UA \text{ and } C' = BV \\
-& = \text{tr}[(C' - C')(C'^* - C')] \\
-& = \sum_{i,j=1}^{m} (a_{ij} - c_{ij})^2 \\
-& \text{which will be a minimum when } c_{ij} = 0 \text{ unless } i = j \text{ and } i \leq s \\
-& \Rightarrow UB'V^* = \Lambda_s \text{ or } B \Rightarrow \sum_{i=1}^{s} \lambda_i u_i v_i^*.
+& \text{tr}[(A - B)(A - B)'] = \text{tr}[UU'(A - B)VV'(A - B)'] \text{ (by orthonormality)}, \\
+& = \text{tr}[U'(A - B)VV'(A - B)U] \text{ (by cyclic trace property)}, \\
+& = \text{tr}[U'(A - B)V(U'(A - B)V)'] \text{ (as }\mathrm{tr}(AB)=B'A'\text{)},\\
+& = \text{tr}[(U'AV-U'BV)(U'AV-U'BV)^*] \text{ (multiplying in)}. \\
+& \text{As } U'AV=U'UDV'V=D \text{ and letting } C' = U'BV, \text{ we have that} \\
+& \text{tr}[(A - B)(A - B)'] = \text{tr}[(D - C)(D - C)'] \\
+& = \sum_{i,j=1}^{m} (d_{ij} - c_{ij})^2, \\
+&= \sum_{i=1}^{m} (d_i - c_{ii})^2 + \sum_{i\neq j} c_{ij}^2 \text{ (as D is diagonal).}
 \end{align*}
+
+# Proof of Theorem 5a (cont.) {.smaller} 
+
+The quantity $\sum_{i=1}^{m} (d_i - c_{ii})^2 + \sum_{i\neq j} c_{ij}^2$ is minimised when 
+
+1. $c_{ij} = 0$ for $i \neq j$, 
+2. $c_{ii} = d_i$ for $i \leq s$, and
+3. $c_{ii}=0$ otherwise.
+
+We choose the $s$ largest singular values as these reduce the error terms along the diagonals the most.
+We cannot choose more than $s$ as we $\symbf{U}'\symbf{B}\symbf{V}$ is diagonal, meaning the number of non-zero diagonal elements is its rank and its rank must be $s$ or less.
+
+This implies that 
+
+$\symbf{U}'\symbf{B}\symbf{V} = \symbf{D}\symbf{J}_s \Rightarrow \symbf{B} = \symbf{U}\symbf{D}\symbf{J}_s\symbf{V}'.$
 
 # Theorem 5b: PCA leads to same approximation as the SVD {.smaller}
 
@@ -1546,17 +1560,38 @@ $$
 
 # Theorom 5b: proof {.smaller}
 
-By definition, $\symbf{P}=\symbf{V}$ as $\symbf{P}$ and $\symbf{V}$ both have the ordered eigenvectors of $\symbf{X}'\symbf{X}$ along the columns.
-
-Therefore,
-$$
-\symbf{Y}=\symbf{X}\symbf{P}=\symbf{X}\symbf{V},
-$$
-
-we have that
+The principal components are given by
 
 $$
-\symbf{Y}=\symbf{U}\symbf{D}\symbf{V}'\symbf{V}=\symbf{U}\symbf{D}=\hat{\symbf{X}}.
+\symbf{Y} = \symbf{X}\symbf{P}.
+$$
+
+The first $k$ principal components are given by
+
+$$
+\symbf{Y}\symbf{J}_k = \symbf{X}\symbf{P}\symbf{J}_k,
+$$
+
+setting the last $p-k$ columns of $\symbf{P}$ to 0.
+
+This implies that the approximation to $\symbf{X}$ is given by 
+
+$$
+\tilde{\symbf{X}} = \symbf{Y}\symbf{J}_k\symbf{P}'.
+$$
+
+# Theorom 5b: proof (cont.) {.smaller}
+
+The columns of $\symbf{P}$ are the eigenvectors of $\symbf{X}'\symbf{X}$, which are the same as the right singular vectors of $\symbf{X}$, i.e.
+
+$$
+\symbf{P} = \symbf{V}.
+$$
+
+This implies that
+
+$$
+\tilde{\symbf{X}} = \symbf{Y}\symbf{J}_k\symbf{P} = \symbf{XV}\symbf{J}_k\symbf{V}' = \symbf{U}\symbf{D}\symbf{VV}'\symbf{J}_k\symbf{V}' = \symbf{U}\symbf{D}\symbf{J}_k\symbf{V}' = \hat{\symbf{X}}.
 $$
 
 # Example
