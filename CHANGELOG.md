@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Patch (v0.2.3): Miguel Julio Rodo (07:37:10)
+  - Make slight correction
 - Patch (v0.2.2): Miguel Julio Rodo (07:30:27)
   - Correct SVD and PCA proofs
 - Patch (v0.2.1): Miguel Julio Rodo (14:23:45)
