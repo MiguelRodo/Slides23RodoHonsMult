@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Patch (v0.2.4): Miguel Julio Rodo (07:39:05)
+  - Upload with correct settings
 - Patch (v0.2.3): Miguel Julio Rodo (07:37:10)
   - Make slight correction
 - Patch (v0.2.2): Miguel Julio Rodo (07:30:27)
