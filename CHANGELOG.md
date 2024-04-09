@@ -1,5 +1,8 @@
 # CHANGELOG
 
+- *Minor* (v0.3.0): Miguel Julio Rodo (15:20:51)
+  - Add final draft of regression slides
+
 - Patch (v0.2.7): Miguel Julio Rodo (15:19:26)
   - SlidesHonsMultL8Reg.qmd
 - Patch (v0.2.6): Miguel Julio Rodo (07:30:59)
