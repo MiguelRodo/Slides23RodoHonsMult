@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Patch (v0.2.7): Miguel Julio Rodo (15:19:26)
+  - SlidesHonsMultL8Reg.qmd
 - Patch (v0.2.6): Miguel Julio Rodo (07:30:59)
   - Add updated regression slides
 - Patch (v0.2.5): Miguel Julio Rodo (02:53:31)
