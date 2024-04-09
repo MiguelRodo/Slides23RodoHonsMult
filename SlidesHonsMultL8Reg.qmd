@@ -680,6 +680,575 @@ $$
 
 ::::
 
+# Inference example {.smaller}
+
+Consider the dataset of four wood-pulp variables and four paper properties:
+
+```{r}
+#| echo: true
+data(
+  "data_tidy_paper", 
+  package = "DataTidy23RodoHonsMult"
+)
+```
+
+We'll select only the first paper variable:
+
+```{r}
+#| results: asis
+data_tidy_paper <- data_tidy_paper |>
+  dplyr::select(matches("pulp|paper_1"))
+data_tidy_paper[1:4, ] |> knitr::kable()
+```
+
+# Inference example (cont.) {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+We extract the response matrix, $\symbf{Y}$:
+
+```{r}
+#| echo: true
+Y_mat <- data_tidy_paper[, "paper_1", drop = FALSE] |>
+  as.matrix()
+colnames(Y_mat) <- "paper_1"
+```
+
+```{r}
+#| results: asis
+Y_mat[1:4, ] |> signif(2) |> knitr::kable()
+```
+
+:::
+
+\pause
+
+::: {.column width=50%}
+
+We extract the data for the predictor matrix, $\symbf{X}$, and prepend a column of 1s:
+
+```{r}
+#| echo: true
+X_mat <- as.matrix(cbind(1,
+  data_tidy_paper |>
+    dplyr::select(starts_with("pulp"))
+))
+colnames(X_mat)[1] <- "intercept"
+```
+
+```{r}
+#| results: asis
+X_mat[1:3, , drop = FALSE] |> signif(2) |> knitr::kable()
+```
+
+:::
+
+::::
+
+# Inference example (cont.) {.smaller}
+
+::::{.columns}
+
+:::{.column width=50%}
+
+## Estimates
+
+We first estimate the coefficients:
+
+```{r}
+#| echo: true
+beta_vec <- 
+  (solve(t(X_mat) %*% X_mat) %*%
+    t(X_mat)) %*% Y_mat
+colnames(beta_vec) <- "estimate"
+```
+
+```{r}
+#| results: asis
+beta_vec |> signif(2) |> knitr::kable()
+```
+
+:::
+
+:::{.column width=50%}
+
+## $\beta_{\mathrm{pulp_1}}$ confidence interval
+
+To get the 95% confidence interval for the $\beta_{\mathrm{pulp_1}}$ coefficient, we first get the standard error:
+
+```{r}
+#| echo: true
+XtX_mat <- t(X_mat) %*% X_mat
+XtX_mat_inv <- solve(XtX_mat)
+var_resp <- sum((Y_mat - X_mat %*% beta_vec)^2) /
+  (nrow(Y_mat) - ncol(X_mat))
+sd_beta_pulp1 <- sqrt(var_resp) * sqrt(XtX_mat_inv[2, 2])
+sd_beta_pulp1 |> signif(2)
+```
+
+:::
+
+::::
+
+# Inference example (cont.) {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+## $\beta_{\mathrm{pulp_1}}$ confidence interval (cont.)
+
+We then get the relevant $t$-distributed quantile:
+
+```{r}
+#| echo: true
+t_beta_pulp1 <- qt(0.975, nrow(Y_mat) - ncol(X_mat))
+t_beta_pulp1 |> signif(2)
+```
+
+The confidence interval is then:
+
+```{r}
+#| echo: true
+(beta_vec[2] + c(-1, 1) * t_beta_pulp1 * sd_beta_pulp1) |>
+  signif(2)
+```
+
+:::
+
+::: {.column width=50%}
+
+## Hypothesis testing: $H_0: \beta_{\mathrm{pulp_1}} = 0$
+
+The test statistic is given by
+
+```{r}
+#| echo: true
+t_stat <- beta_vec[2] / sd_beta_pulp1
+t_stat |> signif(2)
+```
+
+The p-value is therefore:
+
+```{r}
+#| echo: true
+(pt(-abs(t_stat),
+  nrow(Y_mat) - ncol(X_mat)) * 2
+) |> signif(2)
+```
+
+:::
+
+::::
+
+# Inference example (cont.) {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+## Hypothesis testing: $H_0: \symbf{\beta}^{(1)} = \symbf{0}$
+
+We now test the hypothesis that $\symbf{\beta}^{(1)} = \beta_1=\beta_3=\beta_4=0$.
+
+We first extract $\symbf{C}_11$:
+
+```{r}
+#| echo: true
+C11_mat <- XtX_mat_inv[2:5, 2:5]
+C11_mat <- C11_mat[-2, -2]
+C11_mat |> signif(2)
+```
+
+:::
+
+::: {.column width=50%}
+
+## Hypothesis testing: $H_0: \symbf{\beta}^{(1)} = \symbf{0}$
+
+We now extract the relevant estimates:
+
+```{r}
+#| echo: true
+beta_vec_1 <- beta_vec[
+  c(2, 4:5), , drop = FALSE
+]
+beta_vec_1 |> signif()
+```
+
+:::
+
+::::
+
+
+# Inference example (cont.) {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+## Hypothesis testing: $H_0: \symbf{\beta}^{(1)} = \symbf{0}$
+
+The test statistic is then:
+
+```{r}
+#| echo: true
+f_stat <- (t(beta_vec_1) %*%
+  solve(C11_mat) %*%
+  beta_vec_1) / length(beta_vec_1) /
+  var_resp
+f_stat |> signif(2)
+```
+
+:::
+
+:::{.column width=50%}
+
+## Hypothesis testing: $H_0: \symbf{\beta}^{(1)} = \symbf{0}$
+
+This yields the following p-value:
+
+```{r}
+#| echo: true
+pf(f_stat, length(beta_vec_1),
+  nrow(Y_mat) - ncol(X_mat),
+  lower.tail = FALSE
+) |> signif(2)
+```
+
+:::
+
+::::
+
+# Inference for multivariate regression {.smaller}
+
+- Multiple and multivariate regression produce *exactly* the same inference when coefficients are examined within the context of a single response variable.
+- For example, suppose that we model BMI and blood pressure against age, weight and height:
+  - The coefficients, p-values and confidence intervals for age, weight and height will be the same in both multiple (fitting two models) and multivariate regression.
+  - The simultaneous hypothesis tests will be the same when the considering only groups of coefficients iwth respect to a particular response variable. As an example, the p-value for the hypothesis that neither age nor weight has an effect on BMI will be the same in both models.
+- The main difference of interest is that we can perform simultaneous hypothesis tests for regression coefficients across different response variables in multivariate regression.
+  - To continue the example above, in multivariate regression we can test that the effects of age on BMI and blood pressure are both zero.
+
+# Hypothesis testing in multivariate regression
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+Suppose we wish to test that
+
+$$
+\symbf{\mathcal{B}}^{(1)} = \symbf{0},
+$$
+
+where 
+
+$$
+\symbf{\mathcal{B}} = \begin{pmatrix} \symbf{\mathcal{B}}^{(1)} \\ \symbf{\mathcal{B}}^{(2)} \end{pmatrix}
+$$
+
+and $\symbf{\mathcal{B}}^{(1)}:q\times r$.
+
+This is the hypothesis that the first $q$ predictors have no effect on any of the $r$ responses.
+
+:::
+
+\pause
+
+::: {.column width=50%}
+
+- We'll need to fit a model without the first $q$ predictors and compare the fit of the two models.
+- Let's define $\symbf{X}^{(2)}:n\times (k-q) \text{ for } i = 1,2$ as follows:
+
+$$
+\symbf{X}= \begin{pmatrix} \symbf{X}^{(1)} & \symbf{X}^{(2)} \end{pmatrix}
+$$
+
+:::
+
+::::
+
+# Hypothesis testing in multivariate regression {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+- Under the implicit assumption that $\symbf{\mathcal{B}}^{(1)} = \symbf{0}$, we obtain the estimated regression parameters as
+
+$$
+\hat{\symbf{\mathcal{B}}}^{(2)} = (\symbf{X}^{(2)\prime}\symbf{X}^{(2)})^{-1}\symbf{X}^{(2)\prime}\symbf{\mathcal{Y}},
+$$
+
+- and the MLE variance-covariance matrices as
+
+$$
+\hat{\Sigma}_{\mathrm{MLE}} = \frac{1}{n}(\symbf{\mathcal{Y}} - \symbf{X}\hat{\symbf{\mathcal{B}}})'(\symbf{\mathcal{Y}} - \symbf{X}\hat{\symbf{\mathcal{B}}}).
+$$
+
+- and
+
+$$
+\hat{\symbf{\Sigma}}^{(2)}_{\mathrm{MLE}} = \frac{1}{n}(\symbf{\mathcal{Y}} - \symbf{X}^{(2)}\hat{\symbf{\mathcal{B}}}^{(2)})'(\symbf{\mathcal{Y}} - \symbf{X}^{(2)}\hat{\symbf{\mathcal{B}}}^{(2)}).
+$$
+
+:::
+
+\pause
+
+::: {.column width=50%}
+
+- The test statistic is then
+
+\begin{align*}
+\Lambda &= \frac{
+  \displaystyle\max_{\symbf{\mathcal{B}}^{(2)},\symbf{\Sigma^{(2)}}}
+  L(\symbf{\mathcal{B}}^{(2)},\symbf{\Sigma^{(2)}})
+}{
+  \displaystyle\max_{\symbf{\mathcal{B}},\symbf{\Sigma}}
+  L(\symbf{\mathcal{B}},\symbf{\Sigma})
+}, \\
+&= \left(\frac{|\hat{\symbf{\Sigma}}|}{|\hat{\symbf{\Sigma^{(2)}}}|}\right)^{n/2}.
+\end{align*}
+
+
+- For $n-r$ and $n-k$ sufficiently large, the following approximation holds:
+
+$$
+-[n-k-0.5(r-p+q+1)]\ln(\Lambda^{2/n})\sim \chi^2_{r(p-1)}.
+$$
+
+:::
+
+::::
+
+# Multivariate inference example
+
+Using the paper dataset, we will test whether pulp_2 has an effect on any paper type.
+
+Loading the data as follows:
+
+```{r}
+#| echo: true
+data(
+  "data_tidy_paper", 
+  package = "DataTidy23RodoHonsMult"
+)
+```
+
+```{r}
+#| results: asis
+data_tidy_paper[1:4, ] |> knitr::kable()
+```
+
+# Multivariate example (cont.) {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+We extract the response matrix, $\symbf{Y}$:
+
+```{r}
+#| echo: true
+Y_mat <- data_tidy_paper |> 
+  dplyr::select(-starts_with("pulp")) |> 
+  as.matrix()
+```
+
+```{r}
+#| results: asis
+Y_mat[1:4, ] |> signif(2) |> knitr::kable()
+```
+
+:::
+
+\pause
+
+::: {.column width=50%}
+
+We extract the data for the predictor matrix, $\symbf{X}$, and prepend a column of 1s:
+
+```{r}
+#| echo: true
+X_mat <- as.matrix(cbind(1,
+  data_tidy_paper |>
+    dplyr::select(starts_with("pulp"))
+))
+colnames(X_mat)[1] <- "intercept"
+```
+
+```{r}
+#| results: asis
+X_mat[1:3, , drop = FALSE] |> signif(2) |> knitr::kable()
+```
+
+:::
+
+::::
+
+# Multivariate example (cont.) {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+We extract the data for the predictor matrix excluding pulp_2, $\symbf{X}^{(2)}$:
+
+```{r}
+#| echo: true
+X_mat_2 <- X_mat[
+  , -(3:4), drop = FALSE
+]
+```
+
+```{r}
+#| results: asis
+X_mat_2[1:3, , drop = FALSE] |> signif(2) |> knitr::kable()
+```
+
+:::
+
+::: {.column width=50%}
+
+We obtain estimated regression coefficients under both the full and reduced models:
+
+```{r}
+#| echo: true
+B_mat <- (
+  solve(t(X_mat) %*% X_mat) %*%
+  t(X_mat)) %*% Y_mat
+```
+
+```{r}
+#| echo: true
+B_mat_2 <- (
+  solve(t(X_mat_2) %*% X_mat_2) %*%
+  t(X_mat_2)) %*% Y_mat
+```
+
+:::
+
+::::
+
+# Multivariate example (cont.) {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+We now calculate the sample variance-covariance matrices under the full and reduced models:
+
+```{r}
+#| echo: true
+Sigma_mat <-
+  t((Y_mat - X_mat %*% B_mat)) %*%
+    (Y_mat - X_mat %*% B_mat) /
+    (nrow(Y_mat))
+```
+
+```{r}
+#| echo: true
+Sigma_mat_2 <-
+  t((Y_mat - X_mat_2 %*% B_mat_2)) %*%
+    (Y_mat - X_mat_2 %*% B_mat_2) /
+    (nrow(Y_mat))
+```
+
+:::
+
+::: {.column width=50%}
+
+- This yields the following test statistic:
+
+```{r}
+#| echo: true
+n <- nrow(Y_mat)
+r <- ncol(Y_mat)
+q <- ncol(X_mat) - ncol(X_mat_2)
+k <- ncol(X_mat)
+p <- k - 1
+test_stat <-
+  -(n - k - 0.5 * (r - p + q + 1)) *
+  log(
+    det(Sigma_mat) / det(Sigma_mat_2)
+  )
+test_stat |> signif(2)
+```
+
+with p-value
+
+```{r}
+#| echo: true
+pchisq(test_stat, r * (p - q), lower.tail = FALSE) |>
+  signif(2)
+```
+
+:::
+
+::::
+
+# Principal components regression (PCR)
+
+- In PCR, we replace the original $p$ (non-intercept) predictors with $m \leq p$ principal components.
+- Motivations:
+  - Avoid multicollinearity
+  - Reduce overfitting
+  - Use fewer predictors
+  - Improve interpretability
+
+# Method
+
+Very straigthtforward...
+
+1. Calculate the principal components of the (non-intercept) predictors.
+2. Fit a multiple regression model using the first $m$ principal components as predictors.
+
+\pause
+
+If the number of principal components is pre-specified, then all the inferential methods of multiple regression apply.
+
+
+# Relationship with ridge regression
+
+- PCR is akin to a rough version of ridge regression [@hastie_etal09]:
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{_data_raw/img/pcr_vs_ridge.png}
+\end{figure}
+
+# Selecting the number of principal components
+
+- One can use the same reasoning as before (scree plots, proportion of variation captured), or cross-validation (or $R^2$, but this isn't really done).
+- Note that when performing cross validation, the loadings must be computed afresh within each fold.
+
+# Partial least squares (PLS)
+
+- Partial least squares (PLS) is a method that is similar to PCR, in that it takes linear combinations of the input variables.
+- However, instead of choosing the linear combinations to maximise the variance, it chooses them to maximise (something like) the covariance of the resultant variables with the predictor.
+
+# PLS versus PCR [@hastie_etal09]
+
+- PCR and PLS optimise different objective functions:
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{_data_raw/img/pcr_vs_pls.png}
+\end{figure}
+
+# Selecting the number of components in PCR and PLS [@hastie_etal09]
+
+- The number of components can be chosen by cross-validation.
+- @hastie_etal09 chose the number of components within one standard error of the minimum cross-validated error:
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{_data_raw/img/cv-pcr_and_pls.png}
+\end{figure}
+
 # Resources
 
 - Source code is on [GitHub](https://github.com/MiguelRodo/Slides23RodoHonsMult/blob/2024/SlidesHonsMultL8Reg.qmd).
