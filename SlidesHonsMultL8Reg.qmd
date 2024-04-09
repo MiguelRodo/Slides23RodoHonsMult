@@ -1,7 +1,7 @@
 ---
 title: Least-squares regression
 subtitle: Multiple, multivariate, PCR and PLS approaches
-author: Miguel Rodo & Stefan Britz
+author: Miguel Rodo (reworking slides by Stefan Britz)
 date: "2024-04-11"
 bibliography: zotero.bib
 format:
@@ -22,9 +22,11 @@ nocite: |
 - Simple regresssion: one predictor, one response
   - Typical notation: $Y = \beta_0 + \beta_1 X + \epsilon$
   - Example: Ice-cream sales against temperature
+\pause
 - Multiple regression: multiple predictors, one response
   - Typical notation: $Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots + \beta_p X_p + \epsilon$, OR $Y = \symbf{X}'\symbf{\beta} + \epsilon$
   - Example: House price against the number of rooms, the size of the garden, the distance to the city center, etc.
+\pause
 - Multivariate regression: multiple predictors, multiple responses
   - Typical notation: $\symbf{\mathcal{Y}} = \symbf{X}'\symbf{\mathcal{B}} + \symbf{\mathcal{E}}$, where $\symbf{\mathcal{Y}}$, $\symbf{\mathcal{B}}$ and $\symbf{\mathcal{E}}$ have $r$ columns
   - Example: Rainfall and wind speed against hurricane category, altitude and distance from the coast
@@ -33,6 +35,7 @@ nocite: |
 
 - We've often transformed input variables individually, e.g. squaring them or taking the logarithm
   - For example, if we have a predictor $X$, we can use $X^2$ as a predictor and have $Y = \beta_0 + \beta_1 X^2 + \epsilon$
+\pause
 - We will also now consider taking *linear combinations* of different input variables, e.g. creating the variable $X_1^{\ast}=\alpha_1X_1+\alpha_2X_2$ and using it as a predictor in the model
   - We consider two ways of deciding on the linear combinations:
     - Principal components analysis: maximising variance
@@ -54,12 +57,14 @@ nocite: |
 
 ## Multiple regression
 
-- Each observational unit consists of a single response variable ($y_i$) and multiple predictors ($\symbf{x}_i=x_{i1}, x_{i2}, \ldots, x_{ip}$)
+- Each observational unit consists of a single response variable ($y_i$) and multiple predictors ($\symbf{x}_i= \begin{bmatrix} x_{i1} & x_{i2} & \ldots & x_{ip} \end{bmatrix}'$)
 - Example responses per observational unit:
   - Annual revenue of a company
   - Number of pigeons at a single university
   - Blood pressure of an individual
 :::
+
+\pause
 
 ::: {.column width=50%}
 
@@ -89,6 +94,8 @@ nocite: |
   - For example, different individuals in a study have independent BMI measurements
 
 :::
+
+\pause
 
 ::: {.column width=50%}
 
@@ -128,6 +135,8 @@ $$
 
 :::
 
+\pause
+
 ::: {.column width=50%}
 
 ## Multivariate regression
@@ -135,7 +144,7 @@ $$
 Choose $\hat{\symbf{\mathcal{B}}}$ to minimise the sum of squared residuals:
 
 \begin{align*}
- &\sum_{i=1}^n\sum_{j=1}^r (\symbf{y}_{ir} - \hat{\symbf{y}}_{ir})'(\symbf{y}_{ir} - \hat{\symbf{y}}_{ir}) \\
+ &\sum_{i=1}^n\sum_{j=1}^r (y_{ij} - \hat{y}_{ij})^2 \\
 =\; &\mathrm{tr}[(\symbf{\mathcal{Y}} - \symbf{X}\hat{\symbf{\mathcal{B}}})'(\symbf{\mathcal{Y}} - \symbf{X}\hat{\symbf{\mathcal{B}}})].
 \end{align*}
 
@@ -162,6 +171,7 @@ $$
 - A special matrix appears in both cases (now predicting the response for all observations at once):
   - **Multiple regression**: $\hat{\symbf{y}} = \symbf{X}\hat{\symbf{\beta}}=\symbf{X}(\symbf{X}'\symbf{X})^{-1}\symbf{X}'\symbf{y}= \symbf{H}\symbf{y}$
   - **Multivariate regression**: $\hat{\symbf{\mathcal{Y}}}=\symbf{X}\hat{\symbf{\mathcal{B}}}=\symbf{X}(\symbf{X}'\symbf{X})^{-1}\symbf{X}'\symbf{\mathcal{Y}}= \symbf{H}\symbf{\mathcal{Y}}$
+\pause
 - This matrix is called the **hat matrix** and is denoted by $\symbf{H}$
   - The reason for the name is that it "puts a hat" on the response vector $\symbf{y}$ or $\symbf{\mathcal{Y}}$
 - Special properties:
@@ -217,6 +227,8 @@ $$
 
 :::
 
+\pause
+
 ::: {.column width=50%}
 
 ## Multivariate regression
@@ -257,6 +269,8 @@ $$
 where SST, SSR and SSE are the sums of squares due to the total, regression and error, respectively.
 
 :::
+
+\pause
 
 ::: {.column width=50%}
 
@@ -308,6 +322,8 @@ $$
 
 :::
 
+\pause
+
 ::: {.column width=50%}
 
 ## Multivariate regression
@@ -346,6 +362,8 @@ data_tidy_house_price[1:4, ] |> knitr::kable()
 ```
 
 :::
+
+\pause
 
 ::: {.column width=50%}
 
@@ -400,6 +418,8 @@ beta_vec |> signif(2) |> knitr::kable()
 
 :::
 
+\pause
+
 :::{.column width=50%}
 
 This matches the output from the `lm` function:
@@ -440,6 +460,8 @@ R2 |> signif(2)
 
 :::
 
+\pause
+
 ::: {.column width=50%}
 
 - An $R^2$ of 0.83 indicates that 83% of the variance in house prices is explained by the size and assessed value of the house.
@@ -467,9 +489,6 @@ data_tidy_paper[1:4, ] |> knitr::kable()
 ```
 
 
-
-
-
 # Multivariate example (cont.) {.smaller}
 
 :::: {.columns}
@@ -491,6 +510,8 @@ Y_mat[1:4, ] |> signif(2) |> knitr::kable()
 ```
 
 :::
+
+\pause
 
 ::: {.column width=50%}
 
@@ -536,6 +557,8 @@ B_mat[, 1:3] |> signif(2) |> knitr::kable()
 
 :::
 
+\pause
+
 ::: {.column width=50%}
 
 This matches the output from the `lm` function (exc. fourth column for space):
@@ -567,6 +590,8 @@ $$
 $$
 
 :::
+
+\pause
 
 :::{.column width=50%}
 
@@ -630,6 +655,8 @@ $$
 $$
 
 :::
+
+\pause
 
 ::: {.column width=50%}
 
