@@ -1,0 +1,661 @@
+---
+title: Least-squares regression
+subtitle: Multiple, multivariate, PCR and PLS approaches
+author: Miguel Rodo & Stefan Britz
+date: "2024-04-11"
+bibliography: zotero.bib
+format:
+  beamer:
+    embed-resources: true
+    aspectratio: 169
+    urlcolor: cyan
+    linkcolor: blue
+    filecolor: magenta
+    include-in-header:
+      file: preamble-reg.tex
+nocite: |
+    @johnson_wichern07
+---
+
+# Linear regression
+
+- Simple regresssion: one predictor, one response
+  - Typical notation: $Y = \beta_0 + \beta_1 X + \epsilon$
+  - Example: Ice-cream sales against temperature
+- Multiple regression: multiple predictors, one response
+  - Typical notation: $Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots + \beta_p X_p + \epsilon$, OR $Y = \symbf{X}'\symbf{\beta} + \epsilon$
+  - Example: House price against the number of rooms, the size of the garden, the distance to the city center, etc.
+- Multivariate regression: multiple predictors, multiple responses
+  - Typical notation: $\symbf{\mathcal{Y}} = \symbf{X}'\symbf{\mathcal{B}} + \symbf{\mathcal{E}}$, where $\symbf{\mathcal{Y}}$, $\symbf{\mathcal{B}}$ and $\symbf{\mathcal{E}}$ have $r$ columns
+  - Example: Rainfall and wind speed against hurricane category, altitude and distance from the coast
+
+# Transformations of input variables
+
+- We've often transformed input variables individually, e.g. squaring them or taking the logarithm
+  - For example, if we have a predictor $X$, we can use $X^2$ as a predictor and have $Y = \beta_0 + \beta_1 X^2 + \epsilon$
+- We will also now consider taking *linear combinations* of different input variables, e.g. creating the variable $X_1^{\ast}=\alpha_1X_1+\alpha_2X_2$ and using it as a predictor in the model
+  - We consider two ways of deciding on the linear combinations:
+    - Principal components analysis: maximising variance
+    - Partial least squares: maximising association with the response
+
+# A noteworthy note on notable notation
+
+- Number of...
+  - Observations: $n$
+  - Responses: $r$, where $r=1$ for multiple regression ($\symbf{y}:n\times 1$) but $r\geq 1$ for multivariate regression ($\symbf{Y}:n\times r$)
+  - Predictors: $k$, i.e. $\symbf{\beta}:k\times 1$ and $\symbf{\mathcal{B}}:k\times r$
+  - Predictors, apart from the intercept: $p=k-1$, i.e. $\symbf{x}'\symbf{\beta} = \beta_0 + \beta_1 x_1 + \ldots + \beta_p x_p$
+
+# Observational unit
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+## Multiple regression
+
+- Each observational unit consists of a single response variable ($y_i$) and multiple predictors ($\symbf{x}_i=x_{i1}, x_{i2}, \ldots, x_{ip}$)
+- Example responses per observational unit:
+  - Annual revenue of a company
+  - Number of pigeons at a single university
+  - Blood pressure of an individual
+:::
+
+::: {.column width=50%}
+
+## Multivariate regression
+
+- Each observational unit consists of multiple response variables ($\symbf{y}_i= \begin{bmatrix} y_{i1} &y_{i2} & \ldots & y_{ir} \end{bmatrix}'$) and multiple predictors ($\symbf{x}_i= \begin{bmatrix} x_{i1} & x_{i2} & \ldots & x_{ip} \end{bmatrix}'$)
+- Example responses per observational unit:
+  - Stock prices of a single company at multiple timepoints
+  - Number of pigeons and starlings at a single university
+  - Measurements of 1000 genes of an individual
+:::
+
+::::
+
+# Model assumptions {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+## Multiple regression
+
+- **Linearity**: $\mathrm{E}[Y] = \beta_0 + \beta_1 X+1 + \ldots + \beta_p X_p$
+- **Constant variance**: $\mathrm{Var}[\epsilon] = \sigma^2$
+- **Independence**: $\mathrm{Cov}[\epsilon_i, \epsilon_j] = 0 \text{ for } i \neq j$
+  - Different observations entirely independent
+  - For example, different individuals in a study have independent BMI measurements
+
+:::
+
+::: {.column width=50%}
+
+## Multivariate regression
+
+- **Linearity**: $\mathrm{E}[\symbf{\mathcal{Y}}] = \symbf{X}'\symbf{\mathcal{B}}$
+- **Constant variance**: $\mathrm{Var}[\symbf{\mathcal{E}}] = \symbf{\Sigma}$
+- **Independence**: $\mathrm{Cov}[\symbf{\mathcal{E}}_i, \symbf{\mathcal{E}}_j] = \symbf{0} \text{ for } i \neq j$
+  - Different observational units are independent, but different responses within the same observational unit may be correlated
+  - For example, different individuals have independent BMI measurements, but multiple measurements of BMI from the same individual are clearly correlated
+
+:::
+
+::::
+
+# Estimating the regression coefficients
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+## Multiple regression
+
+Choose $\hat{\symbf{\beta}}$ to minimise the sum of squared residuals:
+
+\begin{align*}
+ &\sum_{i=1}^n (y_i - \hat{y}_i)^2 \\
+=\; &(\symbf{y} - \hat{\symbf{y}})'(\symbf{y} - \hat{\symbf{y}}), \\
+=\; &(\symbf{y} - \symbf{X}\hat{\symbf{\beta}})'(\symbf{y} - \symbf{X}\hat{\symbf{\beta}}).
+\end{align*}
+
+This implies that
+
+$$
+\hat{\symbf{\beta}} = (\symbf{X}'\symbf{X})^{-1}\symbf{X}'\symbf{y}.
+$$
+
+:::
+
+::: {.column width=50%}
+
+## Multivariate regression
+
+Choose $\hat{\symbf{\mathcal{B}}}$ to minimise the sum of squared residuals:
+
+\begin{align*}
+ &\sum_{i=1}^n\sum_{j=1}^r (\symbf{y}_{ir} - \hat{\symbf{y}}_{ir})'(\symbf{y}_{ir} - \hat{\symbf{y}}_{ir}) \\
+=\; &\mathrm{tr}[(\symbf{\mathcal{Y}} - \symbf{X}\hat{\symbf{\mathcal{B}}})'(\symbf{\mathcal{Y}} - \symbf{X}\hat{\symbf{\mathcal{B}}})].
+\end{align*}
+
+This implies that 
+
+$$
+\hat{\symbf{\mathcal{B}}} = (\symbf{X}'\symbf{X})^{-1}\symbf{X}'\symbf{\symbf{Y}}.
+$$
+
+:::
+
+::::
+
+# Fitted values
+
+- The fitted values are the values of the response variable predicted by the model:
+  - **Multiple regression**: $\hat{y}_i = \symbf{x}_i'\hat{\symbf{\beta}}$
+  - **Multivariate regression**: $\hat{\symbf{\mathcal{Y}}}_{[i]} = \symbf{x}_i'\hat{\symbf{\mathcal{B}}}$
+    - By convention, we use square brackets (e.g. $\symbf{A}_{[i]}$) to denote the $i$-th row of a matrix
+\pause
+
+# The hat matrix {.smaller}
+
+- A special matrix appears in both cases (now predicting the response for all observations at once):
+  - **Multiple regression**: $\hat{\symbf{y}} = \symbf{X}\hat{\symbf{\beta}}=\symbf{X}(\symbf{X}'\symbf{X})^{-1}\symbf{X}'\symbf{y}= \symbf{H}\symbf{y}$
+  - **Multivariate regression**: $\hat{\symbf{\mathcal{Y}}}=\symbf{X}\hat{\symbf{\mathcal{B}}}=\symbf{X}(\symbf{X}'\symbf{X})^{-1}\symbf{X}'\symbf{\mathcal{Y}}= \symbf{H}\symbf{\mathcal{Y}}$
+- This matrix is called the **hat matrix** and is denoted by $\symbf{H}$
+  - The reason for the name is that it "puts a hat" on the response vector $\symbf{y}$ or $\symbf{\mathcal{Y}}$
+- Special properties:
+  - It is a projection matrix, i.e. $\symbf{H}\symbf{y}=\mathrm{proj}_{\symbf{X}}(\symbf{y})$
+  - It is idempotent, i.e. $\symbf{H}^2=\symbf{H}$
+
+# Estimator properties
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+## Multiple regression
+
+- **Unbiased**: $\mathrm{E}[\hat{\symbf{\beta}}] = \symbf{\beta}$
+- **Zero-mean residual**: $\mathrm{E}[\symbf{\epsilon}]=\mathrm{E}[\symbf{X}'\symbf{\beta} - \symbf{X}'\hat{\symbf{\beta}}] = \symbf{0}$
+- **Correlated estimation errors**: $\mathrm{Cov}[\hat{\symbf{\beta}}] = \sigma^2(\symbf{X}'\symbf{X})^{-1}$
+- **Correlated residuals**: $\mathrm{Cov}[\hat{\symbf{\epsilon}}] = \sigma^2(\symbf{I} - \symbf{X}(\symbf{X}'\symbf{X})^{-1}\symbf{X}')  =\sigma^2(\symbf{I} - \symbf{H})$
+
+:::
+
+::: {.column width=50%}
+
+## Multivariate regression
+
+- **Unbiased**: $\mathrm{E}[\hat{\symbf{\mathcal{B}}}] = \symbf{\mathcal{B}}$
+- **Zero-mean residual**: $\mathrm{E}[\symbf{\mathcal{E}}]=\mathrm{E}[\symbf{X}'\symbf{\mathcal{B}} - \symbf{X}'\hat{\symbf{\mathcal{B}}}] = \symbf{0}$
+- **Correlated estimation errors**: $\mathrm{Cov}[\hat{\symbf{\mathcal{B}}}_i, \hat{\symbf{\mathcal{B}}}_j] = \sigma^2_{ij}(\symbf{X}'\symbf{X})^{-1}$ for $i,j\in\{1,\ldots,r\}$, where $\symbf{\mathcal{B}}_i$ is the $i$th column of $\symbf{\mathcal{B}}$
+- **Correlated residuals**: $\mathrm{Cov}[\hat{\symbf{\mathcal{E}}}_i, \hat{\symbf{\mathcal{E}}}_j] = \sigma_{ij}(\symbf{I} - \symbf{H})$ for $i,j\in\{1,\ldots,r\}$
+  - Now the correlation is both between different responses (columns of $\symbf{\mathcal{Y}}$) and between different observations (rows of $\symbf{\mathcal{Y}}$)
+
+:::
+
+::::
+
+# Estimating the variance
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+## Multiple regression
+
+- The estimator of the variance is
+
+$$
+\hat{\sigma^2} = s^2 = \frac{1}{n-k}(\symbf{y} - \symbf{X}\hat{\symbf{\beta}})'(\symbf{y} - \symbf{X}\hat{\symbf{\beta}}).
+$$
+
+- Properties:
+  - **Unbiased**: $\mathrm{E}[s^2] = \sigma^2$
+  - **Independent of $\hat{\symbf{\beta}}$**: $\mathrm{Cov}[s^2, \hat{\symbf{\beta}}] = \symbf{0}$
+
+:::
+
+::: {.column width=50%}
+
+## Multivariate regression
+
+- The estimator of the variance $\symbf{\Sigma}$ is
+
+$$
+\hat{\symbf{\Sigma}} = \symbf{\symbf{S}}= \frac{1}{n-k}(\symbf{\mathcal{Y}} - \symbf{X}\hat{\symbf{\mathcal{B}}})'(\symbf{\mathcal{Y}} - \symbf{X}\hat{\symbf{\mathcal{B}}}).
+$$
+
+- Properties:
+  - **Unbiased**: $\mathrm{E}[\symbf{S}] = \symbf{\Sigma}$
+  - **Independent of $\hat{\symbf{\mathcal{B}}}$**: $\symbf{S}$ and $\hat{\symbf{\mathcal{B}}}$ are independent
+
+:::
+
+::::
+
+# Sums of squares: Multiple regression {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+The total sum of squares is
+
+$$
+\mathrm{SST}= \sum_{i=1}^n(y_i - \bar{y})^2,
+$$
+
+and can be decomposed into
+
+$$
+\mathrm{SSR} + \mathrm{SSE} =
+\sum_{i=1}^n(\hat{y}_i - \bar{y})^2 + \sum_{i=1}^n(y_i - \hat{y}_i)^2,
+$$
+
+where SST, SSR and SSE are the sums of squares due to the total, regression and error, respectively.
+
+:::
+
+::: {.column width=50%}
+
+In matrix notation, these are given by
+
+\begin{align*}
+\mathrm{SST} &= \symbf{y}'\symbf{y} - n\bar{y}^2, \\
+\mathrm{SSR} &= \hat{\symbf{y}}'\hat{\symbf{y}} - n\bar{y}^2, \text{ and }\\
+\mathrm{SSE} &= \symbf{y}'\symbf{y} - \hat{\symbf{y}}'\hat{\symbf{y}}.
+\end{align*}
+
+:::
+
+::::
+
+# Sums of squares: Multivariate regression {.smaller}
+
+In multivariate regression, there is no universal definition of the sums of squares, but we can consider the following:
+
+$$
+\mathrm{SST}= \sum_{i=1}^n\sum_{j=1}^r(y_{ij} - \bar{y}_j)^2,
+$$
+
+which can be decomposed into
+
+$$
+\mathrm{SSR} + \mathrm{SSE} =
+\sum_{i=1}^n\sum_{j=1}^r(\hat{y}_{ij} - \bar{y}_j)^2 + \sum_{i=1}^n\sum_{j=1}^r(y_{ij} - \hat{y}_{ij})^2,
+$$
+
+where SST, SSR and SSE are the sums of squares due to the total, regression and error, respectively.
+
+# Assessment of the model: $R^2$ {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+## Multiple regression
+
+The $R^2$ statistic is defined as
+
+$$
+R^2 = \frac{\mathrm{SSR}}{\mathrm{SST}} = 1 - \frac{\mathrm{SSE}}{\mathrm{SST}}.
+$$
+
+- $R^2$ is the proportion of the total variance explained by the model
+- $0 \leq R^2 \leq 1$
+
+:::
+
+::: {.column width=50%}
+
+## Multivariate regression
+
+One can envision an appropriate multivariate extension to $R^2$, but it is not universally defined.
+
+- One possibility is to consider the proportion of the total variance explained by the model for each response variable, and average this.
+
+*Note*: we won't really use the sums of squares or $R^2$ for multivariate regression in this module.
+
+:::
+
+::::
+
+# Multiple regression example {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+We model the sales price of a house against its size and assessed value.
+
+We load the data as follows:
+
+```{r}
+#| echo: true
+data(
+  "data_tidy_house_price", 
+  package = "DataTidy23RodoHonsMult"
+)
+```
+
+```{r}
+#| results: asis
+data_tidy_house_price[1:4, ] |> knitr::kable()
+```
+
+:::
+
+::: {.column width=50%}
+
+We extract the response matrix, $\symbf{y}$:
+
+```{r}
+#| echo: true
+y_vec <- data_tidy_house_price |> 
+  dplyr::pull(selling_price)
+```
+
+We extract the data for the predictor matrix, $\symbf{X}$, and prepend a column of 1s:
+
+```{r}
+#| echo: true
+X_mat <- cbind(
+  1,
+  data_tidy_house_price |>
+    dplyr::select(-selling_price)
+) |>
+  as.matrix()
+colnames(X_mat)[1] <- "intercept"
+```
+
+:::
+
+::::
+
+
+# Multiple regression example (cont.)
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+To fit the model, we first obtain the estimated regression coefficients:
+
+```{r}
+#| echo: true
+beta_vec <- (
+  solve(t(X_mat) %*% X_mat) %*%
+  t(X_mat)
+  ) %*%
+  y_vec
+colnames(beta_vec) <- "estimate"
+```
+
+```{r}
+#| results: asis
+beta_vec |> signif(2) |> knitr::kable()
+```
+
+:::
+
+:::{.column width=50%}
+
+This matches the output from the `lm` function:
+
+```{r}
+#| echo: true
+#| results: asis
+lm(
+  selling_price ~ .,
+  data = data_tidy_house_price
+) |> 
+  coef() |> signif(2) |> knitr::kable()
+```
+
+:::
+
+::::
+
+
+
+# Multiple regression example (cont.) {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+To assess the model, we calculate the $R^2$ statistic:
+
+```{r}
+#| echo: true
+SST <- sum((y_vec - mean(y_vec))^2)
+SSE <- (y_vec - X_mat %*% beta_vec)^2 |>
+  sum()
+SSR <- SST - SSE
+R2 <- SSR / SST
+R2 |> signif(2)
+```
+
+:::
+
+::: {.column width=50%}
+
+- An $R^2$ of 0.83 indicates that 83% of the variance in house prices is explained by the size and assessed value of the house.
+- This is a high value, suggesting that the model explains the response "well".
+
+:::
+
+::::
+
+# Multivariate example {.smaller}
+
+Consider a dataset of four wood-pulp variables and four paper properties:
+
+```{r}
+#| echo: true
+data(
+  "data_tidy_paper", 
+  package = "DataTidy23RodoHonsMult"
+)
+```
+
+```{r}
+#| results: asis
+data_tidy_paper[1:4, ] |> knitr::kable()
+```
+
+
+
+
+
+# Multivariate example (cont.) {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+We extract the response matrix, $\symbf{Y}$:
+
+```{r}
+#| echo: true
+Y_mat <- data_tidy_paper |> 
+  dplyr::select(-starts_with("pulp")) |> 
+  as.matrix()
+```
+
+```{r}
+#| results: asis
+Y_mat[1:4, ] |> signif(2) |> knitr::kable()
+```
+
+:::
+
+::: {.column width=50%}
+
+We extract the data for the predictor matrix, $\symbf{X}$, and prepend a column of 1s:
+
+```{r}
+#| echo: true
+X_mat <- as.matrix(cbind(1,
+  data_tidy_paper |>
+    dplyr::select(starts_with("pulp"))
+))
+colnames(X_mat)[1] <- "intercept"
+```
+
+```{r}
+#| results: asis
+X_mat[1:3, , drop = FALSE] |> signif(2) |> knitr::kable()
+```
+
+:::
+
+::::
+
+# Multivariate example (cont.) {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+We first obtain the estimated regression coefficients:
+
+```{r}
+#| echo: true
+B_mat <- (
+  solve(t(X_mat) %*% X_mat) %*%
+  t(X_mat)) %*% Y_mat
+```
+
+```{r}
+#| results: asis
+B_mat[, 1:3] |> signif(2) |> knitr::kable()
+```
+
+:::
+
+::: {.column width=50%}
+
+This matches the output from the `lm` function (exc. fourth column for space):
+
+```{r}
+#| echo: true
+#| results: asis
+lm(
+  cbind(paper_1, paper_2, paper_3, paper_4) ~ .,
+  data = data_tidy_paper
+)$coefficients[, 1:3] |> signif(2) |> knitr::kable()
+```
+
+:::
+
+::::
+
+# Inference for multiple regression
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+- Up to now, we have not assumed a full distribution for the errors ($\symbf{\epsilon}$).
+- To perform inference (calculate CI's and p-values), we make the additional assumption that the errors ($\symbf{\epsilon}$) are normally distributed, implying that
+
+$$
+\symbf{\epsilon} \sim \mathcal{N}(\symbf{0}, \sigma^2\symbf{I}).
+$$
+
+:::
+
+:::{.column width=50%}
+
+- This implies that
+
+$$
+\hat{\symbf{\beta}} \sim \mathcal{N}(\symbf{\beta}, \sigma^2(\symbf{X}'\symbf{X})^{-1}).
+$$
+
+- As well as that
+
+$$
+\frac{n-k}{\sigma^2}s^2 \sim \chi^2_{n-k}.
+$$
+
+- We note again that $\hat{\symbf{\beta}}$ and $s^2$ are independent.
+
+:::
+
+::::
+
+# Confidence intervals for multiple regression {.smaller}
+
+Using the previous results, a $100(1-\alpha)\%$ confidence ellipsoid for $\symbf{\beta}$ is given by
+
+$$
+\frac{
+  (\symbf{\beta} - \hat{\symbf{\beta}})'
+  \symbf{X}'\symbf{X}
+  (\symbf{\beta} - \hat{\symbf{\beta}})
+}{
+  ks^2
+}
+\leq F_{k, n-k}^{1-\alpha},
+$$
+
+implying that a confidence interval for $\beta_j$ is
+
+$$
+\hat{\beta}_j \pm t_{n-k}^{\alpha/2}\sqrt{s^2(\symbf{X}'\symbf{X})^{-1}_{jj}}.
+$$
+
+# Hypothesis testing {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+## Univariate
+
+- To test the null hypothesis $H_0: \beta_j = 0$, we use the test statistic
+
+$$
+t = \frac{\hat{\beta}_j}{\sqrt{s^2(\symbf{X}'\symbf{X})^{-1}_{jj}}}.
+$$
+
+- and reject at significance-level $\alpha$ if
+
+$$
+|t| > t_{n-k}^{1-\alpha/2}.
+$$
+
+:::
+
+::: {.column width=50%}
+
+## Simultaneous
+
+- To test the null hypothesis $H_0: \symbf{\beta}^{(1)}=\symbf{0}$ where $\symbf{\beta}^{(1)}:q\times 1$ and $\symbf{\beta}=\begin{pmatrix} \symbf{\beta}^{(1)} & \symbf{\beta}^{(2)} \end{pmatrix}'$, we use
+
+$$
+F = \frac{\hat{\symbf{\beta}}^{(1)\prime}C_{11}^{-1}\hat{\symbf{\beta}}^{(1)}}{qs^2},
+$$
+
+- where $(\symbf{X}'\symbf{X})^{-1} = \symbf{C} = \begin{bmatrix} \symbf{C}_{11} & \symbf{C}_{12} \\ \symbf{C}_{21} & \symbf{C}_{22}  \end{bmatrix}$.
+
+- Accordingly, we reject at significance-level $\alpha$ if
+
+$$
+F \geq F_{q, n-k}^{1-\alpha}.
+$$
+
+:::
+
+::::
+
+# Resources
+
+- Source code is on [GitHub](https://github.com/MiguelRodo/Slides23RodoHonsMult/blob/2024/SlidesHonsMultL8Reg.qmd).
+  - Suppressed code (e.g. to create figures) is available there.
+
+## References

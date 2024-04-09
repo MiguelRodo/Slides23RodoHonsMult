@@ -19,5 +19,6 @@ docs/**
 *.log
 *.tex
 !*preamble.tex
+!preamble-reg.tex
 Rplots.pdf
 
