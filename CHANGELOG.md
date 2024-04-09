@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Patch (v0.2.5): Miguel Julio Rodo (02:53:31)
+  - Add partially-complete mv reg sligs
 - Patch (v0.2.4): Miguel Julio Rodo (07:39:05)
   - Upload with correct settings
 - Patch (v0.2.3): Miguel Julio Rodo (07:37:10)
