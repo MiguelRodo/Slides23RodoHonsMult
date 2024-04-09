@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Patch (v0.2.6): Miguel Julio Rodo (07:30:59)
+  - Add updated regression slides
 - Patch (v0.2.5): Miguel Julio Rodo (02:53:31)
   - Add partially-complete mv reg sligs
 - Patch (v0.2.4): Miguel Julio Rodo (07:39:05)
