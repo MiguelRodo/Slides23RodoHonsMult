@@ -1026,7 +1026,7 @@ $$
 
 # Multivariate inference example
 
-Using the paper dataset, we will test whether pulp_2 or pulp_2 havei an effect on any paper type.
+Using the paper dataset, we will test whether pulp_2 or pulp_3 have an effect on any paper type.
 
 Loading the data as follows:
 
