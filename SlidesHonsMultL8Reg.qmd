@@ -1230,6 +1230,13 @@ If the number of principal components is pre-specified, then all the inferential
 - Partial least squares (PLS) is a method that is similar to PCR, in that it takes linear combinations of the input variables.
 - However, instead of choosing the linear combinations to maximise the variance, it chooses them to maximise (something like) the covariance of the resultant variables with the predictor.
 
+# Partial least squares algorithm [@hastie_etal09]
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75\textwidth]{_data_raw/img/pls_alg.png}
+\end{figure}
+
 # PLS versus PCR [@hastie_etal09]
 
 - PCR and PLS optimise different objective functions:
