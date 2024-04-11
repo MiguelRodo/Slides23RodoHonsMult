@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Patch (v0.3.2): Miguel Julio Rodo (14:38:48)
+  - Corect multivariate inference example
 - Patch (v0.3.1): Miguel Julio Rodo (13:15:44)
   - Add missing PLS algorithm
 - *Minor* (v0.3.0): Miguel Julio Rodo (15:20:51)
