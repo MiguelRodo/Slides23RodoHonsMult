@@ -1026,7 +1026,7 @@ $$
 
 # Multivariate inference example
 
-Using the paper dataset, we will test whether pulp_2 has an effect on any paper type.
+Using the paper dataset, we will test whether pulp_2 or pulp_2 havei an effect on any paper type.
 
 Loading the data as follows:
 
@@ -1095,7 +1095,7 @@ X_mat[1:3, , drop = FALSE] |> signif(2) |> knitr::kable()
 
 ::: {.column width=50%}
 
-We extract the data for the predictor matrix excluding pulp_2, $\symbf{X}^{(2)}$:
+We extract the data for the predictor matrix excluding pulp_2 and pulp_3, $\symbf{X}^{(2)}$:
 
 ```{r}
 #| echo: true
