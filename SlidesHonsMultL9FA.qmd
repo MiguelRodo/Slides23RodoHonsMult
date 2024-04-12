@@ -1,0 +1,750 @@
+---
+title: Factor analysis
+subtitle: The orthogonal factor model
+author: Miguel Rodo (re-using slides from Francesca Little)
+date: "2024-04-18"
+bibliography: zotero.bib
+format:
+  beamer:
+    embed-resources: true
+    aspectratio: 169
+    urlcolor: cyan
+    linkcolor: blue
+    filecolor: magenta
+    include-in-header:
+      file: preamble-reg.tex
+nocite: |
+    @johnson_wichern07
+---
+
+```{r}
+#| include: false
+#| # Load necessary libraries
+library(ggplot2)
+library(tibble)
+```
+
+# Factor analysis (FA)
+
+- Context: $\symbf{X} \sim \; ?$
+  - Goal: Explain covariance structure of $\symbf{X}$ in terms of a smaller number of unobserved variables
+
+# Economic example of factor analysis
+
+Suppose an economist wants to understand the factors that influence a country's economic growth. They might collect data on various macroeconomic indicators such as:
+
+- **Gross Domestic Product (GDP)**: A measure of the economic output of a country.
+- **Inflation Rate**: The rate at which the general level of prices for goods and services is rising.
+- **Unemployment Rate**: The percentage of the labor force that is jobless and actively looking for employment.
+- **Interest Rates**: The amount charged by lenders to borrowers for the use of assets, expressed as a percentage of the principal.
+- **Foreign Direct Investment (FDI)**: Investment made by a firm or individual in one country into business interests located in another country.
+
+# Average levels of economic variables versus factors (cont.)
+
+```{r}
+col_from_var_eco <- c(
+  "GDP" = "#7fc97f",
+  "Interest Rate" = "#beaed4",
+  "Unemployment Rate" = "#fdc086",
+  "Inflation Rate" = "#f0027f",
+  "FDI" = "#386cb0"
+)
+# Reshape the data for plotting
+var_vec <- names(col_from_var_eco)
+x_vec <- rep(c(-2, 2), length(var_vec))
+y_vec <- c(
+  -2, 2, # GDP
+  -0.1, 0.1, # Interest Rate
+  0.75, -0.75, # Unemployment Rate
+  0.2, -0.2, # Inflation Rate
+  -1.5, 1.5 # FDI
+)
+df_long_f1 <- tibble::tibble(
+  var = rep(var_vec, each = 2),
+  x = x_vec,
+  y = y_vec,
+  factor = "f1"
+)
+# now the following tibble
+# has inflation and interest
+# increasing heavily with factor f2,,
+# while GDP and FDI decrease slightly with f2
+# and unemployment rate also decreases slightly
+y_vec <- c(
+  0.25, -0.25, # GDP
+  -1.5, 1.5, # Interest Rate
+  -0.5, 0.5, # Unemployment Rate
+   2.2, -2.25, # Inflation Rate
+  -0.3, 0.3 # FDI
+)
+df_long_f2 <- tibble::tibble(
+  var = rep(var_vec, each = 2),
+  x = x_vec,
+  y = y_vec,
+  factor = "f2"
+)
+df_long <- df_long_f1 |>
+  dplyr::bind_rows(df_long_f2)
+
+# Plotting
+p <- ggplot(
+  df_long,
+  aes(x = x, y = y, colour = var)
+) +
+  geom_hline(yintercept = 0, colour = "gray75") +
+  geom_vline(xintercept = 0, colour = "gray75") +
+  geom_line(linewidth = 2) +
+  facet_wrap(
+    ~factor, scales = "free", ncol = 2,
+    label = labeller(factor = c(f1 = "Factor 1", f2 = "Factor 2"))
+    ) +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  labs(
+    x = "Factor score", y = "Standardized measurement"
+  ) +
+  scale_colour_manual(
+    values = col_from_var_eco
+  ) +
+  theme(
+    legend.position = "bottom"
+  ) +
+  theme(
+    strip.background = element_rect(fill = "white"),
+    strip.text = element_text(face = "bold"),
+    legend.title = element_blank()
+  )
+path_p <- projr::projr_path_get(
+  "cache", "fig", "p-fa-economic-variables-vs-factors.pdf"
+)
+cowplot::ggsave2(
+  path_p,
+  p,
+  width = 18,
+  height = 10,
+  units = "cm"
+)
+```
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{_tmp/fig/p-fa-economic-variables-vs-factors.pdf}
+\end{figure}
+
+# Distribution of GDP given factors
+
+```{r}
+x_vec <- seq(-3, 3, length.out = 1e2)
+y_vec <- dnorm(x_vec, mean = 0, sd = 1)
+plot_tbl <- purrr::map_df(c(1, -1), function(f_level) {
+  purrr::map_df(c("f1", "f2"), function(f_name) {
+    slope <- switch(
+      f_name,
+      f1 = 1,
+      f2 = - 1 / 6
+    )
+    x_vec_curr <- x_vec + f_level * slope
+    tibble::tibble(
+      x = x_vec_curr,
+      y = y_vec,
+      factor = f_name,
+      score = f_level |> signif(2) |> as.character()
+    )
+  })
+})
+p <- ggplot(
+  plot_tbl,
+  aes(x = x, y = y, colour = score, fill = score)
+) +
+  geom_vline(xintercept = 0, colour = "gray60") +
+  geom_polygon(linewidth = 1, alpha = 0.25) +
+  facet_wrap(
+    ~factor, scales = "fixed", ncol = 2,
+    labeller = labeller(factor = c(f1 = "Factor 1", f2 = "Factor 2"))
+  ) +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  labs(
+    x = "GDP", y = "Density"
+  ) +
+  scale_colour_manual(
+    values = c("1" = "dodgerblue", "-1" = "mediumseagreen"),
+    name = "Factor score"
+  ) +
+  scale_fill_manual(
+    values = c("1" = "dodgerblue", "-1" = "mediumseagreen"),
+    name = "Factor score",
+    guide = "none"
+  ) +
+  theme(
+    legend.position = "bottom"
+  ) +
+  theme(
+    strip.background = element_rect(fill = "white"),
+    strip.text = element_text(face = "bold")
+  )
+
+path_p <- projr::projr_path_get(
+  "cache", "fig", "p-fa-gdp-distribution-given-factors.pdf"
+)
+cowplot::ggsave2(
+  path_p,
+  p,
+  width = 18,
+  height = 10,
+  units = "cm"
+)
+```
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{_tmp/fig/p-fa-gdp-distribution-given-factors.pdf}
+\end{figure}
+
+- $\mathrm{E}[X_{\mathrm{GDP}}]=f_1 - \frac{1}{6}f_2$
+
+# Sources of randomness {.smaller}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+## Error terms
+
+- Given the factor scores for a given observation, the observed variables are not determined - there is some variation around that value.
+- For example, in the previous slide GDP had a distribution given the factors.
+- So, two countries with the same levels for factors 1 and 2 might have different GDPs.
+
+:::
+
+:::{.column width="50%"}
+
+## Factors
+
+- Factors are random variables (albeit unobserved), with a new draw for each observation.
+- For example, one country will randomly have factor scores of 1 and -1.5, whereas another would have factor scores of -0.5 and -1.2.
+
+:::
+
+::::
+
+\pause
+
+- Both error terms and factors typically have a mean of zero, but different approaches to factor analysis will place different assumptions regarding their variances and, especially, their covariances and distributional shape.
+
+# Other examples
+
+- **Psychological Assessments**
+  - *Observed*: Responses to psychological questionnaires.
+  - *Hidden*: Personality traits (e.g., extraversion, neuroticism).
+
+- **Consumer Behavior**
+  - *Observed*: Shopping patterns, demographic data.
+  - *Hidden*: Purchase drivers (e.g., parental status, age, income).
+
+- **Medical Diagnosis**
+  - *Observed*: Transcriptomic profiles.
+  - *Hidden*: Disease states (e.g., cured, infected, advanced).
+
+# The orthogonal factor model (OFM)
+
+- The simplest factor model is the **orthogonal factor model**.
+
+\pause
+
+- We'll discuss the following:
+  - Assumptions
+  - Model specification
+  - Methods for estimation
+    - Principal component method
+    - Maximum likelihood
+  - Factor rotation
+  - Factor scores
+
+# Assumptions
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+## Linearity
+
+- The relationship between the observed variables and the factors is linear.
+- For example, the relationship between GDP and the factors is linear (e.g., $\mathrm{E}[X_{\mathrm{GDP}}]=f_1 - \frac{1}{6}f_2$).
+
+:::
+
+\pause
+
+:::{.column width="50%"}
+
+## Independence
+
+- The factors are uncorrelated with each other.
+  - For example, the first factor being being high does not imply the second factor is (more likely to be) high.
+- The factors are uncorrelated with the error terms.
+  - For example, the first factor being high does not imply the error (change from the mean) for GDP is high.
+
+:::
+
+::::
+
+# The orthogonal factor model
+
+::::{.columns}
+
+:::{.column width="50%"}
+Let 
+
+- $\symbf{X}:p \times 1$ be the random vector of observed variables, 
+- $\symbf{F}:m\times 1$ be the random vector of unobserved factors,
+- $\symbf{\epsilon}:p\times 1$ be the random vector of unobserved error terms, and
+- $\symbf{L}:p\times m$ be a matrix of constants,
+
+satisfying
+
+$$
+\symbf{X}-\symbf{\mu} = \symbf{L}\symbf{F} + \symbf{\epsilon},
+$$
+
+:::
+
+:::{.column width="50%"}
+
+where
+
+- $\symbf{\mu}$ is the mean of $\symbf{X}$,
+- $\mathrm{E}[\symbf{F}]= \symbf{0}$,
+- $\mathrm{Var}[\symbf{F}]= \symbf{I}$,
+- $\mathrm{E}[\symbf{\epsilon}]= \symbf{0}$,
+- $\mathrm{Var}[\symbf{\epsilon}]= \symbf{\Psi}$, a diagonal matrix, and
+- $\mathrm{Cov}[\symbf{F}, \symbf{\epsilon}]= \symbf{0}$.
+
+:::
+
+::::
+
+# Example
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+- Let $\symbf{X} = \begin{bmatrix} X_1 \\ X_2 \end{bmatrix}$, $\symbf{F} = \begin{bmatrix} F_1 \\ F_2 \end{bmatrix}$, and $\symbf{\epsilon} = \begin{bmatrix} \epsilon_1 \\ \epsilon_2 \end{bmatrix}$.
+- Then, the model can be written as
+
+$$
+\begin{bmatrix} X_1 \\ X_2 \end{bmatrix} - \begin{bmatrix} \mu_1 \\ \mu_2 \end{bmatrix} = \begin{bmatrix} l_{11} & l_{12} \\ l_{21} & l_{22} \end{bmatrix} \begin{bmatrix} F_1 \\ F_2 \end{bmatrix} + \begin{bmatrix} \epsilon_1 \\ \epsilon_2 \end{bmatrix}.
+$$
+
+:::
+
+:::{.column width="50%"}
+
+- For $X_1$, this implies that
+
+$$
+\begin{aligned}
+X_1 - \mu_1 &= l_{11}F_1 + l_{12}F_2 + \epsilon_1 \\
+X_1 &= \mu_1 + l_{11}F_1 + l_{12}F_2 + \epsilon_1.
+\end{aligned}
+$$
+
+- Regarding the covariances, for example we have that
+
+$$
+\mathrm{Cov}[F_1, F_2] = 0,
+$$
+
+- and that 
+
+$$
+\mathrm{Cov}[F_1, \epsilon_1] = 0.
+$$
+
+:::
+
+::::
+
+# Example (cont.) {.smaller}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+- We have that 
+
+$$
+\mathrm{Var}[F_1] = \mathrm{Var}[F_2] = 1,
+$$
+
+- and that 
+
+$$
+\mathrm{Var}[\epsilon_1]=\psi_1, \quad \mathrm{Var}[\epsilon_2]=\psi_2.
+$$
+
+- As such, the factors have unit variance, whereas the errors have variable-dependent variance.
+
+:::
+:::{.column width="50%"}
+
+
+- The factor scores are therefore unit-free, indicating the direction and magnitude in a standardised manner.
+  - For example, in the economic example a large positive second first factor level indicates above-average economic activity.
+- The errors therefore help provide the correct "scaling".
+  - For example, interest rates and GDP will have different variabilities (without standardisation), which will (partially) be accounted for by differing error term variances.
+
+:::
+
+::::
+
+# Terminal terminology {.smaller}
+
+- $F_j$: $j$-th common factor
+  - "Common" in the sense of contributing to all the observed variables
+- $\epsilon_i$: $i$-th specific factor
+  - "Specific" in the sense of contributing to only one observed variable
+- $l_{ij}$: loading of $i$-th variable on $j$-th common factor
+  - The extent to which the $j$-th factor influences the $i$-th observed variable
+
+# Source of correlation between observed variables
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+- In the OFM, the error terms are uncorrelated, the factor terms are uncorrelated and the factors are uncorrelated with the error terms.
+- How do we then get correlation between the observed variables?
+\pause
+- The same factor contributing to two observed variables will induce correlation between them.
+
+:::
+
+\pause
+
+:::{.column width="50%"}
+
+- For example, if there is only one factor and so $\mathrm{E}[X_1]=l_{11}F_1$ and $\mathrm{E}[X_2]=l_{21}F_1$, then as long as $l_{11}$ and $l_{21}$ are both non-zero, then $X_1$ and $X_2$ will be correlated.
+- This is the essence of factor analysis: to explain the correlation between observed variables in terms of a smaller number of unobserved factors.
+- We'll now get a formula for the covariance between observed variables in terms of the factor loadings.
+
+:::
+::::
+
+# Covariance between observed variables {.smaller}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+- The OFM model specification implies the following formula for the covariance between the observed variables (proofs at end of the slides):
+
+$$
+\mathrm{Cov}[\symbf{X}]= \symbf{L}\symbf{L}' + \symbf{\Psi}
+$$
+
+- For a given observed variable, we have that
+
+$$
+\mathrm{Var}[\symbf{X}_i]= \sum_{j=1}^ml_{im}^2 + \psi_ii.
+$$
+
+
+:::
+
+:::{.column width="50%"}
+
+- For a pair of observed variables, we have that
+
+$$
+\mathrm{Cov}[X_i, X_j]= \sum_{k=1}^ml_{ik}l_{jk}.
+$$
+
+- The diagonal elements are the specific variances, and "inflate" the variances of the observed variables (over and above that implied by the loadings).
+- As $\symbf{\psi}$ is diagonal, the off-diagonal elements of the covariance matrix are determined by the factor loadings.
+:::
+
+::::
+
+# Accuracy of implied covariance matrix {.smaller}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+- The covariance matrix between the observed variables has $p(p+1)/2$ unique elements, and is typically full rank.
+- The factor model implies that the covariance matrix is equal to
+
+$$
+\symbf{L}\symbf{L}' + \symbf{\Psi}.
+$$
+
+- Whilst $\Psi$ is full rank, $\symbf{L}\symbf{L}'$ is rank $m\leq p$ and is fully responsible for the off-diagonal covariances.
+
+:::
+
+:::{.column width="50%"}
+
+- We can always perfectly reproduce the diagonal elements of the covariance matrix when $m=p$ (as many factors as observed variables) by setting
+
+$$
+\symbf{L}=\symbf{V}\symbf{D}/\sqrt{n-1}, 
+$$
+
+- where $\symbf{X}=\symbf{U}\symbf{D}\symbf{V}'$.
+- However, we almost always want fewer factors than observed variables, and so we will not be able to perfectly reproduce the off-diagonal elements of the covariance matrix.
+- In practice, no problem - an approximation is fine.
+
+:::
+
+::::
+
+
+# Covariance between observed and unobserved variables {.smaller}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+- By the assumptions of the OFM, we have that
+
+$$
+\mathrm{Cov}[\symbf{X}, \symbf{F}]=\symbf{L}.
+$$
+
+- For a specific observed variable and factor, we have that
+
+$$
+\mathrm{Cov}[X_i, F_j]=l_{ij}.
+$$
+
+
+:::
+
+:::{.column width="50%"}
+
+- As such, the covariance between the observed variables and the factors is determined by the factor loadings.
+
+:::
+
+::::
+
+# Solutions are not unique
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+- The solution to an OFM model consists of the loadings matrix $\symbf{L}$ and the error variances $\symbf{\Psi}$.
+- Two solutions are equivalent if a) meet the assumptions of the OFM and b) imply same ovariance matrix and specific variances.
+- In the OFM model, an orthonormal rotation of the loading matrix can yield the same covariance matrix and specific variances.
+
+:::
+
+\pause
+
+:::{.column width="50%"}
+
+- Suppose that $\symbf{T}$ is an $m\times m$ orthonormal matrix, i.e. $\symbf{T}\symbf{T}'=\symbf{I}_m$.
+
+- Then, if $\symbf{L}$ is a solution to the OFM, so is $\symbf{L}^{*}=\symbf{L}\symbf{T}$.
+
+- In other words, the solutions $\symbf{L}$
+
+$$
+\symbf{X}=\symbf{L}\symbf{F}+\symbf{\epsilon}
+$$
+ 
+- and $\symbf{LT}= \symbf{L}^{*}$
+
+$$
+\symbf{X}=(\symbf{L}\symbf{T})(\symbf{T}'\symbf{F})+\symbf{\epsilon}=\symbf{L}^{*}\symbf{F}^{*}+\symbf{\epsilon}
+$$
+
+- are equivalent.
+
+:::
+
+::::
+
+# Demonstrating non-uniqueness {.smaller}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+- Firstly, we show that the mean and variance assumptions are met for the common factors:
+$$
+\begin{aligned}
+&\mathrm{E}[\symbf{F}^*]=\mathrm{E}[\symbf{T}'\symbf{F}]=\symbf{T}'\mathrm{E}[\symbf{F}]=\mathrm{0}, \text{ and } \\
+&\mathrm{Cov}[\symbf{F}^*]=\mathrm{T}'\mathrm{Cov}[\symbf{F}]\mathrm{T}=\mathrm{T}'\mathrm{T}=\mathrm{I}.
+\end{aligned}
+$$
+
+- Secondly, we show that the specific factors are unchanged:
+$$
+\begin{aligned}
+\symbf{X} - \symbf{\mu} &= \symbf{L}\symbf{F} + \symbf{\epsilon} \\
+&= \symbf{L}\symbf{T}\symbf{T}'\symbf{F} + \symbf{\epsilon} \text{ (as } \symbf{TT}'=\symbf{I} \text{), and}\\
+&= \symbf{L}^*\symbf{F}^* + \symbf{\epsilon}, \\
+\end{aligned}
+$$
+where $\symbf{L}^*=\symbf{L}\symbf{T}$ and $\symbf{F}^*=\symbf{T}'\symbf{F}$.
+
+
+
+:::
+
+:::{.column width="50%"}
+
+- Thirdly, we show that the estimated covariance matrix also does not change:
+$$
+\begin{aligned}
+\hat{\mathrm{Var}}[\symbf{X}] &= \symbf{LL}' + \symbf{\Psi}, \\
+&=  \symbf{L}\symbf{T}\symbf{T}'\symbf{L}'+\hat{\symbf{\Psi}}, \\ 
+&= \symbf{L}^*\symbf{L}^{*\prime} + \symbf{\Psi}.
+\end{aligned}
+$$
+
+:::
+
+::::
+
+# Exploiting the lack of uniqueness
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+- Since the solution to the OFM is not unique, we can find initial values for $\hat{\mathbf{L}}$ and then rotate them to find a solution that is more interpretable.
+
+:::
+
+:::{.column width="50%"}
+
+- By "interpretable", we mean one where each factor contributes prominently to a minority of the variables, e.g. factor 1 contributes strongly only to variables 1 and 2, factor 2 contributes strongly only to variables 2 and 5, etc.
+
+:::
+
+::::
+
+\pause
+
+\vspace{1cm}
+
+- In the next couple of slides, we'll consider two approaches for fitting the factor analysis model to a given dataset, and then we'll consider rotating those initial solutions.
+
+# First method of estimation: Principal component method I
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{_data_raw/img/francesca/fit-pc-short.png}
+\end{figure}
+
+# First method of estimation: Principal component method II
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{_data_raw/img/francesca/fit-pc-2.png}
+\end{figure}
+
+# Example 1: Fitting using PC method I
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{_data_raw/img/francesca/fit-pc-example.png}
+\end{figure}
+
+# Example 1: Fitting using PC method II
+
+\begin{figure}
+\centering
+\includegraphics[width=0.95\textwidth]{_data_raw/img/francesca/fit-pc-example_2.png}
+\end{figure}
+
+# Example 1: Fitting using PC method III
+
+\begin{figure}
+\centering
+\includegraphics[width=0.85\textwidth]{_data_raw/img/francesca/fit-pc-example_3.png}
+\end{figure}
+
+# Example 2: Fitting using PC method I
+
+\begin{figure}
+\centering
+\includegraphics[width=0.85\textwidth]{_data_raw/img/francesca/fit-example2-1.png}
+\end{figure}
+
+# Example 2: Fitting using PC method II
+
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{_data_raw/img/francesca/fit-pc-example2-2.png}
+\end{figure}
+
+# Second method of estimation: Maximum likelihood
+
+\begin{figure}
+\centering
+\includegraphics[width=0.85\textwidth]{_data_raw/img/francesca/fit-ml-1.png}
+\end{figure}
+
+# Example 3: Fitting using maximum likelihood I
+
+\begin{figure}
+\centering
+\includegraphics[width=0.85\textwidth]{_data_raw/img/francesca/fit-ml-2.png}
+\end{figure}
+
+# Revisiting rotation
+
+\begin{figure}
+\centering
+\includegraphics[width=0.85\textwidth]{_data_raw/img/francesca/rotation-2.png}
+\end{figure}
+
+# Factor scores
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{_data_raw/img/francesca/factor-scores.png}
+\end{figure}
+
+# Example 4: Factor scores
+
+\begin{figure}
+\centering
+\includegraphics[width=0.875\textwidth]{_data_raw/img/francesca/factor-scores-example.png}
+\end{figure}
+
+# Take-aways I
+
+- Conceptual understanding of factor analysis' relationship to PCA and multivariate regression
+- Assumed mean and covariance structure of an orthogonal factor model
+  - Implied form for covariance matrix
+  - Communality and specific factors
+  - Correlation between observed and unobserved variables
+- Two methods of fitting the OFM to a given dataset
+  - Principal component method (first principles)
+  - Maximum likelihood (`factanal` package)
+
+# Take-aways II
+
+- Factor rotations
+  - Theory behind why they're permitted
+  - Able to justify why they may be useful
+- Interpretation of results of factor analysis
+- Calculation of factor scores
+  - From first principles
+
+
+# Resources
+
+- Source code is on [GitHub](https://github.com/MiguelRodo/Slides23RodoHonsMult/blob/2024/SlidesHonsMultL9FA.qmd).
+  - Suppressed code (e.g. to create figures) is available there.
+
+## References
+
+
