@@ -1,5 +1,8 @@
 # CHANGELOG
 
+- *Minor* (v0.4.0): Miguel Julio Rodo (14:26:55)
+  - Add factor analysis slides
+
 - Patch (v0.3.3): Miguel Julio Rodo (14:42:30)
   - Correct typoe
 - Patch (v0.3.2): Miguel Julio Rodo (14:38:48)
