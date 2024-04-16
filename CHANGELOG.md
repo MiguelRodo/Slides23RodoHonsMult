@@ -1,5 +1,8 @@
 # CHANGELOG
 
+- *Minor* (v0.5.0): Miguel Julio Rodo (13:45:45)
+  - Add HTML-only slides
+
 - *Minor* (v0.4.0): Miguel Julio Rodo (14:26:55)
   - Add factor analysis slides
 
