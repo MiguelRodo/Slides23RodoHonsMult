@@ -5,17 +5,16 @@ author: Miguel Rodo (reworking slides by Stefan Britz)
 date: "2024-04-11"
 bibliography: zotero.bib
 format:
-  beamer:
+  html:
     embed-resources: true
-    aspectratio: 169
-    urlcolor: cyan
-    linkcolor: blue
-    filecolor: magenta
-    include-in-header:
-      file: preamble-reg.tex
 nocite: |
     @johnson_wichern07
 ---
+
+```{r}
+#| include: false
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 # Linear regression
 

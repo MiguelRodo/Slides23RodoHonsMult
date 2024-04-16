@@ -5,14 +5,8 @@ author: Miguel Rodo (re-using slides from Francesca Little)
 date: "2024-04-18"
 bibliography: zotero.bib
 format:
-  beamer:
+  html:
     embed-resources: true
-    aspectratio: 169
-    urlcolor: cyan
-    linkcolor: blue
-    filecolor: magenta
-    include-in-header:
-      file: preamble-reg.tex
 nocite: |
     @johnson_wichern07
 ---
@@ -22,6 +16,7 @@ nocite: |
 #| # Load necessary libraries
 library(ggplot2)
 library(tibble)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Factor analysis (FA)

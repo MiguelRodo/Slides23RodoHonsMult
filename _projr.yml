@@ -9,7 +9,7 @@ directories:
     path: docs
 build:
   github:
-    latest-2024:
+    latest-2024-slides_html:
       content:
       - data-raw
       - docs
