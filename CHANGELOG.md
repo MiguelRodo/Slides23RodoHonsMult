@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Patch (v0.5.1): Miguel Julio Rodo (14:02:37)
+  - Ensure figures all display
 - *Minor* (v0.5.0): Miguel Julio Rodo (13:45:45)
   - Add HTML-only slides
 
