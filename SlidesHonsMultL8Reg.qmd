@@ -1214,10 +1214,10 @@ If the number of principal components is pre-specified, then all the inferential
 
 - PCR is akin to a rough version of ridge regression [@hastie_etal09]:
 
-\begin{figure}
-\centering
-\includegraphics[width=0.75\textwidth]{_data_raw/img/pcr_vs_ridge.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/pcr_vs_ridge.png")
+```
 
 # Selecting the number of principal components
 
@@ -1231,29 +1231,30 @@ If the number of principal components is pre-specified, then all the inferential
 
 # Partial least squares algorithm [@hastie_etal09]
 
-\begin{figure}
-\centering
-\includegraphics[width=0.75\textwidth]{_data_raw/img/pls_alg.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/pls_alg.png")
+```
 
 # PLS versus PCR [@hastie_etal09]
 
 - PCR and PLS optimise different objective functions:
 
-\begin{figure}
-\centering
-\includegraphics[width=0.75\textwidth]{_data_raw/img/pcr_vs_pls.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/pcr_vs_pls.png")
+```
+
 
 # Selecting the number of components in PCR and PLS [@hastie_etal09]
 
 - The number of components can be chosen by cross-validation.
 - @hastie_etal09 chose the number of components within one standard error of the minimum cross-validated error:
 
-\begin{figure}
-\centering
-\includegraphics[width=0.75\textwidth]{_data_raw/img/cv-pcr_and_pls.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/cv-pcr_and_pls.png")
+```
 
 # Resources
 

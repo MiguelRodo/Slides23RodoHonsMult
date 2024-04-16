@@ -639,10 +639,10 @@ cowplot::save_plot(
 )
 ```
 
-\begin{figure}
-\centering
-\includegraphics[width=0.55\textwidth]{`r path_p_proj`}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics(path_p_proj)
+```
 
 ::::{.columns}
 
@@ -1203,7 +1203,7 @@ p <-  ggplot(
     scale_x_continuous(
       breaks = 1:7
     )
-path_p_scree <- projr::projr_path_get("cache", "fig", "p-scree.pdf")
+path_p_scree <- projr::projr_path_get("cache", "fig", "p-scree.png")
 cowplot::save_plot(
   plot = p,
   filename = path_p_scree,
@@ -1280,7 +1280,7 @@ corr_mat |> signif(2) |> knitr::kable()
 
 # Constant-density contours I {.smaller}
 
-By the definition of the MVN PDF, the density of $X$ is constant on the ellipsoid defined by the equation
+By the definition of the MVN png, the density of $X$ is constant on the ellipsoid defined by the equation
 
 $$
 (\symbf{x} - \mu)'\Sigma^{-1}(\symbf{x} - \mu) = c^2.
@@ -1859,7 +1859,10 @@ The rows of $\symbf{Y}$ are the scores (representing the observations) and the r
 
 \centering
 
-\includegraphics[width=0.65\textwidth]{_data_raw/img/biplot.png}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/biplot.png")
+```
 
 # Resources
 

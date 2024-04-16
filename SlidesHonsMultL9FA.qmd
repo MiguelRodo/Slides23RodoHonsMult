@@ -110,7 +110,7 @@ p <- ggplot(
     legend.title = element_blank()
   )
 path_p <- projr::projr_path_get(
-  "cache", "fig", "p-fa-economic-variables-vs-factors.pdf"
+  "cache", "fig", "p-fa-economic-variables-vs-factors.png"
 )
 cowplot::ggsave2(
   path_p,
@@ -121,10 +121,11 @@ cowplot::ggsave2(
 )
 ```
 
-\begin{figure}
-\centering
-\includegraphics[width=0.8\textwidth]{_tmp/fig/p-fa-economic-variables-vs-factors.pdf}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics(path_p)
+```
+
 
 # Distribution of GDP given factors
 
@@ -180,7 +181,7 @@ p <- ggplot(
   )
 
 path_p <- projr::projr_path_get(
-  "cache", "fig", "p-fa-gdp-distribution-given-factors.pdf"
+  "cache", "fig", "p-fa-gdp-distribution-given-factors.png"
 )
 cowplot::ggsave2(
   path_p,
@@ -191,10 +192,10 @@ cowplot::ggsave2(
 )
 ```
 
-\begin{figure}
-\centering
-\includegraphics[width=0.8\textwidth]{_tmp/fig/p-fa-gdp-distribution-given-factors.pdf}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics(path_p)
+```
 
 - $\mathrm{E}[X_{\mathrm{GDP}}]=f_1 - \frac{1}{6}f_2$
 
@@ -632,87 +633,89 @@ $$
 
 # First method of estimation: Principal component method I
 
-\begin{figure}
-\centering
-\includegraphics[width=0.8\textwidth]{_data_raw/img/francesca/fit-pc-short.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/francesca/fit-pc-short.png")
+```
 
 # First method of estimation: Principal component method II
 
-\begin{figure}
-\centering
-\includegraphics[width=0.9\textwidth]{_data_raw/img/francesca/fit-pc-2.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/francesca/fit-pc-2.png")
+```
 
 # Example 1: Fitting using PC method I
 
-\begin{figure}
-\centering
-\includegraphics[width=\textwidth]{_data_raw/img/francesca/fit-pc-example.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/francesca/fit-pc-example.png")
+```
+
 
 # Example 1: Fitting using PC method II
 
-\begin{figure}
-\centering
-\includegraphics[width=0.95\textwidth]{_data_raw/img/francesca/fit-pc-example_2.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/francesca/fit-pc-example_2.png")
+```
+
 
 # Example 1: Fitting using PC method III
 
-\begin{figure}
-\centering
-\includegraphics[width=0.85\textwidth]{_data_raw/img/francesca/fit-pc-example_3.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/francesca/fit-pc-example_3.png")
+```
 
 # Example 2: Fitting using PC method I
 
-\begin{figure}
-\centering
-\includegraphics[width=0.85\textwidth]{_data_raw/img/francesca/fit-example2-1.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/francesca/fit-example2-1.png")
+```
 
 # Example 2: Fitting using PC method II
 
-\begin{figure}
-\centering
-\includegraphics[width=0.8\textwidth]{_data_raw/img/francesca/fit-pc-example2-2.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/francesca/fit-pc-example2-2.png")
+```
 
 # Second method of estimation: Maximum likelihood
 
-\begin{figure}
-\centering
-\includegraphics[width=0.85\textwidth]{_data_raw/img/francesca/fit-ml-1.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/francesca/fit-ml-1.png")
+```
 
 # Example 3: Fitting using maximum likelihood I
 
-\begin{figure}
-\centering
-\includegraphics[width=0.85\textwidth]{_data_raw/img/francesca/fit-ml-2.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/francesca/fit-ml-2.png")
+```
 
 # Revisiting rotation
 
-\begin{figure}
-\centering
-\includegraphics[width=0.85\textwidth]{_data_raw/img/francesca/rotation-2.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/francesca/rotation-2.png")
+```
 
 # Factor scores
 
-\begin{figure}
-\centering
-\includegraphics[width=0.9\textwidth]{_data_raw/img/francesca/factor-scores.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/francesca/factor-scores.png")
+```
 
 # Example 4: Factor scores
 
-\begin{figure}
-\centering
-\includegraphics[width=0.875\textwidth]{_data_raw/img/francesca/factor-scores-example.png}
-\end{figure}
+```{r}
+#| results: asis
+knitr::include_graphics("_data_raw/img/francesca/factor-scores-example.png")
+```
 
 # Take-aways I
 
