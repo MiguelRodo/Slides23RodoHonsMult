@@ -1,5 +1,8 @@
 # CHANGELOG
 
+- *Minor* (v0.6.0): Miguel Julio Rodo (09:48:35)
+  - Add granular Q&As
+
 - Patch (v0.5.1): Miguel Julio Rodo (09:18:26)
   - Remove 23 from names
 - *Minor* (v0.5.0): Miguel Julio Rodo (09:12:18)
