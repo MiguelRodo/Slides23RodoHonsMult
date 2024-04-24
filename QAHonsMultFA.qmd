@@ -1,0 +1,94 @@
+---
+title: Factor analysis
+subtitle: Questions and answers
+author: Miguel Rodo
+bibliography: zotero.bib
+format:
+  pdf:
+    embed-resources: true
+    table-of-contents: false
+    urlcolor: cyan
+    linkcolor: blue
+    filecolor: magenta
+    include-in-header:
+      file: preamble-qa.tex
+nocite: |
+    @johnson_wichern07
+---
+
+# Questions and answers
+
+- What is the goal of factor analysis?
+  - To explain the covariance structure of observed variables (X) in terms of a smaller number of unobserved variables (factors)
+
+- What are some examples of factor analysis applications?
+  - Economics (e.g. factors influencing a country's economic growth)
+  - Psychological assessments (e.g. personality traits underlying questionnaire responses) 
+  - Consumer behavior (e.g. purchase drivers like age, income underlying shopping patterns)
+  - Medical diagnosis (e.g. disease states underlying transcriptomic profiles)
+
+- What are the key assumptions of the orthogonal factor model?
+  - Linearity between observed variables and factors
+  - Independence between factors and between factors and error terms
+
+- How is the orthogonal factor model specified?
+  - $X - \mu = LF + \epsilon$, where $X$ is observed variables, $F$ is factors, $L$ is factor loadings, and $\epsilon$ is error terms
+
+- What are two methods to estimate the factor model?
+  - Principal component method
+  - Maximum likelihood
+
+- Why are factor rotations used?
+  - To find a more interpretable solution where each factor contributes strongly to a small number of variables
+  - Rotations are permitted because the factor model solution is not unique
+
+- What are factor scores?
+  - Estimates of the levels of the factors for each observation
+
+- What is the source of correlation between observed variables in the orthogonal factor model?
+  - The same factor contributing to multiple observed variables induces correlation between them
+
+- How does the number of factors affect the accuracy of the implied covariance matrix?
+  - With fewer factors than observed variables, the off-diagonal elements of the covariance matrix will not be perfectly reproduced
+
+- What is the relationship between the covariance of observed variables and factors and the factor loadings?
+  - The covariance between an observed variable and a factor is equal to the corresponding factor loading (Cov[Xi, Fj] = lij)
+
+- What is the difference between common factors and specific factors?
+  - Common factors contribute to all observed variables, while specific factors contribute to only one observed variable
+
+- What does a factor loading represent?
+  - The extent to which a factor influences an observed variable
+
+- How can equivalent factor model solutions be obtained?
+  - By applying an orthonormal rotation to the loading matrix, which yields the same implied covariance matrix and specific variances
+
+- What is meant by an "interpretable" factor solution?
+  - One where each factor contributes prominently to a small number of variables
+
+- What is the purpose of factor rotation?
+  - To find a more interpretable solution by exploiting the non-uniqueness of the initial factor model estimates
+
+- How are factor scores calculated?
+  - Factor scores can be calculated from the observed variables and estimated factor loadings, representing the estimated levels of the factors for each observation
+
+- What is the definition of communality in factor analysis?
+  - The portion of a variable's variance that is explained by the common factors
+
+- What is the definition of specific variance in factor analysis?
+  - The portion of a variable's variance that is not explained by the common factors and is unique to that variable
+
+- How does the number of factors compare to the number of observed variables in most factor analysis applications?
+  - The number of factors is usually smaller than the number of observed variables
+
+- What is the purpose of the specific factors ($\psi$) in the factor model?
+  - To account for the variability in observed variables that is not explained by the common factors and to ensure the diagonal elements of the covariance matrix can be perfectly reproduced
+
+- What is the rank of the matrix LL' in the implied covariance matrix of the factor model?
+  - The rank of LL' is m, where m is the number of factors and is less than or equal to p, the number of observed variables
+
+- What does it mean for two factor model solutions to be equivalent?
+  - Two solutions are equivalent if they meet the assumptions of the orthogonal factor model and imply the same covariance matrix and specific variances
+
+- How can the lack of uniqueness in factor model solutions be exploited?
+  - By rotating the initial factor loadings to find a more interpretable solution where each factor contributes strongly to a small number of variables
