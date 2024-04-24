@@ -1,0 +1,192 @@
+---
+title: Factor analysis
+subtitle: Questions and answers - granular
+author: Miguel Rodo
+bibliography: zotero.bib
+format:
+  html:
+    embed-resources: true
+    table-of-contents: false
+    urlcolor: cyan
+    linkcolor: blue
+    filecolor: magenta
+nocite: |
+    @johnson_wichern07
+---
+
+# Questions and answers
+
+* Goal of factor analysis?
+    * Explain covariance structure
+        * Of what?
+            * Observed variables (X)
+        * In terms of what?
+            * Smaller number of unobserved variables (factors)
+
+* Examples of factor analysis applications:
+    * Economics
+        * E.g.?
+            * Factors influencing a country's economic growth
+    * Psychological assessments
+        * E.g.?
+            * Personality traits underlying questionnaire responses
+    * Consumer behavior
+        * E.g.?
+            * Purchase drivers like age, income underlying shopping patterns
+    * Medical diagnosis
+        * E.g.?
+            * Disease states underlying transcriptomic profiles
+
+* Key assumptions of orthogonal factor model:
+    * First?
+        * Linearity
+            * Between?
+                * Observed variables and factors
+    * Second?
+        * Independence
+            * Between?
+                * Factors and between factors and error terms
+
+* Orthogonal factor model specification:
+    * Formula?
+        * X - μ = LF + ε
+            * X?
+                * Observed variables
+            * F?
+                * Factors
+            * L?
+                * Factor loadings
+            * ε?
+                * Error terms
+
+* Two methods to estimate factor model:
+    * First?
+        * Principal component method
+    * Second?
+        * Maximum likelihood
+
+* Why use factor rotations?
+    * First reason?
+        * Find more interpretable solution
+            * Where?
+                * Each factor contributes strongly to small number of variables
+    * Second reason?
+        * Rotations permitted
+            * Because?
+                * Factor model solution not unique
+
+* Factor scores?
+    * Estimates
+        * Of what?
+            * Levels of factors for each observation
+
+* Source of correlation between observed variables in orthogonal factor model?
+    * Same factor
+        * Contributing to?
+            * Multiple observed variables
+        * Induces?
+            * Correlation between them
+
+* Effect of number of factors on accuracy of implied covariance matrix?
+    * With fewer factors than observed variables
+        * What happens?
+            * Off-diagonal elements of covariance matrix not perfectly reproduced
+
+* Relationship between covariance of observed variables and factors and factor loadings?
+    * Covariance between observed variable and factor
+        * Equals?
+            * Corresponding factor loading (Cov[Xi, Fj] = lij)
+
+* Difference between common factors and specific factors?
+    * Common factors
+        * Contribute to?
+            * All observed variables
+    * Specific factors
+        * Contribute to?
+            * Only one observed variable
+
+* What does factor loading represent?
+    * Extent
+        * To which?
+            * Factor influences an observed variable
+
+* How to obtain equivalent factor model solutions?
+    * Apply
+        * What?
+            * Orthonormal rotation to loading matrix
+        * Yields?
+            * Same implied covariance matrix and specific variances
+
+* "Interpretable" factor solution?
+    * One where
+        * What happens?
+            * Each factor contributes prominently to small number of variables
+
+* Purpose of factor rotation?
+    * Find
+        * What?
+            * More interpretable solution
+        * By exploiting?
+            * Non-uniqueness of initial factor model estimates
+
+* How to calculate factor scores?
+    * Can be calculated
+        * From?
+            * Observed variables and estimated factor loadings
+        * Representing?
+            * Estimated levels of factors for each observation
+
+* Definition of communality in factor analysis?
+    * Portion of variable's variance
+        * Explained by?
+            * Common factors
+
+* Definition of specific variance in factor analysis?
+    * Portion of variable's variance
+        * Not explained by?
+            * Common factors
+        * Unique to?
+            * That variable
+
+* Comparison of number of factors to number of observed variables in most factor analysis applications?
+    * Number of factors
+        * Usually?
+            * Smaller than number of observed variables
+
+* Purpose of specific factors (ψ) in factor model?
+    * First purpose?
+        * Account for variability in observed variables
+            * Not explained by?
+                * Common factors
+    * Second purpose?
+        * Ensure
+            * What?
+                * Diagonal elements of covariance matrix can be perfectly reproduced
+
+* Rank of matrix LL' in implied covariance matrix of factor model?
+    * Rank is?
+        * m
+            * m?
+                * Number of factors
+            * Compared to?
+                * p
+                    * p?
+                        * Number of observed variables
+            * m is?
+                * Less than or equal to p
+
+* What does it mean for two factor model solutions to be equivalent?
+    * Two solutions equivalent if
+        * First condition?
+            * Meet assumptions of orthogonal factor model
+        * Second condition?
+            * Imply same covariance matrix and specific variances
+
+* How to exploit lack of uniqueness in factor model solutions?
+    * Rotate
+        * What?
+            * Initial factor loadings
+        * To find?
+            * More interpretable solution
+                * Where?
+                    * Each factor contributes strongly to small number of variables

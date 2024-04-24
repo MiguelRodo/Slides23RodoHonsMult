@@ -1,0 +1,254 @@
+---
+title: Multivariate regression
+subtitle: Questions and answers - granular
+author: Miguel Rodo
+bibliography: zotero.bib
+format:
+  html:
+    embed-resources: true
+    table-of-contents: false
+    urlcolor: cyan
+    linkcolor: blue
+    filecolor: magenta
+nocite: |
+    @johnson_wichern07
+---
+
+# Questions and answers
+
+* Typical notation for simple regression model with one predictor and one response?
+    * $Y = \beta_0 + \beta_1 X + \epsilon$
+
+* Example of multiple regression?
+    * Modeling house price
+        * Against?
+            * Number of rooms, size of garden, distance to city center, etc.
+
+* Typical notation for multiple regression model?
+    * Two options:
+        * First?
+            * $Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots + \beta_p X_p + \epsilon$
+        * Second?
+            * $Y = \symbf{X}'\symbf{\beta} + \epsilon$
+
+* Typical notation for multivariate regression model?
+    * $\symbf{\mathcal{Y}} = \symbf{X}\symbf{\mathcal{B}} + \symbf{\mathcal{E}}$
+        * Where $\symbf{\mathcal{Y}}$, $\symbf{\mathcal{B}}$ and $\symbf{\mathcal{E}}$ have?
+            * $r$ columns
+
+* Example of multivariate regression?
+    * Modeling rainfall and wind speed
+        * Against?
+            * Hurricane category, altitude and distance from coast
+
+* How many observations, responses, and predictors are denoted by $n$, $r$, and $k$ respectively?
+    * Observations?
+        * $n$
+    * Responses?
+        * $r$
+            * $r=1$ for?
+                * Multiple regression
+            * $r \geq 1$ for?
+                * Multivariate regression
+    * Predictors?
+        * $k$
+            * Non-intercept predictors?
+                * $p=k-1$
+
+* Key assumptions for multiple regression:
+    * Linearity?
+        * $\mathrm{E}[Y] = \beta_0 + \beta_1 X+1 + \ldots + \beta_p X_p$
+    * Constant variance?
+        * $\mathrm{Var}[\epsilon] = \sigma^2$
+    * Independence of observations?
+        * $\mathrm{Cov}[\epsilon_i, \epsilon_j] = 0 \text{ for } i \neq j$
+
+* Key assumptions for multivariate regression:
+    * Linearity?
+        * $\mathrm{E}[\symbf{\mathcal{Y}}] = \symbf{X}'\symbf{\mathcal{B}}$
+    * Constant variance?
+        * $\mathrm{Var}[\symbf{\mathcal{E}}] = \symbf{\Sigma}$
+    * Independence of observational units?
+        * $\mathrm{Cov}[\symbf{\mathcal{E}}_i, \symbf{\mathcal{E}}_j] = \symbf{0} \text{ for } i \neq j$
+
+* How are regression coefficients estimated in multiple regression?
+    * Minimizing?
+        * $\sum_{i=1}^n (y_i - \hat{y}_i)^2$
+    * Yielding?
+        * $\hat{\symbf{\beta}} = (\symbf{X}'\symbf{X})^{-1}\symbf{X}'\symbf{y}$
+
+* How are regression coefficients estimated in multivariate regression?
+    * Minimizing?
+        * $\sum_{i=1}^n\sum_{j=1}^r (y_{ij} - \hat{y}_{ij})^2$
+    * Yielding?
+        * $\hat{\symbf{\mathcal{B}}} = (\symbf{X}'\symbf{X})^{-1}\symbf{X}'\symbf{\symbf{Y}}$
+
+* What is hat matrix $\symbf{H}$ and its key properties?
+    * Definition?
+        * $\symbf{H} = \symbf{X}(\symbf{X}'\symbf{X})^{-1}\symbf{X}'$
+            * Which?
+                * "Puts a hat" on response vector
+    * First key property?
+        * Projection matrix
+            * $\symbf{H}\symbf{y}=\mathrm{proj}_{\symbf{X}}(\symbf{y})$
+    * Second key property?
+        * Idempotent
+            * $\symbf{H}^2=\symbf{H}$
+
+* How is variance $\sigma^2$ estimated in multiple regression?
+    * $\hat{\sigma^2} = s^2 = \frac{1}{n-k}(\symbf{y} - \symbf{X}\hat{\symbf{\beta}})'(\symbf{y} - \symbf{X}\hat{\symbf{\beta}})$
+
+* How is variance-covariance matrix $\symbf{\Sigma}$ estimated in multivariate regression?
+    * $\hat{\symbf{\Sigma}} = \symbf{\symbf{S}}= \frac{1}{n-k}(\symbf{\mathcal{Y}} - \symbf{X}\hat{\symbf{\mathcal{B}}})'(\symbf{\mathcal{Y}} - \symbf{X}\hat{\symbf{\mathcal{B}}})$
+
+* What is $R^2$ statistic and how is it defined for multiple regression?
+    * $R^2$ is?
+        * Proportion of total variance explained by model
+    * Formula?
+        * $R^2 = \frac{\mathrm{SSR}}{\mathrm{SST}} = 1 - \frac{\mathrm{SSE}}{\mathrm{SST}}$
+
+* What additional assumption is made for inference in multiple regression?
+    * Errors are normally distributed
+        * $\symbf{\epsilon} \sim \mathcal{N}(\symbf{0}, \sigma^2\symbf{I})$
+
+* Distribution of $\hat{\symbf{\beta}}$ under normality assumption?
+    * $\hat{\symbf{\beta}} \sim \mathcal{N}(\symbf{\beta}, \sigma^2(\symbf{X}'\symbf{X})^{-1})$
+
+* Distribution of $(n-k)s^2/\sigma^2$ under normality assumption?
+    * $\frac{n-k}{\sigma^2}s^2 \sim \chi^2_{n-k}$
+
+* $100(1-\alpha)\%$ confidence interval for individual regression coefficient $\beta_j$?
+    * $\hat{\beta}_j \pm t_{n-k}^{\alpha/2}\sqrt{s^2(\symbf{X}'\symbf{X})^{-1}_{jj}}$
+
+* Test statistic for testing $H_0: \beta_j = 0$ in multiple regression?
+    * $t = \frac{\hat{\beta}_j}{\sqrt{s^2(\symbf{X}'\symbf{X})^{-1}_{jj}}}$
+        * Reject if?
+            * $|t| > t_{n-k}^{1-\alpha/2}$
+
+* Test statistic for testing $H_0: \symbf{\beta}^{(1)}=\symbf{0}$ where $\symbf{\beta}^{(1)}$ is subvector of $\symbf{\beta}$?
+    * $F = \frac{\hat{\symbf{\beta}}^{(1)\prime}C_{11}^{-1}\hat{\symbf{\beta}}^{(1)}}{qs^2}$
+        * Where $(\symbf{X}'\symbf{X})^{-1} = \begin{bmatrix} \symbf{C}_{11} & \symbf{C}_{12} \\ \symbf{C}_{21} & \symbf{C}_{22}  \end{bmatrix}$
+    * Reject if?
+        * $F \geq F_{q, n-k}^{1-\alpha}$
+
+* How do inferences for individual coefficients and subsets compare between multiple and multivariate regression?
+    * They are exactly the same
+        * When considering?
+            * A single response variable at a time
+
+* Main inferential difference between multiple and multivariate regression?
+    * In multivariate regression
+        * We can test?
+            * Hypotheses about coefficients across multiple response variables simultaneously
+
+* Test statistic for testing $H_0: \symbf{\mathcal{B}}^{(1)} = \symbf{0}$ in multivariate regression?
+    * $\Lambda = \left(\frac{|\hat{\symbf{\Sigma}}|}{|\hat{\symbf{\Sigma^{(2)}}}|}\right)^{n/2}$
+        * Where $\hat{\symbf{\Sigma}}$ and $\hat{\symbf{\Sigma}^{(2)}}$ are estimated under?
+            * Full and reduced models
+    * For large $n$
+        * $-[n-k-0.5(r-p+q+1)]\ln(\Lambda^{2/n})\sim \chi^2_{r(p-1)}$ approximately
+
+* Some motivations for using principal components regression (PCR):
+    * First?
+        * Avoid multicollinearity
+    * Second?
+        * Reduce overfitting
+    * Third?
+        * Use fewer predictors
+    * Fourth?
+        * Improve interpretability
+
+* Two steps in PCR:
+    * First?
+        * Calculate PCs of non-intercept predictors
+    * Second?
+        * Fit multiple regression using first $m$ PCs as predictors
+
+* How is PCR related to ridge regression?
+    * PCR can be seen as
+        * What?
+            * Rough approximation to ridge regression
+
+* How can number of components be selected in PCR?
+    * Options:
+        * First?
+            * Scree plots
+        * Second?
+            * Proportion of variance explained
+        * Third?
+            * Cross-validation
+                * Recomputing?
+                    * Loadings within each fold
+
+* Main difference between PCR and partial least squares (PLS) regression?
+    * PLS chooses linear combinations
+        * To maximize?
+            * Covariance with response
+        * Rather than?
+            * Predictor variance
+
+* How does PLS algorithm work at high level?
+    * Iteratively extracts
+        * What?
+            * Orthogonal factors from predictors
+                * That maximize?
+                    * Covariance with response
+    * Uses factors as?
+        * New predictors
+
+* How does PLS differ from PCR in terms of optimization objective?
+    * PCR maximizes?
+        * Variance of predictors
+    * PLS maximizes?
+        * Covariance between predictors and response
+
+* How can optimal number of components be selected for PCR and PLS?
+    * Options:
+        * First?
+            * Cross-validation
+        * Often choosing?
+            * Number of components within one standard error of minimum CV error
+
+* Where can source code and additional materials for this lecture be found?
+    * On GitHub at
+        * https://github.com/MiguelRodo/Slides23RodoHonsMult/blob/2024/SlidesHonsMultL8Reg.qmd
+
+* Example of transforming input variables individually in regression?
+    * Squaring a predictor $X$
+        * To get?
+            * $Y = \beta_0 + \beta_1 X^2 + \epsilon$
+
+* Example of transforming input variables using linear combinations in regression?
+    * Creating a new predictor
+        * $X_1^{\ast}=\alpha_1X_1+\alpha_2X_2$
+            * And using it?
+                * In the model
+
+* Two main approaches for deciding on linear combinations of input variables:
+    * First?
+        * Principal components analysis (PCA)
+            * Which maximizes?
+                * Variance  
+    * Second?
+        * Partial least squares (PLS)
+            * Which maximizes?
+                * Association with response 
+
+* In house price example, interpretation of $R^2$ value of 0.83?
+    * 83% of variance in house prices
+        * Explained by?
+            * Assessed value and house size
+
+* Purpose of principal components regression (PCR)?
+    * Replace original predictors
+        * With?
+            * Smaller number of principal components
+        * To?
+            * Avoid multicollinearity, reduce overfitting, improve interpretability, etc.
+
+* Main advantage of partial least squares (PLS) regression compared to PCR?
+    * PLS chooses components
+        * To maximize?
+            * Covariance with response
+        * Potentially leading to?
+            * Better predictive performance

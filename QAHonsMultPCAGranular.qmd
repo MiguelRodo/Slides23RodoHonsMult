@@ -1,0 +1,180 @@
+---
+title: PCA
+subtitle: Questions and answers - granular
+author: Miguel Rodo
+bibliography: zotero.bib
+format:
+  html:
+    embed-resources: true
+    table-of-contents: false
+    urlcolor: cyan
+    linkcolor: blue
+    filecolor: magenta
+nocite: |
+    @johnson_wichern07
+---
+
+* What does multivariate analysis help uncover?
+    * Patterns and relationships
+        * Within what?
+            * Datasets containing multiple variables
+
+* Example of multivariate analysis in meteorology?
+    * Analyzing
+        * What variables?
+            * Temperature, humidity, wind speed, and more
+        * To understand?
+            * Weather systems
+
+* Linear combinations used as basis for multivariate analysis?
+    * Formula?
+        * $\symbf{x}_1\symbf{u}_1 + \symbf{x}_2\symbf{u}_2 + \ldots + \symbf{x}_p\symbf{u}_p$
+
+* Advantages of using linear combinations:
+    * First?
+        * Simplicity
+    * Second?
+        * Strong theoretical results
+    * Third?
+        * Robustness
+    * Fourth?
+        * Speed
+    * Fifth?
+        * Interpretability
+
+* Two main types of multivariate analysis based on variables involved:
+    * First type?
+        * $\symbf{X} \sim \symbf{X}$
+            * Includes?
+                * PCA, factor analysis, correspondence analysis
+    * Second type? 
+        * $\symbf{Y} \sim \symbf{X}$
+            * Includes?
+                * Multiple/multivariate regression, canonical correlation analysis, discrimination and classification
+
+* What does principal component analysis (PCA) allow you to do?
+    * First?
+        * Represent data
+            * How?
+                * More compactly
+    * Second?
+        * Interpret relationships
+            * Between?
+                * Variables
+
+* Example applications of PCA:
+    * First?
+        * Market analysis
+    * Second?
+        * Image compression
+    * Third?
+        * Bioinformatics
+
+* Formula for projecting vector $\symbf{b}$ onto vector $\symbf{a}$?
+    * $\text{proj}_{\symbf{a}}(\symbf{b}) = \frac{\symbf{a}^T \symbf{b}}{\symbf{a}^T \symbf{a}} \symbf{a}$
+
+* If $\symbf{a}$ is a unit vector, projection of $\symbf{b}$ onto $\symbf{a}$?
+    * $\text{proj}_{\symbf{a}}(\symbf{b}) = (\symbf{a}^T \symbf{b})\symbf{a}$
+
+* In two-variable height and weight example, projecting onto $[1/\sqrt{2}, 1/\sqrt{2}]$ represents?
+    * A general "size" variable 
+        * Combining?
+            * Height and weight equally
+
+* What do original variable axes represent in terms of projections?
+    * Height?
+        * Projection onto?
+            * [1,0]
+    * Weight?
+        * Projection onto?
+            * [0,1]
+
+* How can height and weight be represented using two orthogonal projection directions?
+    * Projecting onto?
+        * First direction?
+            * $[1/\sqrt{2}, 1/\sqrt{2}]$
+        * Second direction?  
+            * $[1/\sqrt{2}, -1/\sqrt{2}]$
+    * Gives?
+        * Alternative coordinate system
+
+* For $k$-th principal component, objective function being maximized?
+    * $\text{Var}(\symbf{a}_k'\symbf{X}) = \symbf{a}_k^T\symbf{\Sigma}\symbf{a}_k$
+        * Subject to?
+            * First constraint?
+                * $||\symbf{a}_k|| = 1$
+            * Second constraint?
+                * $\symbf{a}_k^T\symbf{a}_j = 0$ for $j < k$
+
+* Theorem 1 states what about maximizing $\symbf{x}'\symbf{B}\symbf{x}/\symbf{x}'\symbf{x}$ for $\symbf{x}$ on unit sphere?
+    * Maximum attained at?
+        * Largest eigenvalue $\lambda_1$ of $\symbf{B}$
+            * When?
+                * $\symbf{x}$ equals corresponding eigenvector $\symbf{e}_1$
+
+* For random vector $\symbf{X}$ with covariance $\symbf{\Sigma}$, $i$-th principal component $Y_i$ according to Theorem 2?
+    * $Y_i = \symbf{e}_i'\symbf{X}$
+        * Where $\symbf{e}_i$ is?
+            * Eigenvector of $\symbf{\Sigma}$ 
+                * Corresponding to?
+                    * $i$-th largest eigenvalue $\lambda_i$
+
+* Variance of $i$-th principal component $Y_i$?
+    * $\mathrm{Var}[Y_i] = \lambda_i$
+        * Where $\lambda_i$ is?
+            * $i$-th largest eigenvalue of $\symbf{\Sigma}$
+
+* Sum of variances of original variables $X_i$ equals what, according to Theorem 3?
+    * Sum of eigenvalues of covariance matrix $\symbf{\Sigma}$
+        * Which equals?
+            * Sum of variances of principal components $Y_i$
+
+* What does a scree plot show?
+    * Proportion of total variance
+        * Accounted for by?
+            * Each principal component
+
+* Formula for correlation between $i$-th principal component $Y_i$ and $k$-th original variable $X_k$?
+    * $\rho_{Y_i,X_k} = \frac{\sqrt{\lambda_i}e_{ik}}{\sqrt{\sigma_{kk}}}$
+        * Where $e_{ik}$ is?
+            * $k$-th element of $i$-th eigenvector of $\symbf{\Sigma}$
+
+* How does standardizing variables to have unit variance before PCA change results?
+    * Principal components will be?
+        * Different linear combinations
+            * That don't depend on?
+                * Original variable scales
+
+* When estimating PCA from sample data, what estimates covariance matrix $\symbf{\Sigma}$?
+    * Sample covariance matrix
+        * Formula?
+            * $\symbf{S}=n^{-1}\symbf{X}'\symbf{X}$
+                * Where $\symbf{X}$ is?
+                    * Mean-centered
+
+* Two main uses of approximating data matrix $\symbf{X}$ with lower rank matrix $\hat{\symbf{X}}$:
+    * First?
+        * Data compression
+    * Second? 
+        * Understanding key patterns
+            * While?
+                * Minimizing information loss
+
+* According to Theorem 5a, singular value decomposition (SVD) provides best rank $s$ approximation to matrix $\symbf{X}$?
+    * Formula?
+        * $\hat{\symbf{X}} = \symbf{U}\symbf{D}\symbf{J}_s\symbf{V}' = \sum_{i=1}^{s} d_i\symbf{u}_i\symbf{v}_i'$
+            * Where $d_i, \symbf{u}_i, \symbf{v}_i$ are?
+                * $i$-th singular value, left singular vector, right singular vector
+
+* How is PCA rank $s$ approximation $\tilde{\symbf{X}}$ related to SVD approximation $\hat{\symbf{X}}$?
+    * They are equivalent
+        * $\tilde{\symbf{X}} = \symbf{Y}\symbf{J}_k\symbf{P}' = \symbf{U}\symbf{D}\symbf{J}_k\symbf{V}' = \hat{\symbf{X}}$
+
+* What is a biplot?
+    * Graphical display 
+        * Of both?
+            * Observations (as points) and variables (as vectors)
+        * Based on?
+            * Low-rank PCA approximation to data matrix
+
+I have finished breaking down the Q&A into more granular questions and answers.
