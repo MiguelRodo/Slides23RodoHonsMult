@@ -1,5 +1,8 @@
 # CHANGELOG
 
+- *Minor* (v0.5.0): Miguel Julio Rodo (09:12:18)
+  - Add Q&As for PCA, MV reg and FA
+
 - *Minor* (v0.4.0): Miguel Julio Rodo (14:26:55)
   - Add factor analysis slides
 
