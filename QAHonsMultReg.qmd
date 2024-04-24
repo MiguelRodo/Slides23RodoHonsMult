@@ -29,7 +29,7 @@ nocite: |
   - $Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \ldots + \beta_p X_p + \epsilon$ or $Y = \symbf{X}'\symbf{\beta} + \epsilon$
 
 - What is the typical notation for a multivariate regression model?
-  - $\symbf{\mathcal{Y}} = \symbf{X}'\symbf{\mathcal{B}} + \symbf{\mathcal{E}}$ where $\symbf{\mathcal{Y}}$, $\symbf{\mathcal{B}}$ and $\symbf{\mathcal{E}}$ have $r$ columns
+  - $\symbf{\mathcal{Y}} = \symbf{X}\symbf{\mathcal{B}} + \symbf{\mathcal{E}}$ where $\symbf{\mathcal{Y}}$, $\symbf{\mathcal{B}}$ and $\symbf{\mathcal{E}}$ have $r$ columns
 
 - What is an example of multivariate regression?
   - Modeling rainfall and wind speed against hurricane category, altitude and distance from coast
