@@ -1,5 +1,8 @@
 # CHANGELOG
 
+- *Minor* (v0.7.0): Miguel Julio Rodo (13:35:49)
+  - Add final CA slides
+
 - *Minor* (v0.6.0): Miguel Julio Rodo (09:48:35)
   - Add granular Q&As
 
