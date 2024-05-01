@@ -1,0 +1,117 @@
+---
+title: Correspondence analysis
+date: "2024-05-02"
+bibliography: zotero.bib
+format:
+  html:
+    embed-resources: true
+    aspectratio: 169
+    urlcolor: cyan
+    linkcolor: blue
+    filecolor: magenta
+---
+
+```{r}
+#| include: false
+library(tibble)
+library(ggplot2)
+```
+
+# Introduction
+
+## Understanding the need for scaling
+
+```{r}
+X_mat <- matrix(c(1, 1, 2, 2.5, 3, 6), byrow = TRUE, ncol = 2)
+P_mat <- X_mat / sum(X_mat)
+r_vec <- rowSums(P_mat)
+c_vec <- colSums(P_mat)
+rc_mat <- outer(r_vec, c_vec)
+D_r_mat <- diag(r_vec)
+D_c_mat <- diag(c_vec)
+S_mat <- solve(sqrt(D_r_mat)) %*% (P_mat - rc_mat) %*% solve(sqrt(D_c_mat))
+svd_obj <- svd(S_mat)
+svd_obj$d
+svd_obj$u
+svd_obj$v
+```
+
+```{r}
+# biplot
+F_mat_biplot_principal <- svd_obj$u %*% diag(svd_obj$d)
+G_mat_biplot_princiapl <- svd_obj$v %*% diag(svd_obj$d)
+# principal coordinates
+F_mat_principal <- solve(D_r_mat)^0.5 %*% svd_obj$u %*% diag(svd_obj$d) # row
+G_mat_principal <- solve(D_c_mat)^0.5 %*% svd_obj$v %*% diag(svd_obj$d) # column
+# standard coordinates
+F_mat_standard <- solve(D_r_mat)^0.5 %*% svd_obj$u # row
+G_mat_standard <- solve(D_c_mat)^0.5 %*% svd_obj$v # column
+```
+
+```{r}
+calc_dist_chi2_vec <- function(vec_1, vec_2, weight) {
+  sum(
+    (vec_1 - vec_2)^2 / weight
+  )
+}
+chi2_dist_vec <- NULL
+chi2_dist_vec[1] <- calc_dist_chi2_vec(
+  X_mat[1, ],
+  X_mat[2, ],
+  c_vec
+)
+chi2_dist_vec[2] <- calc_dist_chi2_vec(
+  X_mat[2, ],
+  X_mat[3, ],
+  c_vec
+)
+chi2_dist_vec[3] <- calc_dist_chi2_vec(
+  X_mat[1, ],
+  X_mat[3, ],
+  c_vec
+)
+f_principal_dist_vec <- NULL
+f_principal_dist_vec[1] <- sqrt(sum((F_mat_principal[1, ] - F_mat_principal[2, ])^2))
+f_principal_dist_vec[2] <- sqrt(sum((F_mat_principal[2, ] - F_mat_principal[3, ])^2))
+f_principal_dist_vec[3] <- sqrt(sum((F_mat_principal[1, ] - F_mat_principal[3, ])^2))
+f_standard_dist_vec <- NULL
+f_standard_dist_vec[1] <- sqrt(sum((F_mat_standard[1, ] - F_mat_standard[2, ])^2))
+f_standard_dist_vec[2] <- sqrt(sum((F_mat_standard[2, ] - F_mat_standard[3, ])^2))
+f_standard_dist_vec[3] <- sqrt(sum((F_mat_standard[1, ] - F_mat_standard[3, ])^2))
+f_biplot_vec <- NULL
+f_biplot_vec[1] <- sqrt(sum((F_mat_biplot_principal[1, ] - F_mat_biplot_principal[2, ])^2))
+f_biplot_vec[2] <- sqrt(sum((F_mat_biplot_principal[2, ] - F_mat_biplot_principal[3, ])^2))
+f_biplot_vec[3] <- sqrt(sum((F_mat_biplot_principal[1, ] - F_mat_biplot_principal[3, ])^2))
+tibble::tibble(
+  comparison = c("1 vs 2", "2 vs 3", "1 vs 3"),
+  chi2_dist = chi2_dist_vec,
+  f_principal_dist = f_principal_dist_vec,
+  f_standard_dist = f_standard_dist_vec,
+  f_biplot_dist = f_biplot_vec,
+  ratio_principal_to_chi2 = f_principal_dist_vec / chi2_dist_vec,
+  ratio_standard_to_chi2 = f_standard_dist_vec / chi2_dist_vec,
+  ratio_biplot_to_chi2 = f_biplot_vec / chi2_dist_vec
+)
+```
+
+```{r}
+p_biplot <- ggplot() +
+  cowplot::theme_cowplot() +
+  # make plot background white and not transparent
+  theme(plot.background = element_rect(fill = "white", color = NA)) +
+  cowplot::background_grid(major = "xy") +
+  geom_segment(
+    aes(x = 0, y = 0, xend = svd_obj$u %*% diag(svd_obj$d)^0.5, yend = svd_obj$u %*% diag(svd_obj$d)^0.5),
+    arrow = arrow(length = unit(0.2, "cm")),
+    color = "red"
+  ) +
+  geom_segment(
+    aes(x = 0, y = 0, xend = diag(svd_obj$d)^0.5 * svd_obj$v, yend = diag(svd_obj$d)^0.5 * svd_obj$v[2, 2]),
+    arrow = arrow(length = unit(0.2, "cm")),
+    color = "blue"
+  ) 
+ggplot2::ggsave(
+  projr::projr_path_get("cache", "fig", "p_biplot.png"),
+  p_biplot, width = 5, height = 5
+)
+```

@@ -22,3 +22,7 @@ docs/**
 !preamble-reg.tex
 Rplots.pdf
 
+scrap.pdf
+scrap.html
+scrap.qmd
+

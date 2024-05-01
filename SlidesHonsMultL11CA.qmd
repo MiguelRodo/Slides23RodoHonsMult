@@ -1,0 +1,791 @@
+---
+title: Correspondence analysis
+date: "2024-05-02"
+bibliography: zotero.bib
+format:
+  beamer:
+    embed-resources: true
+    aspectratio: 169
+    urlcolor: cyan
+    linkcolor: blue
+    filecolor: magenta
+    include-in-header:
+      file: preamble-reg.tex
+nocite: |
+    @johnson_wichern07
+---
+
+# Introduction to correspondence analysis (CA)
+
+- Context: $\symbf{Y}$ (abundance)
+  - Goal: Graphically display the relationships between and/or within the rows and columns
+
+<!-- \pause !-->
+
+:::: {.columns}
+
+::: {.column width="45%" text-align="center"}
+
+\begin{center} 
+
+We go from this dataset:
+
+\end{center}
+
+```{r}
+#| results: asis
+#| echo: false
+data("smoke", package = "ca")
+smoke |> knitr::kable()
+```
+
+:::
+
+::: {.column width="2.5%"}
+
+:::
+
+::: {.column width="52.5%" text-align="center"}
+
+\begin{center}
+to this plot:
+\end{center}
+
+\vspace{-1cm}
+
+```{r}
+#| echo: false
+#| results: asis
+path_pdf_cover <- projr::projr_path_get("cache", "p-cover.pdf")
+pdf(path_pdf_cover, width = 3.5, height = 3.5)
+ca_obj <- ca::ca(smoke)
+plot(
+  ca::ca(smoke), mass = TRUE, contrib = "absolute",
+  map = "symmetric", arrows = rep(TRUE, 2)
+  )
+suppressMessages(suppressWarnings(invisible(dev.off())))
+
+pander::pandoc.image(path_pdf_cover)
+```
+
+:::
+
+::::
+
+::: {.comment}
+- So, the key thing so far is that the rows are not displayed in terms of how similar they are overall
+  - Rather, they're displayed in terms of the similarity of their profiles
+:::
+
+# Introduction to correspondence analysis (CA)
+
+- Context: $\symbf{Y}$ (abundance)
+  - Goal: Graphically display the relationships between and/or within the rows and columns
+
+:::: {.columns}
+
+::: {.column width="45%" text-align="center"}
+
+\begin{center} 
+
+We go from this dataset:
+
+\end{center}
+
+
+```{r}
+#| results: asis
+#| echo: false
+smoke_dem <- smoke
+for (i in seq_len(nrow(smoke_dem))) {
+  smoke_rep <- as.matrix(smoke_dem)[i, ] / sum(smoke_dem[i, ])
+  for (j in seq_len(ncol(smoke_dem))) {
+    smoke_dem[i, j] <- smoke_rep[j]
+  }
+}
+smoke_dem |> round(2) |> knitr::kable()
+```
+
+:::
+
+::: {.column width="2.5%"}
+
+:::
+
+::: {.column width="52.5%" text-align="center"}
+
+\begin{center}
+to this plot:
+\end{center}
+
+\vspace{-1cm}
+
+```{r}
+#| echo: false
+#| results: asis
+path_pdf <- projr::projr_path_get("cache", "p-cover.pdf")
+pdf(path_pdf, width = 3.5, height = 3.5)
+ca_obj <- ca::ca(smoke)
+plot(
+  ca::ca(smoke), mass = TRUE, contrib = "absolute",
+  map = "symmetric", arrows = rep(TRUE, 2)
+  )
+suppressMessages(suppressWarnings(invisible(dev.off())))
+
+pander::pandoc.image(path_pdf)
+```
+
+:::
+
+::::
+
+::: {.comment}
+- So, the key thing so far is that the rows are not displayed in terms of how similar they are overall
+  - Rather, they're displayed in terms of the similarity of their profiles
+:::
+
+
+# Example applications {.smaller}
+
+**Datasets**
+
+- Rows are various dams, and columns are counts of waterbird species
+- Rows are various immune compartments (e.g. blood, spleen, lymph), and columns are frequencies of immune cell types (e.g. T cells, B cells, NK cells)
+- Rows are company brands (e.g. Cadbury, Beacon, Lindt), and columns are consumer ratings on a 1-5 scale (e.g. quality, price, taste)
+
+**Key characteristics**
+
+- Non-negative
+- Natural zero (i.e. zero means literally nothing and not simply that two quantities are equal, for example)
+- Same units (e.g. counts all in thousands)
+
+<!-- \pause !-->
+
+The key property of the data is that proportions make sense throughout.
+
+# Correspondence matrix, $\symbf{P}$ {.smaller}
+
+- Suppose that we have some matrix $\symbf{X}:I \times J$ where each element 
+  - Rows can be thought of as observations and columns as variables
+
+- The correspondence matrix $\symbf{P}:I \times J$ is the matrix of overall proportions where
+
+$$
+P_{ij}= \frac{x_{ij}}{\sum_{i=1}^I \sum_{j=1}^J x_{ij}} = \frac{x_{ij}}{n}
+$$
+
+<!-- \pause !-->
+
+:::: {.columns}
+
+::: {.column width="45%" text-align="center"}
+
+\begin{center} 
+
+We go from $\symbf{X}$
+
+\end{center}
+
+\vspace{-0.5cm}
+
+```{r}
+#| results: asis
+#| echo: false
+smoke |> knitr::kable()
+```
+
+:::
+
+::: {.column width="2.5%"}
+
+:::
+
+::: {.column width="52.5%" text-align="center"}
+
+\begin{center}
+
+to $\symbf{P}$
+
+\vspace{-0.5cm}
+
+\end{center}
+
+```{r}
+#| echo: false
+#| results: asis
+smoke_dem <- smoke
+for (i in seq_len(nrow(smoke_dem))) {
+  smoke_rep <- as.matrix(smoke_dem)[i, ] / sum(smoke_dem[i, ])
+  for (j in seq_len(ncol(smoke_dem))) {
+    smoke_dem[i, j] <- smoke_rep[j]
+  }
+}
+n <- sum(colSums(as.matrix(smoke)))
+P <- (smoke / n)
+P |> round(2) |> knitr::kable()
+```
+
+:::
+
+::::
+
+# Independence of rows and columns
+
+- Let $\symbf{r}$ be the vector of row totals, i.e. $r_i=\sum_{j=1}^J P_{ij} = \symbf{P} \symbf{1}$
+- Let $\symbf{c}$ be the vector of column totals, i.e. $c_j=\sum_{i=1}^I P_{ij} = \symbf{P}' \symbf{1}$
+- Then if the rows are independent of the cells, we have that
+
+\begin{align*}
+p_{ij} &= r_ic_j,
+\implies \symbf{P}_{\mathrm{ind}} = \symbf{r}\symbf{c}'
+\end{align*}
+
+```{r}
+#| echo: false
+#| results: asis
+r_vec <- matrix(rowSums(P), ncol = 1)
+c_vec <- matrix(colSums(P), ncol = 1)
+P_ind <- r_vec %*% t(c_vec)
+P_ind_disp <- P
+for (i in seq_len(nrow(P))) {
+  for (j in seq_len(ncol(P))) {
+    P_ind_disp[i, j] <- P_ind[i,j] |> round(2)
+  }
+}
+knitr::kable(P_ind_disp)
+```
+
+# Matrix of residuals
+- Under the assumption of independence, we can calculate residuals:
+
+$$
+\symbf{P} - \symbf{P}_{\mathrm{ind}} = \symbf{P} - \symbf{r}\symbf{c}'.
+$$
+
+<!-- \pause !-->
+
+- Continuing the smoking example, we then have
+
+:::: {.columns}
+
+::: {.column width="45%" text-align="center"}
+
+\begin{center} 
+
+$\symbf{P}$
+
+\end{center}
+
+\vspace{0.05cm}
+
+
+```{r}
+#| results: asis
+#| echo: false
+P |> round(2) |> knitr::kable()
+```
+
+:::
+
+::: {.column width="2.5%"}
+
+:::
+
+::: {.column width="52.5%" text-align="center"}
+
+\begin{center}
+
+$\symbf{P} - \symbf{r}\symbf{c}'$
+
+\end{center}
+
+\vspace{0.05cm}
+
+
+```{r}
+#| echo: false
+#| results: asis
+S <- P - P_ind
+S |> round(3) |> knitr::kable()
+```
+
+:::
+
+::::
+
+<!-- \pause !-->
+
+- Residuals are naturally larger for the more abundant rows (employee ranks)
+
+# Standardised residuals
+
+- To avoid the more abundant rows and columns from dominating downstream analyses, we normalise by row and column size.
+- For each residual $P_{ij} - P_{\mathrm{ind}_{ij}}$, we standardise by 
+
+$$
+\frac{P_{ij} - P_{\mathrm{ind}_{ij}}}{\sqrt{r_ic_j}} = \frac{P_{ij} - r_ic_j}{\sqrt{r_ic_j}}
+$$
+
+- Define the diagonal matrices $\symbf{D}_r=\mathrm{diag}(\symbf{r})$ and $\symbf{D}_c=\mathrm{diag}(\symbf{c})$.
+- We then have that the matrix of standardised residuals is given by
+
+$$
+\symbf{S} = \symbf{D}_r^{-1/2}(\symbf{P} - \symbf{P}_{\mathrm{ind}} ) \symbf{D}_c^{-1/2}.
+$$
+
+# Motivation for this form of residual I: Count distribution
+
+- Consider the following residual:
+
+$$
+\frac{\mathrm{Observed}-\mathrm{Expected}}{\sqrt{\mathrm{Expected}}}
+$$
+
+- This is equal to a residual with mean 0 and unit variance if the data are Poisson distributed, as for the Poisson distribution, the mean is equal to the variance.
+<!-- \pause !-->
+
+  - Considering that we are dealing with abundance (e.g. count) data, the Poisson distribution seems appropriate.
+  - We are accounting for the mean-variance relationship.
+
+# Motivation for this form of residual II: The $\chi^2$ statistic
+
+- Now if we square the residuals, we get a $\chi^2$-related statistic:
+
+$$
+\frac{(\mathrm{Observed}-\mathrm{Expected})^2}{\mathrm{Expected}}
+$$
+
+- This tracks the deviation from the model with mean $\mathrm{Expected}$ and variance $\mathrm{Expected}$.
+- We can calculate this for all the elements in the matrix $P$ under the assumption that $P$ arose under independent rows and columns.
+  - When we add these up, the sum is equal to the $\chi^2$ statistic on the counts, divided by $n$:
+
+$$
+\Chi^2 = \sum_{i=1}^I\sum_{j=1}^J \frac{(\mathrm{Observed}_{ij}-\mathrm{Expected}_{ij})^2}{\mathrm{Expected}_{ij}}
+$$
+
+# Role of independence assumption
+
+- The assumption of independence is likely not true, but that is in fact the point:
+  - We've created a way to highlight observation-variable (row-column) combinations that are more common than expected
+    - In particular, the abundance of the row or column is now cancelled out
+- We are *not* performing inference for a test of association between rows and columns
+- Rather, this deviation-from-independence information (i.e. $\symbf{S}$) will be used to represent rows in a lower-dimensional space that we can then interpret
+
+# Correspondence analysis as PCA on a transformed matrix
+
+- What we've done up until this point is, essentially, transform the data appropriately
+  - Calculated proportions ($\symbf{X}\rightarrow \symbf{P}$)
+  - "Centred" it ($\symbf{P}-\symbf{r}\symbf{c}'$)
+  - "Standardised" it ($\symbf{S} = \symbf{D}_r^{-1/2}(\symbf{P}-\symbf{r}\symbf{c}')\symbf{D}_c^{-1/2}$)
+- We then use the SVD to obtain a low-rank approximation to $\symbf{S}$
+  - Find the low-rank $s<\min(I-1,J-1)$ rank matrix $\tilde{S}$ such that the sum of squared differences is minimised
+    - $\tilde{S}=\sum_{k=1}^{s}\lambda_i\symbf{u}_k\symbf{v}_k'$
+  - PCA creates the same approximating matrix as the SVD, and so CA is essentially PCA on a transformed matrix
+- Since this is an exploratory technique, we plot the points (transformed again) in a biplot
+  - We have various options for how exactly to calculate the points, which we'll discuss
+
+# Views of correspondence analysis
+
+- The previous description of CA is a bit handwavy, but serves to (help) give an intuition for what CA is doing
+- There are two formal approaches to (or ways of developing) correspondence analysis:
+  - Matrix approximation
+  - Profile approximation
+
+# Matrix approximation view of correspondence analysis I
+
+- The matrix approximation view to CA regards it as solving the following weighted least squares problem:
+
+:::{.callout-important icon="false"}
+# Matrix approximation angle on CA
+
+- Find a reduced rank matrix  $\hat{\symbf{P}}$ such that
+
+$$
+\sum_{i=1}^I\sum_{j=1}^J \frac{(p_{ij}-\hat{p}_{ij})^2}{r_ic_j} 
+$$
+
+is minimised.
+
+:::
+
+- We upweight errors arising from more commonly observed rows and cells.
+  - This makes sense from the mean-variance relationship we mentioned before.
+
+# Matrix approximation view of correspondence analysis II
+
+\small
+
+Since 
+
+$$
+\sum_{i=1}^I\sum_{j=1}^J \frac{(p_{ij}-\hat{p}_{ij})^2}{r_ic_j}  = \mathrm{tr}[(\symbf{D}_r^{-1/2}(\symbf{P} - \hat{\symbf{P}})\symbf{D}_c^{-1/2})(\symbf{D}_r^{-1/2}(\symbf{P} - \hat{\symbf{P}})\symbf{D}_c^{-1/2})'],
+$$
+
+we have that 
+
+
+\begin{align*}
+\sum_{i=1}^I\sum_{j=1}^J \frac{(p_{ij}-\hat{p}_{ij})^2}{r_ic_j}  &= \mathrm{tr}[(\symbf{D}_r^{-1/2}\symbf{P}\symbf{D}_c^{-1/2} - \symbf{D}_r^{-1/2}\hat{\symbf{P}}\symbf{D}_c^{-1/2})(\symbf{D}_r^{-1/2}\symbf{P}\symbf{D}_c^{-1/2} - \symbf{D}_r^{-1/2}\hat{\symbf{P}}\symbf{D}_c^{-1/2})'], \\
+&=
+\mathrm{tr}[(\symbf{D}_r^{-1/2}\symbf{P}\symbf{D}_c^{-1/2} - \hat{\symbf{P}}^{\ast})(\symbf{D}_r^{-1/2}\symbf{P}\symbf{D}_c^{-1/2} - \hat{\symbf{P}}^{\ast})'],
+\end{align*},
+
+where $\hat{\symbf{P}}^{\ast} =  \symbf{D}_r^{-1/2}\hat{\symbf{P}}\symbf{D}_c^{-1/2}$.
+
+\vspace{-0.2cm}
+
+- Thus the weighted least squares problem is essentially the same as an unweighted least squares problem, which we know how to solve - using the SVD on $\symbf{D}_r^{-1/2}\symbf{P}\symbf{D}_c^{-1/2}$.
+
+# Results from matrix approximation view I
+
+\normalsize
+
+1. The reduced rank $s$ approximation to $\symbf{P}$ is given by 
+
+$$
+\sum_{k=1}^s\tilde{\lambda}_k(\symbf{D}_r^{1/2}\tilde{\symbf{u}}_k)(\symbf{D}_c^{1/2}\tilde{\symbf{v}}_k)',
+$$
+
+where $\tilde{\lambda}_k$, $\tilde{\symbf{u}}_k$ and $\tilde{\symbf{v}}_k$ arise from the SVD of $\symbf{D}_r^{-1/2}\symbf{P}\symbf{D}_c^{-1/2}$ and the approximation error is $\sum_{k=s+1}^J\tilde{\lambda}_k^2$.
+
+2. We always have that 
+
+$$
+\tilde{\lambda}_k(\symbf{D}_r^{1/2}\tilde{\symbf{u}}_1)(\symbf{D}_c^{1/2}\tilde{\symbf{v}}_1) = \symbf{r}\symbf{c}'.
+$$
+
+# Results from matrix approximation view II
+
+3. The reduced rank $K>1$ approximation to $\symbf{P}-\symbf{r}\symbf{c}'$ is given by 
+
+$$
+\sum_{k=1}^K\lambda_k(\symbf{D}_r^{1/2}\symbf{u}_k)(\symbf{D}_c^{1/2}\symbf{v}_k)',
+$$
+
+where  $\lambda_k$, $\symbf{u}_k$ and $\symbf{v}_k$ arise from the SVD of $\symbf{D}_r^{-1/2}(\symbf{P}-\symbf{r}\symbf{c}')\symbf{D}_c^{-1/2}$. 
+
+4.  $\symbf{D}_r^{-1/2}\symbf{P}\symbf{D}_c^{-1/2}$ and  $\symbf{D}_r^{-1/2}(\symbf{P}-\symbf{r}\symbf{c}')\symbf{D}_c^{-1/2}$ share singular vectors and singular values, in that $\tilde{\lambda}_{k+1}= \lambda_k$, $\tilde{u}_{k+1}= u_k$ and $\tilde{v}_{k+1}= v_k$.
+
+# Comment on the previous results
+
+- It's a lot - but I mention them because they shed light on a couple of things in CA, rather than that you memorise them all.
+- The main point is that CA is an application of PCA on a transformed matrix, which is equivalent to a weighted least-squares problem whose solution we find by the singular -vectors and -values of the matrix of standardised residuals, $\symbf{S} = \symbf{D}_r^{-1/2}(\symbf{P}-\symbf{r}\symbf{c}')\symbf{D}_c^{-1/2}$. 
+
+# Row profiles
+
+- We now build up to the profile approximation view of correspondence analysis.
+- To do so, we need to define row and column profiles.
+- First, we define row profiles as the row proportions of the correspondence matrix, $\symbf{P}$.
+  - In other words, conditional on the row, what is the relative frequency of the columns? 
+- The formula for the row profiles is $\symbf{D}_r^{-1}\symbf{P}$, with $i$-th row profile denoted $\tilde{\symbf{r}}_i$.
+
+:::: {.columns}
+
+::: {.column width="45%" text-align="center"}
+
+\begin{center} 
+
+\vspace{-0.35cm}
+
+From this dataset:
+
+\end{center}
+
+```{r}
+#| results: asis
+#| echo: false
+data("smoke", package = "ca")
+smoke |> knitr::kable()
+```
+
+:::
+
+::: {.column width="45%" text-align="center"}
+
+\begin{center} 
+
+\vspace{-0.35cm}
+
+We get these row profiles:
+
+\end{center}
+
+```{r}
+#| results: asis
+#| echo: false
+smoke_dem <- smoke
+for (i in seq_len(nrow(smoke_dem))) {
+  smoke_rep <- as.matrix(smoke_dem)[i, ] / sum(smoke_dem[i, ])
+  for (j in seq_len(ncol(smoke_dem))) {
+    smoke_dem[i, j] <- smoke_rep[j]
+  }
+}
+smoke_dem |> round(2) |> knitr::kable()
+```
+
+:::
+
+::::
+
+# Column profiles
+
+- Column profiles are defined analogously to row profiles.
+- The formula for the column profiles is $\symbf{D}_c^{-1}\symbf{P}^T$, with $j$-th column profile denoted $\tilde{\symbf{c}}_j$.
+
+# The $\chi^2$ distance
+
+- The $\chi^2$ distance is a weighted Euclidean distance. In our case, we use it to down-weight more-abundant columns.
+- Let $\tilde{\symbf{r}}_i$ be the $i$-th row profile. 
+- In correspondence analysis, the $\chi^2$ distance between the $i$-th and $i'$-th row profiles is given by
+
+$$
+\sum_{j=1}^J \frac{(\tilde{r}_{ij}-\tilde{r}_{i'j})^2}{c_j}.
+$$
+
+# CA as profile approximation I {.smaller}
+
+- We'll consider CA in terms of row profiles, but results follow analogously for column profiles.
+- The goal is to find a low-dimensional representation of the row profiles that preserves the $\chi^2$ distances between the rows.
+- The earlier least squares criterion can be written as
+
+$$
+\sum_i\sum_j\frac{(p_{ij} - \hat{p}_{ij})^2}{r_ic_j} = \sum_ir_i\sum_j\frac{(p_{ij}/r_i - p_{ij}^*)^2}{c_j}, 
+$$
+
+- i.e. the row-mass weighted sum of squared $\chi^2$ distances between the original and approximated row profiles.
+
+# CA as profile approximation I {.smaller}
+
+- It can be shown that the least-squares criterion is minimised for 
+
+$$
+\symbf{P}^{\ast} = \symbf{1}\symbf{c}^T + \sum_{k=2}^K \tilde{\lambda}_k\symbf{D}_r^{-1/2}\tilde{\symbf{u}}_k(\symbf{D}_c^{1/2}\tilde{\symbf{v}}_k)^T
+$$
+
+for $\tilde{\lambda}_k$, $\tilde{\symbf{u}}_k$ and $\tilde{\symbf{v}}_k$ from the SVD of $\symbf{D}_r^{-1/2}\symbf{P}\symbf{D}_c^{-1/2}$ and $\symbf{c}$ the average row profile - the equivalent result to before (multiply through by $\symbf{D}_r$ to see this).
+
+# Inertia
+
+- For $\symbf{S} = \symbf{D}_r^{-1/2}(\symbf{P}-\symbf{r}\symbf{c}')\symbf{D}_c^{-1/2}$, total inertia is the weighted sum of squares of residuals:
+
+$$
+\mathrm{tr}[\symbf{S}\symbf{S}'] = \sum_i\sum_j\frac{(p_{ij} - r_ic_j)^2}{r_ic_j} = \sum_{k=1}^{J-1}\lambda_k^2 
+$$
+
+- $\lambda_k$ is the $k$-th singular value of $\symbf{S}$
+  - This follows from the fact that $\symbf{r}\symbf{c}'$ is in fact the best rank-one approximation to $\symbf{P}$
+    - It is therefore the first term in the SVD approximation, and the rank one SVD matrice's approximation error is equal to $\sum_{k=2}^{J}\tilde{\lambda}_k^2 = \sum_{k=1}^{J-1}\lambda_k^2$.
+- The inertia captured by the first $s$ components represents the variation captured in $\symbf{S}$, and the proportion of variation captured is given by $(\sum_{k=1}^{s}\lambda_k^2)/(\sum_{k=1}^{J-1}\lambda_k^2)$.
+
+```{r}
+#| echo: false
+#| eval: false
+data_tidy_smoke_long_init <- smoke |>
+  dplyr::mutate(Rank = rownames(smoke)) |>
+  tidyr::pivot_longer(
+    cols = none:heavy,
+    names_to = "Smoking habit",
+    values_to = "Count"
+  )
+data_tidy_smoke_long <- purrr::map_df(
+  seq_len(nrow(data_tidy_smoke_long_init)), function(i) {
+    data_row <- data_tidy_smoke_long_init[i, ]
+    purrr::map_df(seq_len(data_row$Count), function(j) {
+      data_row[, c("Rank", "Smoking habit")]
+  })
+})
+data_tidy_smoke_long <- data_tidy_smoke_long |>
+  dplyr::mutate(
+    Rank = factor(
+      data_tidy_smoke_long$Rank,
+      c("SM", "JM", "SE", "JE", "SEC"),
+      ordered = TRUE
+      ),
+    `Smoking habit` = factor(
+      data_tidy_smoke_long$`Smoking habit`,
+      c("none", "light", "medium", "heavy"),
+      ordered = TRUE
+      )
+  ) |>
+  dplyr::arrange(Rank)
+```
+
+# Examining the raw data using CA concepts
+
+![](_data_raw/img/smoke_example_intro.png)
+
+# Calculating the solution to the least-squares problem
+
+![](_data_raw/img/smoke_example.png)
+
+# Displaying the results of a correspondence analysis
+
+- We've discussed the first three steps in performing CA:
+  1. Calculating the matrix of standardised residuals, $\symbf{S} = \symbf{D}_r^{-1/2}(\symbf{P} - \symbf{r}\symbf{c}')\symbf{D}_c^{-1/2}$.
+  2. Calculating SVD of this (to obtain its least-squares approximation).
+  3. Assessing the quality of the dimensionality reduction (via inertia).
+
+- We now turn our attention to to displaying the rows and columns:
+
+\centering
+
+\vspace{-1.95cm}
+
+```{r}
+#| echo: false
+#| results: asis
+#| eval: true
+pander::pandoc.image(path_pdf_cover)
+```
+
+# Choosing coordinate scales
+
+- A biplot is a graphical display of a matrix $\symbf{X}_{m \times n}$ such that
+
+$$
+\symbf{X}_{m\times n} = \symbf{F}_{m\times k}(\symbf{G}_{n \times k})' \text{ for } k \leq \min(m, n),
+$$
+
+where each row of $\symbf{F}$ is a lower-dimensional representation of a row in $\symbf{X}$ and each column of $\symbf{G}$ is a lower-dimensional representation of a column in $\symbf{X}$.
+
+- Here we term $\symbf{F}$ and $\symbf{G}$ the *row* and *column* coordinates, respectively.
+
+- Clearly, in our case $\symbf{X}=\symbf{S}=\symbf{D}_r^{-1/2}(\symbf{P} - \symbf{r}\symbf{c}')\symbf{D}_c^{-1/2}$.
+
+# Principal vs standard coordinates
+
+- We need to choose the scaling for our row coordinates. Typical choices:
+  - *Principal* coordinates:
+    - Rows: $\symbf{F} = \symbf{D}_r^{-1/2}\symbf{U}\symbf{\Lambda}$
+    - Columns: $\symbf{G} = \symbf{D}_c^{-1/2}\symbf{V}\symbf{\Lambda}$
+  - *Standard* coordinates: 
+    - Rows: $\symbf{F} = \symbf{D}_r^{-1/2}\symbf{U}$
+    - Columns: $\symbf{G} = \symbf{D}_c^{-1/2}\symbf{V}$
+- When rows are plotted using principal coordinates, the $\chi^2$ distance between the rows is optimally displayed. Similarly for columns.
+
+# Symmetric vs asymmetric biplots
+
+- In symmetric biplots, the both rows and columns are plotted using principal coordinates.
+  - This ensures that the $\chi^2$ distances between rows and columns are optimally displayed.
+  - However, the row and column points are not strictly related, so interpreting rows (observations) in terms of variables (columns) is not strictly correct.
+- In asymmetric biplots, one uses principal coordinates and the other uses standard coordinates.
+  - The motivation is that the relationships between rows and columns are more accurately displayed.
+  - The standard coordinates of the columns (variables) represent "extreme" observations. For each variable, they are what that an observation would look like if all its members/weight/mass were on that variable. In other words, if the row profile for an observation had a 1 for that variable and 0 everywhere else.
+  - However:
+    - The standard and principal coordinates may be on fairly different scales, depending on the size of the singular values.
+    - Low-frequency categories may appear to be more important than they are.
+
+# Approaches
+
+:::: {.columns}
+
+::: {.column width="45%"}
+
+- One approach may be to have two coordinate axes [@greenacre13a]:
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{_data_raw/img/dual-axis-example.png}
+\end{figure}
+
+:::
+
+::: {.column width="45%"}
+
+- Another approach is to use an alternate scaling, such as that in contribution biplots [@greenacre13a] which multiplies the column vector lengths by their masses.
+  - This is the `rowgreen` or `colgreen` argument to the `map` parameter in the `ca::plot` function.
+- A final approach is to use $\symbf{F} = \symbf{D}_r^{-1/2}\symbf{U}\symbf{\Lambda}^{\alpha}$ and $\symbf{G}= \symbf{D}_c^{-1/2}\symbf{V}\symbf{\Lambda}^{1-\alpha}$ for some $\alpha \in (0, 1)$.
+
+:::
+
+::::
+
+# Terminology for scaling choices:
+
+- Both principal: symmetric 
+- Row principal and column standard: row-principal
+- Column principal and row standard: column-principal
+
+# `ca.plot` function
+
+```{r}
+#| echo: true
+#| eval: false
+library(ca)
+?plot.ca
+```
+
+# Example: symmetric plot
+
+```{r}
+#| results: asis
+pander::pandoc.image("_data_raw/img/ca_example_2.png")
+```
+
+# Example: asymmetric plot I
+
+```{r}
+#| results: asis
+pander::pandoc.image("_data_raw/img/ca_example-asymmetric_biplots_1.png")
+```
+
+# Example: asymmetric plot II
+
+```{r}
+#| results: asis
+pander::pandoc.image("_data_raw/img/ca_example-asymmetric_biplots_2.png")
+```
+
+# Example: asymmetric plot III
+
+```{r}
+#| results: asis
+pander::pandoc.image("_data_raw/img/ca_example-asymmetric_biplots_2.png")
+```
+
+# Example: quality of approximation
+
+```{r}
+#| results: asis
+pander::pandoc.image("_data_raw/img/ca_example-quality.png")
+```
+
+# Multiple correspondence analysis (MCA)
+
+```{r}
+#| results: asis
+pander::pandoc.image("_data_raw/img/ca-multilevel_1.png")
+```
+
+# MCA: example introduction
+
+```{r}
+#| results: asis
+pander::pandoc.image("_data_raw/img/ca-multilevel_2.png")
+```
+
+# MCA: example application
+
+```{r}
+#| results: asis
+pander::pandoc.image("_data_raw/img/ca-multilevel_3.png")
+```
+
+# MCA: example plot
+
+```{r}
+#| results: asis
+pander::pandoc.image("_data_raw/img/ca-multilevel_4.png")
+```
+
+# Summary
+
+```{r}
+#| results: asis
+pander::pandoc.image("_data_raw/img/summary.png")
+```
+
+
+
+
+
