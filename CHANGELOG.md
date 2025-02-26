@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Patch (v1.0.1): Miguel Rodo (2025-02-26 11:46:07)
+  - Tweak steup
 - **Major** (v1.0.0): Miguel Rodo (2025-02-26 11:42:36)
   - Start with PCA slides for 2025
 

@@ -7,7 +7,7 @@
   "codeRepository": "https://github.com/MiguelRodo/Slides23RodoHonsMult/",
   "issueTracker": "https://github.com/MiguelRodo/Slides23RodoHonsMult/issues",
   "license": "{{ License }}",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -33,7 +33,7 @@
   "softwareRequirements": {
     "SystemRequirements": null
   },
-  "fileSize": "2165.551KB",
+  "fileSize": "1325.402KB",
   "citation": [
     {
       "@type": "CreativeWork",
@@ -41,7 +41,8 @@
         {
           "@type": "Person",
           "givenName": "Miguel",
-          "familyName": "Rodo"
+          "familyName": "Rodo",
+          "email": "miguel.rodo@uct.ac.za"
         }
       ],
       "name": "Slides23RodoHonsMult: Slides for statistics honours multivariate course",
