@@ -9,6 +9,8 @@
 # Start of projr section: do not edit by hand (until `# End of projr section`)
 ^_raw/img/2024/
 ^_raw/img/2024$
+^_raw/img/2025/
+^_raw/img/2025$
 ^_reference/
 ^_reference$
 ^_tmp/
@@ -24,8 +26,6 @@
 ^CHANGELOG\.md$
 ^codemeta\.json$
 ^manifest\.csv$
-^QAHonsMultRegGranular\.aux$
-^QAHonsMultRegGranular\.pdf$
 ^SlidesHonsMultL7PCA\.pdf/
 ^SlidesHonsMultL7PCA\.pdf$
 # End of projr section

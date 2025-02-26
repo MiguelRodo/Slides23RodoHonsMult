@@ -1,6 +1,8 @@
 directories:
   raw-img-2024:
     path: _raw/img/2024
+  raw-img-2025:
+    path: _raw/img/2025
   raw-docs:
     path: _reference
   cache:
@@ -14,11 +16,13 @@ build:
     latest-2025:
       content:
       - raw-img-2024
+      - raw-img-2025
       - docs
       - output
     archive-2025:
       content:
       - raw-img-2024
+      - raw-img-2025
       - output
       structure: archive
 
