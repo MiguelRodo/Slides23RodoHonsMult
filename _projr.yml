@@ -1,6 +1,8 @@
 directories:
-  data-raw:
-    path: _data_raw
+  raw-img-2024:
+    path: _raw/img/2024
+  raw-docs:
+    path: _reference
   cache:
     path: _tmp
   output:
@@ -9,10 +11,14 @@ directories:
     path: docs
 build:
   github:
-    latest-2024:
+    latest-2025:
       content:
-      - data-raw
+      - raw-img-2024
       - docs
       - output
-      structure: latest
+    archive-2025:
+      content:
+      - raw-img-2024
+      - output
+      structure: archive
 

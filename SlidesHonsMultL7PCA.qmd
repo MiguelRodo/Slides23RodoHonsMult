@@ -1,8 +1,7 @@
 ---
 title: Principal component analysis
-subtitle: Modern multivariate statistical techniques
 author: Miguel Rodo
-date: "2024-04-04"
+date: "2025-02-26"
 bibliography: zotero.bib
 format:
   beamer:
@@ -1864,7 +1863,7 @@ The rows of $\symbf{Y}$ are the scores (representing the observations) and the r
 
 \centering
 
-\includegraphics[width=0.65\textwidth]{_data_raw/img/biplot.png}
+\includegraphics[width=0.65\textwidth]{_raw/img/2024/biplot.png}
 
 # Resources
 

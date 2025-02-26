@@ -9,10 +9,14 @@ SCRATCH.qmd
 Test.qmd
 
 # Start of projr section: do not edit by hand (until `# End of projr section`)
-_data_raw/**
+_raw/img/2024/**
+_reference/**
 _tmp/**
 _output/**
 docs/**
+QAHonsMultRegGranular.aux
+QAHonsMultRegGranular.pdf
+SlidesHonsMultL7PCA.pdf/**
 # End of projr section
 
 *_files
