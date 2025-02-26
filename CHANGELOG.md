@@ -1,5 +1,10 @@
 # CHANGELOG
 
+- **Major** (v1.0.0): Miguel Rodo (2025-02-26 11:42:36)
+  - Start with PCA slides for 2025
+
+___
+
 - Patch (v0.7.1): Miguel Julio Rodo (07:15:44)
   - Remove question to make total 65
 - *Minor* (v0.7.0): Miguel Julio Rodo (13:35:49)

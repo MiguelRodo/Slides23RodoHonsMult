@@ -4,17 +4,16 @@
   "identifier": "Slides23RodoHonsMult",
   "description": "Slides for statistics honours multivariate course",
   "name": "Slides23RodoHonsMult: Slides for statistics honours multivariate course",
-  "relatedLink": "https://github.com/MiguelRodo/Slides23RodoHonsMult/#readme",
-  "codeRepository": "https://github.com/MiguelRodo/Slides23RodoHonsMult",
+  "codeRepository": "https://github.com/MiguelRodo/Slides23RodoHonsMult/",
   "issueTracker": "https://github.com/MiguelRodo/Slides23RodoHonsMult/issues",
   "license": "{{ License }}",
-  "version": "0.0.0.1",
+  "version": "1.0.0",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.3.2 (2023-10-31)",
+  "runtimePlatform": "R version 4.4.1 (2024-06-14)",
   "author": [
     {
       "@type": "Person",
@@ -34,7 +33,7 @@
   "softwareRequirements": {
     "SystemRequirements": null
   },
-  "fileSize": "1.961KB",
+  "fileSize": "2165.551KB",
   "citation": [
     {
       "@type": "CreativeWork",
