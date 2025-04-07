@@ -431,6 +431,77 @@ $$
 - Principal components (the \(Y_i\)'s) may also be referred to as "scores."
 - The coefficient vectors \(\mathbf{a}_i\) may be referred to as "loadings" (algebraically) or "principal axes"/"principal directions" (geometrically).
 
+
+## Performing PCA using the eigen decomposition
+
+Consider the following variance-covariance matrix:
+
+```{r}
+# Generate the variance-covariance matrix
+vcov_mat <- matrix(
+  c(1, 0.9, 0.9, 0, 0, 0, 0,
+    0.9, 1, 0.9, 0, 0, 0, 0,
+    0.9, 0.9, 1, 0, 0, 0, 0,
+    0, 0, 0, 1, 0.9, 0.9, 0.9,
+    0, 0, 0, 0.9, 1, 0.9, 0.9,
+    0, 0, 0, 0.9, 0.9, 1, 0.9,
+    0, 0, 0, 0.9, 0.9, 0.9, 1),
+  byrow = TRUE,
+  nrow = 7
+)
+colnames(vcov_mat) <- paste0("V", 1:7)
+rownames(vcov_mat) <- paste0("V", 1:7)
+```
+
+The resulting matrix is:
+
+```{r}
+#| echo: false
+knitr::kable(vcov_mat)
+```
+
+Next, we apply the eigen decomposition to the variance-covariance matrix. This produces an object containing the eigenvalues and eigenvectors. For example:
+
+```{r}
+# Apply eigen decomposition
+eig_obj <- eigen(vcov_mat)
+```
+
+The eigenvectors are stored in the matrix below. We assign row names corresponding to the variables and column names corresponding to the principal components:
+
+```{r}
+eig_vec_mat <- eig_obj$vectors
+rownames(eig_vec_mat) <- paste0("V", 1:7)
+colnames(eig_vec_mat) <- paste0("PC", 1:7)
+```
+
+Printing the eigenvector matrix (rounded to 2 significant figures) gives:
+
+```{r}
+eig_vec_mat |> signif(2)
+```
+
+By the variance formula, these linear combinations have the following variances:
+
+```{r}
+# Compute the variances of the principal components
+(eig_vec_mat |> t()) %*%
+  vcov_mat %*%
+  (eig_vec_mat) |>
+  diag() |>
+  signif(2)
+```
+
+These values match the eigenvalues of the variance-covariance matrix, as expected from theorem 2:
+
+```{r}
+eig_obj$values |>
+  signif(2) |>
+  setNames(paste0("PC", 1:7))
+```
+
+Due to the structure of the correlations, the orthogonality constraint forces only two of the principal components to have meaningful variance. 
+
 ## PCA as rotation
 
 - PCA can be viewed as a rotation of the original variables into new axes (the principal components).
