@@ -683,3 +683,114 @@ cowplot::save_plot(
 #| echo: false
 knitr::include_graphics(path_p_height_weight_ex_2)
 ```
+
+## Theorem three: total variance
+
+Let $\mathbf{X}' = [X_1, X_2, \ldots, X_p]'$ be a random vector with covariance matrix $\mathbf{\Sigma}$ that has eigenvalue–eigenvector pairs $(\lambda_1, \mathbf{e}_1), \ldots, (\lambda_p, \mathbf{e}_p)$, ordered such that $\lambda_1 \ge \lambda_2 \ge \cdots \ge \lambda_p \ge 0$. Define the principal components $Y_i = \mathbf{e}_i'\mathbf{X}$ for $i = 1, \ldots, p$. Then, the sum of the variances of the original variables is equal to the sum of the eigenvalues of $\mathbf{\Sigma}$, which is also equal to the sum of the variances of the principal components:
+
+$$
+\sum_{i=1}^{p} \sigma_{ii} = \sum_{i=1}^{p} \text{Var}(X_i) = \sum_{i=1}^{p} \lambda_i = \sum_{i=1}^{p} \text{Var}(Y_i).
+$$
+
+### Proof of theorem three
+
+The trace of the covariance matrix $\mathbf{\Sigma}$ is the sum of the variances of the original variables. Since $\mathbf{\Sigma}$ can be decomposed as
+$$
+\mathbf{\Sigma} = \mathbf{PDP}',
+$$
+where $\mathbf{D}$ is the diagonal matrix of eigenvalues and $\mathbf{P}$ is the matrix of eigenvectors, we have
+
+$$
+\text{trace}(\mathbf{\Sigma}) = \text{trace}(\mathbf{PDP}') = \text{trace}(\mathbf{D}) = \sum_{i=1}^{p} \lambda_i = \sum_{i=1}^{p} \text{Var}(Y_i).
+$$
+
+### Contribution per component
+
+Theorem two showed that
+
+$$
+\text{trace}(\mathbf{\Sigma}) = \sum \lambda_i = \sum \text{Var}(Y_i).
+$$
+
+This implies that the proportion of the total variance due to the $k^{\text{th}}$ principal component is
+
+$$
+\frac{\lambda_k}{\sum \lambda_i},\quad k=1,\ldots,p,
+$$
+
+and, because the principal components are uncorrelated, the proportion of variance accounted for by the first $r$ principal components is given by
+
+$$
+\frac{\sum_{i=1}^r \lambda_i}{\sum \lambda_i}.
+$$
+
+#### The scree plot
+
+The scree plot is a graphical representation of the proportion of variance accounted for by each principal component. In this plot, the point $(i, \lambda_i/\sum_{j=1}^{p} \lambda_j)$ is plotted for $i = 1, \ldots, p$. Typically, one looks for the "elbow" in the plot, which indicates the number of principal components to retain. Beyond this point, each additional principal component captures little additional variation.
+
+For example, the following R code generates a scree plot:
+
+```r
+plot_tbl <- tibble::tibble(
+  pc = 1:7,
+  prop_var = eig_obj$values / sum(eig_obj$values)
+)
+plot_tbl_point <- purrr::map_df(
+  seq(5.5, 5.502, length.out = 9), function(x) {
+    plot_tbl |>
+      dplyr::filter(pc == 2) |>
+      dplyr::mutate(size_point = x)
+  }
+)
+p <-  ggplot(
+  data = plot_tbl
+  ) +
+    geom_line(
+      aes(x = pc, y = prop_var),
+      stat = "identity",
+      colour = "dodgerblue"
+    ) +
+    geom_point(
+      data = plot_tbl_point |> dplyr::slice(5:9),
+      aes(x = pc, y = prop_var, size = size_point),
+      colour = "mediumseagreen",
+      alpha = 0.9,
+      shape = 1,
+      show.legend = FALSE
+    ) +
+    geom_point(
+      aes(x = pc, y = prop_var),
+      colour = "dodgerblue",
+      alpha = 0.9,
+      size = 1.5
+    ) +
+    labs(
+      x = "Principal component index",
+      y = "Proportion of variance"
+    ) +
+    cowplot::theme_cowplot() +
+    cowplot::background_grid(major = "xy") +
+    theme(
+      panel.background = element_rect(fill = "white"),
+      plot.background = element_rect(fill = "white")
+    ) +
+    scale_x_continuous(
+      breaks = 1:7
+    )
+path_p_scree <- projr::projr_path_get("cache", "fig", "p-scree.pdf")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_scree,
+  units = "cm",
+  base_height = 7,
+  base_width = 8 * (7/6)
+)
+```
+
+The generated scree plot is then included as follows:
+
+```r
+knitr::include_graphics(path_p_scree)
+```
+
+This plot provides a visual guide to selecting the number of principal components that capture the majority of the variance, reinforcing the numerical insights obtained from the eigen decomposition.
