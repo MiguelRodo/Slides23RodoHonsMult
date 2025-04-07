@@ -26,7 +26,9 @@
 ^CHANGELOG\.md$
 ^codemeta\.json$
 ^manifest\.csv$
-^SlidesHonsMultL7PCA\.pdf/
-^SlidesHonsMultL7PCA\.pdf$
+^SlidesHonsMultL7PCA_files/
+^SlidesHonsMultL7PCA_files$
+^SlidesHonsMultL7PCA\.html/
+^SlidesHonsMultL7PCA\.html$
 # End of projr section
 
