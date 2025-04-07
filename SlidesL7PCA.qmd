@@ -1,5 +1,5 @@
 ---
-title: Principal component analysis
+title: Principal Component Analysis
 author: Miguel Rodo
 date: "2025-04-07"
 bibliography: zotero.bib
@@ -26,149 +26,148 @@ for (i in seq_along(fn_vec)) {
 ## Context
 
 - Multivariate analysis addresses situations where many variables make analysis difficult.
-- Example multivariate analysis: Meteorologists analyze temperature, humidity, wind speed, and other variables to understand weather patterns.
-  - Typical questions:
+- **Example:** Meteorologists analyze temperature, humidity, wind speed, and other variables to understand weather patterns.
+  - Typical questions include:
     - Which variables are correlated?
     - Can we predict rainfall from these variables?
-    - What variables distinguish clearly between weather systems?
+    - What variables clearly distinguish between different weather systems?
 
-### Common issues in multivariate analysis
+### Common Issues in Multivariate Analysis
 
-- **Exploratory data analysis:**
+- **Exploratory Data Analysis:**
   - With a few variables, pairwise scatterplots are easy.
-  - With many variables (e.g. 1000), scatterplots become impractical.
+  - With many variables (e.g., 1000), scatterplots become impractical.
 
-- **Identifying correlated variables:**
-  - Correlation heatmaps quickly become cluttered as variable count increases.
-  - Effective interpretation requires summarisation methods or smarter organisation.
+- **Identifying Correlated Variables:**
+  - Correlation heatmaps quickly become cluttered as the number of variables increases.
+  - Effective interpretation requires summarization methods or smarter organization.
 
-- **Excess explanatory variables:**
-  - More explanatory variables than observations:
-    - Models can't be fitted (identifiability issue).
-    - Models may take too long or overfit.
-    - Interpretation becomes overly complex.
+- **Excess Explanatory Variables:**
+  - Having more explanatory variables than observations leads to:
+    - Models that cannot be fitted (identifiability issues).
+    - Models that may take too long to compute or overfit.
+    - Overly complex interpretation.
 
-- **Correlated explanatory variables:**
+- **Correlated Explanatory Variables:**
   - Highly correlated variables produce unstable parameter estimates.
-  - Larger datasets increase the likelihood of correlated variables.
+  - Larger datasets increase the likelihood of encountering correlated variables.
 
-- **Multiple dependent variables:**
-  - Multivariate regression may increase accuracy and robustness.
-  - However, such models require specialised methods and interpretations.
+- **Multiple Dependent Variables:**
+  - Multivariate regression can increase accuracy and robustness.
+  - However, such models require specialized methods and interpretations.
 
+## Types of Multivariate Analyses
 
-## Types of multivariate analyses
+- **Analysing Relationships Among Explanatory Variables ($\mathbf{X}\sim\mathbf{X}$):**
+  - Methods include PCA, factor analysis, and correspondence analysis (for count data).
+  - The aim is to identify groups of correlated variables.
 
-- **Analysing relationships among explanatory variables ($\symbf{X}\sim\symbf{X}$):**
-  - PCA, factor analysis, correspondence analysis (for count data)
-  - Aim: identify groups of correlated variables.
+- **Analysing Relationships Between Dependent and Explanatory Variables ($\mathbf{Y}\sim\mathbf{X}$):**
+  - Methods include multivariate regression, canonical correlation analysis, discriminant analysis, and classification.
 
-- **Analysing relationships between dependent and explanatory variables ($\symbf{Y}\sim\symbf{X}$):**
-  - Multivariate regression, canonical correlation analysis, discriminant analysis, classification.
+### Unifying Theme
 
-### Unifying theme
-
-The unifying theme of the techniques we'll discuss is *linearity*:
+The unifying theme of the techniques discussed is *linearity*:
 
 $$
 a_1 x_1 + a_2 x_2 + \dots + a_p x_p
 $$
 
-- Linear combinations of variables are the basis of many multivariate methods. When people think "multivariate analysis", this is often what they mean.
-- Linear techniques were traditionally the only ones available (due to computational constraints), but they are still widely used for the following reasons:
+- Linear combinations of variables form the basis of many multivariate methods. When people refer to "multivariate analysis," they are often referring to such linear methods.
+- Linear techniques were traditionally the only ones available (due to computational constraints), yet they remain widely used because:
   - They are simple to understand and interpret.
   - They are fast to compute.
   - They suffer less from fragility due to excessive flexibility.
-- It is also important to understand the foundational approaches, as they are often used as building blocks for more complex methods. More complex methods are also often discussed in relation to linear methods, so it is important to understand the linear methods first.
+- Understanding these foundational approaches is crucial, as they often serve as building blocks for more complex methods. More advanced techniques are frequently discussed in relation to linear methods, making it important to grasp the linear methods first.
 
-## Principal component analysis
+## Principal Component Analysis
 
-- Principal component analysis (PCA) is a linear method for reducing the dimensionality of data.
-- The easiest way to think about PCA is that we want to create a smaller number of new variables that have as much information as possible about the original variables.
+- Principal Component Analysis (PCA) is a linear method for reducing the dimensionality of data.
+- The simplest way to think about PCA is that we seek to create a smaller number of new variables that retain as much information as possible about the original variables.
 
-### Choosing the linear combinations
+### Choosing the Linear Combinations
 
-- Consider a random vector $\symbf{X}\in\mathbb{R}^p$ with zero mean and covariance matrix $\symbf{\Sigma}$.
-- Goal: reduce $p$ variables to fewer variables while keeping most information.
-- First principal component ($Y_1$) is a linear combination of original variables:
+- Consider a random vector $\mathbf{X} \in \mathbb{R}^p$ with zero mean and covariance matrix $\mathbf{\Sigma}$.
+- **Goal:** Reduce $p$ variables to fewer variables while retaining most information.
+- The first principal component ($Y_1$) is a linear combination of the original variables:
 
 $$
-Y_1 = \symbf{a}_1'\symbf{X} = a_{1}^{(1)}X_1 + a_{2}^{(1)}X_2 + \dots + a_{p}^{(1)}X_p
+Y_1 = \mathbf{a}_1'\mathbf{X} = a_{1}^{(1)}X_1 + a_{2}^{(1)}X_2 + \dots + a_{p}^{(1)}X_p
 $$
 
-- How do we select $\symbf{a}_1$?  
-  - Choose $\symbf{a}_1$ to maximise the variance of $Y_1$.
+- **How to select $\mathbf{a}_1$?**  
+  - Choose $\mathbf{a}_1$ to maximize the variance of $Y_1$.
 
-## Why maximise variance?
+## Why Maximize Variance?
 
-### Minimising variance loses information
+### Minimizing Variance Loses Information
 
-- Consider choosing a linear combination with minimal variance:
-  - If a variable has zero variance, all observations are identical.
-  - This provides no predictive or discriminative information.
+- A linear combination with minimal variance is not useful; for example, if a variable has zero variance, all observations are identical, providing no predictive or discriminative information.
 
-### Low variance implies low information
+### Low Variance Implies Low Information
 
 - Variables with minimal variation are less informative:
-  - Example: Height (1.79–1.81 m) vs. weight (50–100 kg).
-  - Height provides little practical information compared to weight.
+  - For instance, consider height (1.79–1.81 m) versus weight (50–100 kg): height may provide little practical information compared to weight.
 
-### Statistical benefits of high variance
+### Statistical Benefits of High Variance
 
-- Regression coefficients' precision improves with higher variance predictors.
-- Larger variance → lower standard errors → more precise estimation.
+- Higher variance in predictors improves the precision of regression coefficients.
+- Larger variance leads to lower standard errors and more precise estimation.
 
-### Leveraging covariance structure
+### Leveraging Covariance Structure
 
-- The variance of linear combinations:
+- The variance of linear combinations is given by:
+  
 $$
-\mathrm{Var}(a_1X_1 + a_2X_2) = a_1^2\mathrm{Var}(X_1) + a_2^2\mathrm{Var}(X_2) + 2a_1a_2\mathrm{Cov}(X_1,X_2)
+\mathrm{Var}(a_1X_1 + a_2X_2) = a_1^2\,\mathrm{Var}(X_1) + a_2^2\,\mathrm{Var}(X_2) + 2a_1a_2\,\mathrm{Cov}(X_1,X_2)
 $$
-- Positively correlated variables given positive weights increase combined variance.
-- PCA exploits correlations by assigning larger weights to correlated variables.
 
-### Efficient representation of information
+- Positively correlated variables with positive weights increase the combined variance.
+- PCA exploits these correlations by assigning larger weights to correlated variables.
 
-- PCA reduces dimensionality (from $p$ to $r<p$) with minimal information loss.
-- Specifically, PCA minimises the reconstruction error (least squares sense).
+### Efficient Representation of Information
 
-### Joint display of variables and observations
+- PCA reduces dimensionality (from $p$ to $r<p$) while minimizing information loss.
+- Specifically, PCA minimizes the reconstruction error (in a least squares sense).
 
-- Standard scatterplots limit visualisation to two variables.
-- Choosing the linear combinations to maximise variation leads to a low-dimensional plot displaying multiple variables simultaneously, aiding interpretation.
+### Joint Display of Variables and Observations
 
-## Key advantages of PCA
+- Standard scatterplots limit visualization to two variables.
+- By choosing linear combinations that maximize variation, PCA creates a low-dimensional plot that displays multiple variables simultaneously, aiding interpretation.
 
-- Selects informative directions capturing meaningful differences.
+## Key Advantages of PCA
+
+- Selects informative directions that capture meaningful differences.
 - Enhances statistical stability and precision.
-- Reflects underlying correlation structure.
-- Enables efficient data compression and visualisation.
-- Minimises information loss during dimensionality reduction.
+- Reflects the underlying correlation structure.
+- Enables efficient data compression and visualization.
+- Minimizes information loss during dimensionality reduction.
 
-### Practical examples of PCA
+### Practical Examples of PCA
 
-- **Finance:** Reducing correlated stock returns for diversification.
-- **Image compression:** Representing images with fewer, informative pixels.
-- **Genomics:** Finding gene-expression patterns indicating biological processes.
+- **Finance:** Reducing correlated stock returns to assist in diversification.
+- **Image Compression:** Representing images with fewer, informative pixels.
+- **Genomics:** Identifying gene-expression patterns that indicate biological processes.
 
-## Maximising variance mathematically
+## Maximizing Variance Mathematically
 
-Suppose that $\symbf{X}$ is a $p$-dimensional random vector with zero mean and covariance matrix $\symbf{\Sigma}$.
-We want to find the linear combination of the variables that maximises the variance.
+Suppose $\mathbf{X}$ is a $p$-dimensional random vector with zero mean and covariance matrix $\mathbf{\Sigma}$. We aim to find the linear combination that maximizes the variance.
 
-### Objective function for the first principal component
+### Objective Function for the First Principal Component
 
-- The objective for choosing the first principal component:
+- The objective for choosing the first principal component is:
+
 $$
-\symbf{a}_1 = \underset{\symbf{a}_1}{\arg\max}\; \symbf{a}_1'\symbf{\Sigma}\symbf{a}_1
+\mathbf{a}_1 = \underset{\mathbf{a}_1}{\arg\max}\; \mathbf{a}_1'\mathbf{\Sigma}\mathbf{a}_1
 $$
-- Issue: Without constraints, this variance is unbounded.
-- Solution: Restrict $\symbf{a}_1$ to be a unit vector ($\symbf{a}_1'\symbf{a}_1=1$).
 
-### Height and weight example
+- **Issue:** Without constraints, the variance is unbounded.
+- **Solution:** Restrict $\mathbf{a}_1$ to be a unit vector ($\mathbf{a}_1'\mathbf{a}_1=1$).
 
-- Suppose we have a dataset with two correlated variables, perhaps weight and height.
-- Then, the scatterplot of these may look something like this:
+### Height and Weight Example
+
+- Suppose we have a dataset with two correlated variables, such as weight and height.
+- The scatterplot of these may look like the following:
 
 ```{r}
 #| include: false
@@ -226,7 +225,10 @@ knitr::include_graphics(path_p_height_weight)
 
 - The first PCA combines these two variables into one: $a_1 \times \text{height} + a_2 \times \text{weight}$.
 - For example, suppose we have the point $[1.2, 0.3]$:
-  - If we set $\symbf{a}' = [1/\sqrt{2}, 1/\sqrt{2}]$, then the new variable is $1/\sqrt{2} \times 1.2 + 1/\sqrt{2} \times 0.3$.
+  - If we set $\mathbf{a} = [1/\sqrt{2}, 1/\sqrt{2}]$, then the new variable is 
+    \[
+    \frac{1}{\sqrt{2}} \times 1.2 + \frac{1}{\sqrt{2}} \times 0.3.
+    \]
   - We go from the matrix of variables
 
 ```{r}
@@ -239,172 +241,158 @@ tibble::tibble(height = 1.2, weight = 0.3) |> as.data.frame()
 tibble::tibble(size = 1.2 / sqrt(2) + 0.3 / sqrt(2)) |> as.data.frame()
 ```
 
-- The first principal component can be viewed as the "size" of the observation, as height and weight contribute equally to the new variable and it increases with both height and weight.
+- The first principal component can be viewed as representing the "size" of the observation, as both height and weight contribute equally to the new variable, which increases with both.
 
-## Selecting additional principal components
+## Selecting Additional Principal Components
 
-- One component typically insufficient.
+- One component is typically insufficient.
 
-### Objective for second principal component
+### Objective for the Second Principal Component
 
-- Maximising variance again without constraints yields identical results.
-- Solution: Require second component ($\symbf{a}_2$) orthogonal to first ($\symbf{a}_1'\symbf{a}_2=0$):
+- Maximizing variance without constraints again would yield the same direction.
+- **Solution:** Require the second component ($\mathbf{a}_2$) to be orthogonal to the first ($\mathbf{a}_1'\mathbf{a}_2=0$):
+
 $$
-\symbf{a}_2 = \underset{\symbf{a}_2}{\arg\max}\; \symbf{a}_2'\symbf{\Sigma}\symbf{a}_2
+\mathbf{a}_2 = \underset{\mathbf{a}_2}{\arg\max}\; \mathbf{a}_2'\mathbf{\Sigma}\mathbf{a}_2
 $$
+
 subject to:
+
 $$
-\symbf{a}_2'\symbf{a}_2=1,\quad \symbf{a}_2'\symbf{a}_1=0
+\mathbf{a}_2'\mathbf{a}_2=1,\quad \mathbf{a}_2'\mathbf{a}_1=0.
 $$
 
-#### Height and weight data
+#### Height and Weight Data
 
-- If the first principal component is $[1/\sqrt{2}, 1/\sqrt{2}]$, the second principal component has to be $[1/\sqrt{2}, -1/\sqrt{2}]$.
-  - This captures the "shape" of the observation, as taller and thinner people have higher values, while shorter and wider people have lower values.
-- For the example point of $[1.2, 0.3]$, the second principal component is $1/\sqrt{2} \times 1.2 - 1/\sqrt{2} \times 0.3= 0.64$.
+- If the first principal component is $[1/\sqrt{2}, 1/\sqrt{2}]$, then the second principal component must be $[1/\sqrt{2}, -1/\sqrt{2}]$.
+  - This captures the "shape" of the observation, as taller and thinner individuals have higher values, while shorter and wider individuals have lower values.
+- For the example point $[1.2, 0.3]$, the second principal component is calculated as:
+  
+  \[
+  \frac{1}{\sqrt{2}} \times 1.2 - \frac{1}{\sqrt{2}} \times 0.3 = 0.64.
+  \]
 
-### General objective for $k$-th principal component
+### General Objective for the $k$-th Principal Component
 
-- Generalise further: $k$-th component orthogonal to all previous components.
-- Optimisation:
+- Generalizing further, the $k$-th component is required to be orthogonal to all previous components.
+- The optimization becomes:
+
 $$
-\symbf{a}_k = \underset{\symbf{a}_k}{\arg\max}\; \symbf{a}_k'\symbf{\Sigma}\symbf{a}_k
+\mathbf{a}_k = \underset{\mathbf{a}_k}{\arg\max}\; \mathbf{a}_k'\mathbf{\Sigma}\mathbf{a}_k
 $$
+
 subject to:
+
 $$
-\symbf{a}_k'\symbf{a}_k=1,\quad \symbf{a}_k'\symbf{a}_j=0,\; \text{for all } j<k
+\mathbf{a}_k'\mathbf{a}_k=1,\quad \mathbf{a}_k'\mathbf{a}_j=0,\; \text{for all } j<k.
 $$
 
-## How many principal components?
+## How Many Principal Components?
 
-- At most, as many components as original variables ($p$).
+- At most, there can be as many components as original variables ($p$).
 - Later components capture progressively less variance.
 - Components with zero variance (due to zero eigenvalues) indicate redundancy.
-- Typically, select a small number of principal components that explain most variance.
+- Typically, one selects a small number of principal components that explain most of the variance.
 
-## Theorem 1: Maximisation of quadratic forms for points on the unit sphere
+## Theorem 1: Maximization of Quadratic Forms for Points on the Unit Sphere
 
-Let $\symbf{B}:p\times p$ be a positive semi-definite matrix with the $i$-th largest eigenvalue $\lambda_i$ and associated eigenvector $\symbf{e}_i$. Then we have that 
-
-$$
-\max_{\symbf{x}\neq \symbf{0}} \frac{\symbf{x}'\symbf{B}\symbf{x}}{\symbf{x}'\symbf{x}}=\lambda_1 \; (\mathrm{attained}\; \mathrm{when} \; \symbf{x}=\symbf{e}_1)
-$$
-
-and that
+Let $\mathbf{B}$ be a $p \times p$ positive semi-definite matrix with the $i$-th largest eigenvalue $\lambda_i$ and associated eigenvector $\mathbf{e}_i$. Then:
 
 $$
-\max_{\symbf{x}\neq \symbf{0},\symbf{x}\perp \symbf{e}_1, \symbf{e}_2, \ldots, \symbf{e}_{i-1}} \frac{\symbf{x}'\symbf{B}\symbf{x}}{\symbf{x}'\symbf{x}}=\lambda_i \; (\mathrm{attained}\; \mathrm{when} \; \symbf{x}=\symbf{e}_{i})
+\max_{\mathbf{x}\neq \mathbf{0}} \frac{\mathbf{x}'\mathbf{B}\mathbf{x}}{\mathbf{x}'\mathbf{x}} = \lambda_1 \quad (\text{attained when } \mathbf{x}=\mathbf{e}_1)
 $$
 
-for $i\in\{2,3, \ldots, p\}$, where $\lambda_i$ is the $i$-th largest eigenvalue and $\symbf{e}_i$ is the associated eigenvector.
+and
+
+$$
+\max_{\mathbf{x}\neq \mathbf{0},\, \mathbf{x}\perp \mathbf{e}_1, \mathbf{e}_2, \ldots, \mathbf{e}_{i-1}} \frac{\mathbf{x}'\mathbf{B}\mathbf{x}}{\mathbf{x}'\mathbf{x}} = \lambda_i \quad (\text{attained when } \mathbf{x}=\mathbf{e}_{i})
+$$
+
+for $i\in\{2,3, \ldots, p\}$.
 
 ### Proof of Theorem 1 {.smaller}
 
-Let $\symbf{P}:p\times p$ be the orthogonal matrix whose $i$-th column is the $i$-th eigenvector and $\Lambda$ be the diagonal matrix with ordered eigenvalues along the diagonal. Let $\symbf{B}^{1/2}=\symbf{P}\symbf{\Lambda}^{1/2}\symbf{P}'$ and $\symbf{y}=\symbf{P}'\symbf{x}$.
-
-First, we show that the quadratic form can never be larger than $\lambda_1$:
-
-\begin{align*} 
-\frac{\symbf{x}'\symbf{B}\symbf{x}}{\symbf{x}'\symbf{x}} &=  \frac{\symbf{x}'\symbf{B}^{1/2}\symbf{B}^{1/2}\symbf{x}}{\symbf{x}'\symbf{P}\symbf{P}'\symbf{x}} 
-= \frac{\symbf{x}'\symbf{P}\symbf{\Lambda}^{1/2}\symbf{P}'\symbf{P}\symbf{\Lambda}^{1/2}\symbf{P}'\symbf{x}}{\symbf{y}'\symbf{y}}
-=  \frac{\symbf{y}'\symbf{\Lambda}\symbf{y}}{\symbf{y}'\symbf{y}} \\ 
- &=  \frac{\sum_{i=1}^p\lambda_iy_i^2}{\sum_{i=1}^py_i^2} 
- \leq \lambda_1 \frac{\sum_{i=1}^py_i^2}{\sum_{i=1}^py_i^2}
- = \lambda_1 
-\end{align*}
-
-Now we show that this is actually attained for $\symbf{x}=\symbf{e}_1$. Since eigenvectors are by convention length 1, we consider $\symbf{e}_1'\symbf{B}\symbf{e}_1$.
-
-First, let $\symbf{c}_i$ be the unit vector with a 1 in the $i$-th position (and 0's everywhere else).
-
-Expanding $\symbf{B}$ by the eigen decomposition, we have that
-
-$$
-\symbf{e}_1'\symbf{B}\symbf{e}_1=\symbf{e}_1'\symbf{P}\symbf{\Lambda}\symbf{P}'\symbf{e}_1.
 $$
 
-Since $B$ is symmetric, the eigenvectors can be chosen orthogonal.
-We do so, which implies that $\symbf{e}_i'P=\symbf{c}_i'$, where $\symbf{c}_i$ is the unit vector with a 1 in the $i$-th position (and 0 everwhere else).
-Consequently,
+1. First, note that:
+   
+   \[
+   \frac{\mathbf{x}'\mathbf{B}\mathbf{x}}{\mathbf{x}'\mathbf{x}} = \frac{\mathbf{y}'\Lambda\mathbf{y}}{\mathbf{y}'\mathbf{y}} = \frac{\sum_{i=1}^p \lambda_i y_i^2}{\sum_{i=1}^p y_i^2} \leq \lambda_1.
+   \]
+
+2. This maximum is attained for $\mathbf{x}=\mathbf{e}_1$ because:
+   
+   \[
+   \mathbf{e}_1'\mathbf{B}\mathbf{e}_1 = \lambda_1.
+   \]
+
+3. For $\mathbf{x}$ orthogonal to $\mathbf{e}_1, \mathbf{e}_2, \ldots, \mathbf{e}_{i-1}$, the first $i-1$ entries of $\mathbf{y}$ are zero, and therefore:
+
+   \[
+   \frac{\mathbf{x}'\mathbf{B}\mathbf{x}}{\mathbf{x}'\mathbf{x}} = \frac{\sum_{j=i}^p \lambda_j y_j^2}{\sum_{j=i}^p y_j^2} \leq \lambda_i.
+   \]
+
+   This maximum is attained for $\mathbf{x}=\mathbf{e}_i$.
+
+### Connection with Principal Components
+
+- Theorem 1 applies by setting $\mathbf{B}=\mathbf{\Sigma}$, the covariance matrix.
+- Since 
+  \[
+  \frac{\mathbf{x}'\mathbf{\Sigma}\mathbf{x}}{\mathbf{x}'\mathbf{x}} = \left(\frac{\mathbf{x}}{\|\mathbf{x}\|}\right)'\mathbf{\Sigma}\left(\frac{\mathbf{x}}{\|\mathbf{x}\|}\right),
+  \]
+  the constraint $\|\mathbf{x}\|=1$ is implicit.
+- Thus, by applying Theorem 1 in a probabilistic context, we relate the eigen-decomposition of $\mathbf{\Sigma}$ to the variance of the principal components.
+
+## Theorem 2: Selecting Principal Components
+
+Let $\mathbf{X}$ be a $p \times 1$ random vector with variance-covariance matrix $\mathbf{\Sigma}$, whose $i$-th largest eigenvalue is $\lambda_i$ with associated eigenvector $\mathbf{e}_i$. Then, the $i$-th principal component is defined as:
 
 $$
-\symbf{e}_i'\symbf{P}\symbf{\Lambda}\symbf{P}'\symbf{e}_i
-= \symbf{c}_i'\symbf{\Lambda}\symbf{c}_i=\lambda_i,
+Y_i = \mathbf{e}_i'\mathbf{X},
 $$
 
-and so $\symbf{e}_1'\symbf{P}\symbf{\Lambda}\symbf{P}'\symbf{e}_1=\lambda_1$.
+which implies:
 
-Now, we consider the case where $\symbf{x}$ is orthogonal to $\symbf{e}_1, \symbf{e}_2, \ldots, \symbf{e}_{i-1}$.
-
-Each component in the vector $\symbf{y}$ is the dot product of $x$ and an eigenvector $\symbf{e}_i$.
-Since we choose $x$ orthogonal to the first $i-1$ eigenvectors, the first $i-1$ entries of $\symbf{y}$ are zero.
-
-Returning to considering the quadratic form, we have that
-
-\begin{align}
-\frac{\symbf{x}'\symbf{B}\symbf{x}}{\symbf{x}'\symbf{x}} 
-&= \frac{\sum_{j=1}^p\lambda_jy_j^2}{\sum_{j=1}^py_j^2} \\
-&= \frac{\sum_{j=i}^p\lambda_jy_j^2}{\sum_{j=i}^py_j^2} 
- \leq \lambda_i \frac{\sum_{j=i}^py_j^2}{\sum_{j=i}^py_j^2} 
- = \lambda_i
-\end{align}
-
-Using the same argument as before, we can show that this is actually attained for $\symbf{x}=\symbf{e}_i$.
-
-### Connection with principal components
-
-- Theorem 1 has already done the heavy lifting, as we can simply set $\symbf{B}=\symbf{\Sigma}$.
-  - To see this, consider that $\frac{\symbf{x}'\symbf{\Sigma}\symbf{x}}{\symbf{x}'\symbf{x}}=\frac{\symbf{x}'\symbf{\Sigma}\symbf{x}}{||\symbf{x}||^2} = (\symbf{x}/||\symbf{x}||)'\symbf{\Sigma}(\symbf{x}/||\symbf{x}||)$, so implicitly the constraint $||\symbf{x}||=1$ is already present.
-- All that's left to do is place Theorem 1 in a probabilistic context, and relate it to the variance and covariance of linear combinations of a random vector.
-
-## Theorem 2: Selecting principal components
-
-Let $\symbf{X}:\symbf{p}\times 1$ be the random vector with variance-covariance matirx $\symbf{\Sigma}:p\times p$, which has the $i$-th largest eigenvalue as $\lambda_i$ and associated eigenvector $\symbf{e}_i$.
-
-Then the $i$-th principal component (defined as before) is given by 
-
-$$
-Y_i = \symbf{e}_i'\symbf{X},
-$$
-
-implying that
-
-\begin{align*}
-\mathrm{Var}[Y_i] &= \lambda_i \;\forall \; i \in \{1,2, \ldots, p\}, \; \mathrm{and} \\
-\mathrm{Cov}[Y_i, Y_j] &= 0 \; \mathrm{for} \; i\neq j.
-\end{align*}
+\[
+\mathrm{Var}(Y_i) = \lambda_i \quad \text{for } i \in \{1,2, \ldots, p\},
+\]
+and
+\[
+\mathrm{Cov}(Y_i, Y_j) = 0 \quad \text{for } i\neq j.
+\]
 
 ### Proof of Theorem 2
 
-From Theorem 1, we know that 
+- From Theorem 1:
+  
+  \[
+  \max_{\mathbf{x}} \frac{\mathbf{x}'\mathbf{\Sigma}\mathbf{x}}{\mathbf{x}'\mathbf{x}} = \lambda_1,
+  \]
+  
+  achieved by setting $\mathbf{x}=\mathbf{e}_1$. Since $\|\mathbf{e}_1\|=1$, it follows that:
+  
+  \[
+  \mathrm{Var}(Y_1) = \mathbf{e}_1'\mathbf{\Sigma}\mathbf{e}_1 = \lambda_1.
+  \]
 
-$$
-\max_{\symbf{x}} \frac{\symbf{x}'\symbf{\Sigma}\symbf{x}}{\symbf{x}'\symbf{x}} = \lambda_1,
-$$
+- A similar argument shows that for $i\ge 2$, the maximum variance $\lambda_i$ is attained when $\mathbf{a}_i=\mathbf{e}_i$ under the constraint of orthogonality with the previous eigenvectors.
+- Additionally, $\mathrm{Cov}(Y_i, Y_j) = \mathbf{e}_i'\mathbf{\Sigma}\mathbf{e}_j = 0$ for $i\neq j$.
 
-which we achieve by setting $\symbf{x}=\symbf{e}_1$.
+## A Note on Terminology
 
-Since $||\symbf{e}_1||=1$, $\frac{\symbf{e}_1'\symbf{\Sigma}\symbf{e}_1}{\symbf{e}_1'\symbf{e}_1}=\symbf{e}_1'\symbf{\Sigma}\symbf{e}_1$, which is equal to $\mathrm{Var}[\symbf{a}'\mathrm{X}]=\mathrm{Var}[Y_1]$ if we set $\symbf{a}=\symbf{e}_1$. This implies that $\symbf{a}=\symbf{e}_1$ maximises the variance, which is $\lambda_1$.
+- Principal components (the $Y_i$'s) may also be referred to as "scores."
+- The coefficient vectors $\mathbf{a}_i$ may be referred to as "loadings" (algebraically) or "principal axes"/"principal directions" (geometrically).
 
-Analagous reasoning shows that $\mathrm{Var}[\symbf{a}_i'\symbf{X}]$ has a maximum value $\lambda_i$ for $i\in\{2,3,\ldots,p\}$ that is attained when we set $\symbf{a}_i=\symbf{e}_i$, under the restriction $\symbf{a}_i$ to be orthogonal to $\symbf{a}_1, \symbf{a}_2, \ldots, \symbf{a}_{i-1}$.
+## PCA as Rotation
 
-For $i\neq j$, $\mathrm{Cov}[\symbf{e}_i'\symbf{X},\symbf{e}_j'\symbf{X}] = \symbf{e}_i'\symbf{\Sigma}\symbf{e}_j = 0$.
+- PCA can be viewed as a rotation of the original variables into new axes (the principal components).
+- The first principal component is the direction of maximum variance, and the second is orthogonal to the first, capturing the next highest variance.
+- This rotation simplifies the data structure and highlights the most important features.
 
-## A note on terminology
+### First Principal Component
 
-- Principal components (the $\symbf{Y}_i$'s) may also be referred to as "scores".
-- The coefficient vectors $\symbf{a}_i$ may also be referred to as "loadings" (thinking algebraically) or as "principal axes"/"principal directions" (thinking geometrically).
-
-## PCA as rotation
-
-- PCA can be viewed as a rotation of the original variables to new axes.
-- The new axes are the principal components, and the original variables are projected onto these new axes.
-- The first principal component is the direction of maximum variance, and the second principal component is orthogonal to the first and captures the next highest variance, and so on.
-- This rotation helps to simplify the data structure and highlight the most important features of the data.
-
-### First principal component
-
-- The first PC can be visualised as an axis along the vector $\symbf{a} = [1/\sqrt{2}, 1/\sqrt{2}]$, with the projection of the point $[1.2, 0.3]$ onto this axis being the new variable:
+- Visualize the first principal component as an axis along the vector $\symbf{a} = [1/\sqrt{2}, 1/\sqrt{2}]$, with the projection of the point $[1.2, 0.3]$ onto this axis forming the new variable:
 
 ```{r}
 set.seed(2106)
@@ -449,7 +437,7 @@ p <- ggplot(
     x = "Height",
     y = "Weight"
   ) +
-  geom_point(aes(x = height, y = weight), alpha = 0.1, col = "dodgerblue") +
+  geom_point(aes(x = height, y = weight), alpha = 0.85, col = "dodgerblue") +
   geom_point(
     data = plot_tbl_proj_ind,
     aes(x = height, y = weight), col = "mediumseagreen"
@@ -461,14 +449,14 @@ p <- ggplot(
   ) +
   geom_abline(
     data = plot_tbl_proj_ind |>
-      dplyr::mutate(slope = a2 / a1) ,
+      dplyr::mutate(slope = a2 / a1),
     aes(intercept = 0, slope = slope),
     col = "purple"
   ) +
   coord_cartesian(xlim = c(-2.5, 2.5), ylim = c(-2.5, 2.5)) +
   ggrepel::geom_text_repel(
     data = plot_tbl_proj_ind |>
-      dplyr::mutate(a1 = a1 |> signif(2), a2 = a2 |> signif(2)),
+      dplyr::mutate(a1 = signif(a1, 2), a2 = signif(a2, 2)),
     aes(x = a1, y = a2, label = proj),
     nudge_x = 0.1, nudge_y = 0.1
   )
@@ -488,13 +476,11 @@ cowplot::save_plot(
 knitr::include_graphics(path_p_height_weight_ex_1)
 ```
 
-- If we set $\symbf{a} = [1, 0]$, then the "new" variable is the height.
-- If we set $\symbf{a} = [0, 1]$, then the "new" variable is the weight.
+- If we set $\mathbf{a} = [1, 0]$, the new variable is simply the height.
+- If we set $\mathbf{a} = [0, 1]$, the new variable is simply the weight.
+- This illustrates that the original coordinates can themselves be seen as projections, helping to conceptualize the new axis $[1/\sqrt{2}, 1/\sqrt{2}]$.
 
-- The point of these last two is that original coordinates are, in a sense, themselves projections.
-- So, if we consider $[1, 0]$ and $[0, 1]$ as axes, then that helps to see why we can view $[1/\sqrt{2}, 1/\sqrt{2}]$ as a new axis.
-
-### Second principal component
+### Second Principal Component
 
 ```{r}
 set.seed(2106)
@@ -551,14 +537,14 @@ p <- ggplot(
   ) +
   geom_abline(
     data = plot_tbl_proj_ind |>
-      dplyr::mutate(slope = a2 / a1) ,
+      dplyr::mutate(slope = a2 / a1),
     aes(intercept = 0, slope = slope),
     col = "purple"
   ) +
   coord_cartesian(xlim = c(-2.5, 2.5), ylim = c(-2.5, 2.5)) +
   ggrepel::geom_text_repel(
     data = plot_tbl_proj_ind |>
-      dplyr::mutate(a1 = a1 |> signif(2), a2 = a2 |> signif(2)),
+      dplyr::mutate(a1 = signif(a1, 2), a2 = signif(a2, 2)),
     aes(x = a1, y = a2, label = proj),
     nudge_x = 0.1, nudge_y = 0.1
   )
@@ -577,3 +563,4 @@ cowplot::save_plot(
 #| echo: false
 knitr::include_graphics(path_p_height_weight_ex_2)
 ```
+
