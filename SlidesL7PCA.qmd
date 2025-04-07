@@ -54,7 +54,7 @@ for (i in seq_along(fn_vec)) {
 
 - **Multiple dependent variables:**
   - Multivariate regression can increase accuracy and robustness.
-  - However, such models require specialized methods and interpretations.
+  - However, such models require specialised methods and interpretations.
 
 ## Types of multivariate analyses
 
@@ -96,11 +96,11 @@ Y_1 = \mathbf{a}_1'\mathbf{X} = a_{1}^{(1)}X_1 + a_{2}^{(1)}X_2 + \dots + a_{p}^
 $$
 
 - **How to select $\mathbf{a}_1$?**  
-  - Choose $\mathbf{a}_1$ to maximize the variance of $Y_1$.
+  - Choose $\mathbf{a}_1$ to maximise the variance of $Y_1$.
 
-## Why maximize variance?
+## Why maximise variance?
 
-### Minimizing variance loses information
+### Minimising variance loses information
 
 - A linear combination with minimal variance is not useful; for example, if a variable has zero variance, all observations are identical, providing no predictive or discriminative information.
 
@@ -127,13 +127,13 @@ $$
 
 ### Efficient representation of information
 
-- PCA reduces dimensionality (from $p$ to $r<p$) while minimizing information loss.
-- Specifically, PCA minimizes the reconstruction error (in a least squares sense).
+- PCA reduces dimensionality (from $p$ to $r<p$) while minimising information loss.
+- Specifically, PCA minimises the reconstruction error (in a least squares sense).
 
 ### Joint display of variables and observations
 
 - Standard scatterplots limit visualization to two variables.
-- By choosing linear combinations that maximize variation, PCA creates a low-dimensional plot that displays multiple variables simultaneously, aiding interpretation.
+- By choosing linear combinations that maximise variation, PCA creates a low-dimensional plot that displays multiple variables simultaneously, aiding interpretation.
 
 ## Key advantages of PCA
 
@@ -141,7 +141,7 @@ $$
 - Enhances statistical stability and precision.
 - Reflects the underlying correlation structure.
 - Enables efficient data compression and visualization.
-- Minimizes information loss during dimensionality reduction.
+- Minimises information loss during dimensionality reduction.
 
 ### Practical examples of PCA
 
@@ -149,9 +149,9 @@ $$
 - **Image compression:** representing images with fewer, informative pixels.
 - **Genomics:** identifying gene-expression patterns that indicate biological processes.
 
-## Maximizing variance mathematically
+## Maximising variance mathematically
 
-Suppose $\mathbf{X}$ is a $p$-dimensional random vector with zero mean and covariance matrix $\mathbf{\Sigma}$. We aim to find the linear combination that maximizes the variance.
+Suppose $\mathbf{X}$ is a $p$-dimensional random vector with zero mean and covariance matrix $\mathbf{\Sigma}$. We aim to find the linear combination that maximises the variance.
 
 ### Objective function for the first principal component
 
@@ -249,7 +249,7 @@ tibble::tibble(size = 1.2 / sqrt(2) + 0.3 / sqrt(2)) |> as.data.frame()
 
 ### Objective for the second principal component
 
-- Maximizing variance without constraints again would yield the same direction.
+- Maximising variance without constraints again would yield the same direction.
 - **Solution:** require the second component (\(\mathbf{a}_2\)) to be orthogonal to the first (\(\mathbf{a}_1'\mathbf{a}_2=0\)):
 
 $$
@@ -274,7 +274,7 @@ $$
 
 ### General objective for the $k$-th principal component
 
-- Generalizing further, the $k$-th component is required to be orthogonal to all previous components.
+- Generalising further, the $k$-th component is required to be orthogonal to all previous components.
 - The optimization becomes:
 
 $$
@@ -439,7 +439,7 @@ $$
 
 ### First principal component
 
-- Visualize the first principal component as an axis along the vector \(\mathbf{a} = [1/\sqrt{2}, 1/\sqrt{2}]\), with the projection of the point \([1.2, 0.3]\) onto this axis forming the new variable:
+- Visualise the first principal component as an axis along the vector \(\mathbf{a} = [1/\sqrt{2}, 1/\sqrt{2}]\), with the projection of the point \([1.2, 0.3]\) onto this axis forming the new variable:
 
 ```{r}
 #| include: false
@@ -526,7 +526,7 @@ knitr::include_graphics(path_p_height_weight_ex_1)
 
 - If we set \(\mathbf{a} = [1, 0]\), the new variable is simply the height.
 - If we set \(\mathbf{a} = [0, 1]\), the new variable is simply the weight.
-- This illustrates that the original coordinates can themselves be seen as projections, helping to conceptualize the new axis \([1/\sqrt{2}, 1/\sqrt{2}]\).
+- This illustrates that the original coordinates can themselves be seen as projections, helping to conceptualise the new axis \([1/\sqrt{2}, 1/\sqrt{2}]\).
 
 ### Second principal component
 
