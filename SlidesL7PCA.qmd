@@ -794,3 +794,51 @@ knitr::include_graphics(path_p_scree)
 ```
 
 This plot provides a visual guide to selecting the number of principal components that capture the majority of the variance, reinforcing the numerical insights obtained from the eigen decomposition.
+
+## Theorem 4: correlation with original variables
+
+For $Y_i$ and $X_k$, the $i$-th principal component and the $k$-th original variable respectively, we have
+
+$$
+\rho_{Y_i,X_k} = \frac{\sqrt{\lambda_i}\,e_{ik}}{\sqrt{\sigma_{kk}}}.
+$$
+
+### Proof of theorem 4
+
+Let $\mathbf{a}_k'$ be a vector that is 1 in the $k$-th position and 0 elsewhere, so that $X_k = \mathbf{a}_k'\mathbf{X}$. Then, note that
+
+$$
+\begin{aligned}
+\text{Cov}(X_k, Y_i) &= \text{Cov}(\mathbf{a}_k'\mathbf{X}, \mathbf{e}_i'\mathbf{X}) \\
+&= \mathbf{a}_k'\mathbf{\Sigma}\mathbf{e}_i \\
+&= \mathbf{a}_k'\mathbf{PDP}'\mathbf{e}_i \\
+&= \lambda_i\,\mathbf{a}_k'\mathbf{e}_i \\
+&= \lambda_i\,e_{ik}.
+\end{aligned}
+$$
+
+Since $\text{Var}(Y_i) = \lambda_i$ and $\text{Var}(X_k)=\sigma_{kk}$, the correlation is
+
+$$
+\rho_{Y_i,X_k}=\frac{\text{Cov}(Y_i,X_k)}{\sqrt{\text{Var}(Y_i)}\,\sqrt{\text{Var}(X_k)}}= \frac{\sqrt{\lambda_i}\,e_{ik}}{\sqrt{\sigma_{kk}}}.
+$$
+
+
+## Example
+
+Continuing from our previous example with two sets of correlated variables, we obtain the following correlation matrix between the original variables and the principal components. The following R code computes this matrix:
+
+```{r}
+#| results: asis
+# Compute the correlation matrix between original variables and principal components
+P <- eig_obj$vectors
+D <- diag(eig_obj$values)
+var_mat <- diag(diag(vcov_mat))
+numerator <- P %*% sqrt(D)
+corr_mat <- var_mat %*% numerator
+rownames(corr_mat) <- paste0("V", 1:7)
+colnames(corr_mat) <- paste0("PC", 1:7)
+corr_mat |> signif(2) |> knitr::kable()
+```
+
+In this example, since all variables have unit variance, the only factors that matter in determining the correlation are the eigenvalue and the eigenvector. A high loading (i.e., a large value of $e_{ik}$) combined with a high eigenvalue will lead to a high correlation. Hypothetically, if the variance were higher, it would tend to decorrelate the principal components and the original variables.
