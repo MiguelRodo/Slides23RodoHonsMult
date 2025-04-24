@@ -842,3 +842,6 @@ corr_mat |> signif(2) |> knitr::kable()
 ```
 
 In this example, since all variables have unit variance, the only factors that matter in determining the correlation are the eigenvalue and the eigenvector. A high loading (i.e., a large value of $e_{ik}$) combined with a high eigenvalue will lead to a high correlation. Hypothetically, if the variance were higher, it would tend to decorrelate the principal components and the original variables.
+
+- the variables have different scales (e.g. some genes are expressed in low quantities if expressed whereas others are expressed in high quantities if expressed); or  
+#| echo: false
