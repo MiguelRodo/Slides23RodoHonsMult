@@ -21,11 +21,14 @@
 ^docs$
 ^_projr\.yml$
 ^README\.Rmd$
+^SlidesHonsMultL8Reg\.qmd$
 ^SlidesL7PCA\.qmd$
 ^_dependencies\.R$
 ^CHANGELOG\.md$
 ^codemeta\.json$
 ^manifest\.csv$
+^SlidesHonsMultL8Reg\.pdf/
+^SlidesHonsMultL8Reg\.pdf$
 ^SlidesL7PCA_files/
 ^SlidesL7PCA_files$
 ^SlidesL7PCA\.html/
