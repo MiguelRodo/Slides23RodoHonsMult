@@ -1,5 +1,7 @@
 # CHANGELOG
 
+- Patch (v1.1.2): Miguel Rodo (2025-05-02 14:45:22)
+  - Correct minor errors
 - Patch (v1.1.1): Miguel Rodo (2025-04-24 12:16:51)
   - Add MV reg slides back
 - Patch (v1.0.1): Miguel Rodo (2025-02-26 11:46:07)
