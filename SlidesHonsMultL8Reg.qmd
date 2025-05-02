@@ -19,7 +19,7 @@ nocite: |
 
 # Linear regression
 
-- Simple regresssion: one predictor, one response
+- Simple regression: one predictor, one response
   - Typical notation: $Y = \beta_0 + \beta_1 X + \epsilon$
   - Example: Ice-cream sales against temperature
 \pause
@@ -87,7 +87,7 @@ nocite: |
 
 ## Multiple regression
 
-- **Linearity**: $\mathrm{E}[Y] = \beta_0 + \beta_1 X+1 + \ldots + \beta_p X_p$
+- **Linearity**: $\mathrm{E}[Y] = \beta_0 + \beta_1 X_1 + \ldots + \beta_p X_p$
 - **Constant variance**: $\mathrm{Var}[\epsilon] = \sigma^2$
 - **Independence**: $\mathrm{Cov}[\epsilon_i, \epsilon_j] = 0 \text{ for } i \neq j$
   - Different observations entirely independent
@@ -151,7 +151,7 @@ Choose $\hat{\symbf{\mathcal{B}}}$ to minimise the sum of squared residuals:
 This implies that 
 
 $$
-\hat{\symbf{\mathcal{B}}} = (\symbf{X}'\symbf{X})^{-1}\symbf{X}'\symbf{\symbf{Y}}.
+\hat{\symbf{\mathcal{B}}} = (\symbf{X}'\symbf{X})^{-1}\symbf{X}'\symbf{Y}.
 $$
 
 :::
@@ -1017,7 +1017,7 @@ $$
 - For $n-r$ and $n-k$ sufficiently large, the following approximation holds:
 
 $$
--[n-k-0.5(r-p+q+1)]\ln(\Lambda^{2/n})\sim \chi^2_{r(p-1)}.
+-[n-k-0.5(r-p+q+1)]\ln(\Lambda^{2/n})\sim \chi^2_{rq}.
 $$
 
 :::
@@ -1201,7 +1201,7 @@ pchisq(test_stat, r * (p - q), lower.tail = FALSE) |>
 
 # Method
 
-Very straigthtforward...
+Very straightforward...
 
 1. Calculate the principal components of the (non-intercept) predictors.
 2. Fit a multiple regression model using the first $m$ principal components as predictors.
@@ -1228,7 +1228,7 @@ If the number of principal components is pre-specified, then all the inferential
 # Partial least squares (PLS)
 
 - Partial least squares (PLS) is a method that is similar to PCR, in that it takes linear combinations of the input variables.
-- However, instead of choosing the linear combinations to maximise the variance, it chooses them to maximise (something like) the covariance of the resultant variables with the predictor.
+- However, instead of choosing the linear combinations to maximise the variance, it chooses them to maximise (something like) the covariance of the resultant variables with the response.
 
 # Partial least squares algorithm [@hastie_etal09]
 
