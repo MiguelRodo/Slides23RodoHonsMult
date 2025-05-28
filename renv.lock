@@ -327,6 +327,31 @@
       "Maintainer": "Carson Sievert <carson@posit.co>",
       "Repository": "RSPM"
     },
+    "ca": {
+      "Package": "ca",
+      "Version": "0.71.1",
+      "Source": "Repository",
+      "Date": "2018-10-10",
+      "Title": "Simple, Multiple and Joint Correspondence Analysis",
+      "Authors@R": "c(person(given = \"Michael\", family = \"Greenacre\", role = \"aut\", email = \"michael.greenacre@upf.edu\"), person(given = \"Oleg\", family = \"Nenadic\", role = c(\"aut\", \"cre\"), email = \"onenadi@uni-goettingen.de\"), person(given = \"Michael\", family = \"Friendly\", role = \"ctb\"))",
+      "Author": "Michael Greenacre [aut], Oleg Nenadic [aut, cre], Michael Friendly [ctb]",
+      "Maintainer": "Oleg Nenadic <onenadi@uni-goettingen.de>",
+      "Depends": [
+        "R (>= 3.0.0)"
+      ],
+      "Suggests": [
+        "rgl (>= 0.64-10)",
+        "vcd"
+      ],
+      "Description": "Computation and visualization of simple, multiple and joint correspondence analysis.",
+      "LazyLoad": "yes",
+      "LazyData": "yes",
+      "License": "GPL",
+      "URL": "http://www.carme-n.org/",
+      "NeedsCompilation": "no",
+      "Repository": "RSPM",
+      "Encoding": "UTF-8"
+    },
     "cachem": {
       "Package": "cachem",
       "Version": "1.1.0",
@@ -397,7 +422,7 @@
     },
     "cli": {
       "Package": "cli",
-      "Version": "3.6.4",
+      "Version": "3.6.5",
       "Source": "Repository",
       "Title": "Helpers for Developing Command Line Interfaces",
       "Authors@R": "c( person(\"Gábor\", \"Csárdi\", , \"gabor@posit.co\", role = c(\"aut\", \"cre\")), person(\"Hadley\", \"Wickham\", role = \"ctb\"), person(\"Kirill\", \"Müller\", role = \"ctb\"), person(\"Salim\", \"Brüggemann\", , \"salim-b@pm.me\", role = \"ctb\", comment = c(ORCID = \"0000-0002-5329-5987\")), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
@@ -938,7 +963,7 @@
     },
     "fs": {
       "Package": "fs",
-      "Version": "1.6.5",
+      "Version": "1.6.6",
       "Source": "Repository",
       "Title": "Cross-Platform File System Operations Based on 'libuv'",
       "Authors@R": "c( person(\"Jim\", \"Hester\", role = \"aut\"), person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\"), person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")), person(\"libuv project contributors\", role = \"cph\", comment = \"libuv library\"), person(\"Joyent, Inc. and other Node contributors\", role = \"cph\", comment = \"libuv library\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",
@@ -2047,6 +2072,69 @@
       "Maintainer": "Jeroen Ooms <jeroenooms@gmail.com>",
       "Repository": "RSPM"
     },
+    "pander": {
+      "Package": "pander",
+      "Version": "0.6.5",
+      "Source": "Repository",
+      "Authors@R": "c( person(\"Gergely\", \"Daróczi\", , \"daroczig@rapporter.net\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0003-3149-8537\")), person(\"Roman\", \"Tsegelskyi\", , \"roman.tsegelskyi@gmail.com\", role = c(\"aut\")))",
+      "Title": "An R 'Pandoc' Writer",
+      "Type": "Package",
+      "Encoding": "UTF-8",
+      "Description": "Contains some functions catching all messages, 'stdout' and other useful information while evaluating R code and other helpers to return user specified text elements (like: header, paragraph, table, image, lists etc.) in 'pandoc' markdown or several type of R objects similarly automatically transformed to markdown format. Also capable of exporting/converting (the resulting) complex 'pandoc' documents to e.g. HTML, 'PDF', 'docx' or 'odt'. This latter reporting feature is supported in brew syntax or with a custom reference class with a smarty caching 'backend'.",
+      "Date": "2022-03-17",
+      "URL": "https://rapporter.github.io/pander/",
+      "BugReports": "https://github.com/rapporter/pander/issues",
+      "License": "AGPL-3 | file LICENSE",
+      "Depends": [
+        "R (>= 2.15.0)"
+      ],
+      "Imports": [
+        "grDevices",
+        "graphics",
+        "methods",
+        "utils",
+        "stats",
+        "digest",
+        "tools",
+        "Rcpp"
+      ],
+      "Suggests": [
+        "grid",
+        "lattice",
+        "ggplot2 (>= 0.9.2)",
+        "sylly",
+        "sylly.en",
+        "logger",
+        "survival",
+        "microbenchmark",
+        "zoo",
+        "nlme",
+        "descr",
+        "MASS",
+        "knitr",
+        "rmarkdown",
+        "tables",
+        "reshape",
+        "memisc",
+        "Epi",
+        "randomForest",
+        "tseries",
+        "gtable",
+        "rms",
+        "forecast",
+        "data.table"
+      ],
+      "SystemRequirements": "pandoc (https://johnmacfarlane.net/pandoc) for exporting markdown files to other formats.",
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "VignetteBuilder": "knitr",
+      "RoxygenNote": "7.1.1",
+      "NeedsCompilation": "yes",
+      "Author": "Gergely Daróczi [aut, cre] (<https://orcid.org/0000-0003-3149-8537>), Roman Tsegelskyi [aut]",
+      "Maintainer": "Gergely Daróczi <daroczig@rapporter.net>",
+      "Repository": "RSPM"
+    },
     "piggyback": {
       "Package": "piggyback",
       "Version": "0.1.5",
@@ -2211,7 +2299,7 @@
     },
     "projr": {
       "Package": "projr",
-      "Version": "0.2.18-1",
+      "Version": "0.2.18-2",
       "Source": "GitHub",
       "Title": "Facilitate reproducible and archived projects",
       "Authors@R": "person(\"Miguel\", \"Rodo\", , \"miguel.rodo@uct.ac.za\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0002-2036-4878\"))",
@@ -2261,13 +2349,15 @@
       "Config/testthat/edition": "3",
       "URL": "https://satvilab.github.io/projr/",
       "VignetteBuilder": "knitr",
-      "Author": "Miguel Rodo [aut, cre] (<https://orcid.org/0000-0002-2036-4878>)",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteUsername": "SATVILab",
       "RemoteRepo": "projr",
-      "RemoteRef": "main",
-      "RemoteSha": "3cfea429dd0f39713b74686831d00bf276c58941"
+      "RemoteUsername": "SATVILab",
+      "RemotePkgRef": "SATVILab/projr",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "7d6c2e818abd6975b9307709ae1c00fc55e4b001",
+      "NeedsCompilation": "no",
+      "Author": "Miguel Rodo [aut, cre] (<https://orcid.org/0000-0002-2036-4878>)"
     },
     "ps": {
       "Package": "ps",

@@ -1,12 +1,14 @@
 Package: Slides23RodoHonsMult
 Title: Slides for statistics honours multivariate course
-Version: 1.1.2
-Authors@R: person("Miguel", "Rodo", , "miguel.rodo@uct.ac.za", role = c("aut", "cre"))
+Version: 1.2.0
+Authors@R: person("Miguel", "Rodo", , "miguel.rodo@uct.ac.za", role
+       = c("aut", "cre"))
 Maintainer: Miguel Rodo <miguel.rodo@uct.ac.za>
 Description: Slides for statistics honours multivariate course
 License: {{ License }}
 URL: https://github.com/MiguelRodo/Slides23RodoHonsMult/#readme
-BugReports: https://github.com/MiguelRodo/Slides23RodoHonsMult/issues
+BugReports:
+       https://github.com/MiguelRodo/Slides23RodoHonsMult/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1

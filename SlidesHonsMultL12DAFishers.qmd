@@ -1,0 +1,436 @@
+---
+title: "Linear Discriminant Analysis: EMC vs Fisher’s LDA"
+format:
+  html:
+    toc: true
+    toc-title: "Table of Contents"
+    toc-depth: 2
+    code-fold: true
+    code-summary: "Show/Hide Code"
+    embed-resources: true
+---
+
+::: {.note}
+I use the terms “group”, “cluster” and “class” interchangeably.
+:::
+
+# Overview
+
+In multivariate classification we typically distinguish two perspectives:
+
+1. **Expected cost of misclassification (EMC)**  
+2. **Fisher’s Linear Discriminant Analysis (LDA)**  
+
+These two techniques appear to arise from different motivations, yet under specific assumptions they yield the same classification rule.
+
+# Paradigms
+
+## 1. Expected Cost of Misclassification (EMC)
+
+EMC frames classification as a decision‐theoretic problem:
+
+- **Prior class probabilities** $\pi_i$ may differ across classes.  
+- **Misclassification costs** $c(j|i)$ (cost of assigning to class $j$ when true class is $i$) can vary.  
+- **Class‐conditional densities** $f_i(\symbf{x})$ may differ in shape and scale.
+
+> **Rule**: Allocate an observation $\symbf{x}$ to the class $j$ that minimises the expected cost
+
+$$
+ \mathrm{EMC}(j \mid \symbf{x})
+ = \sum_{i} c(j|i)\,\pi_i\,f_i(\symbf{x})\,.
+$$
+
+## 2. Fisher’s Linear Discriminant Analysis
+
+Fisher’s LDA seeks a low‐dimensional projection that maximises class separability.
+
+### Key matrices
+
+- **Between‐class scatter** matrix  
+  $$
+  B^{\ast} = \frac{1}{g-1}\sum_{i=1}^g n_i (\bar{\symbf{x}}_i - \bar{\symbf{x}})\,(\bar{\symbf{x}}_i - \bar{\symbf{x}})^\top\,,
+  $$
+
+  where $g$ is the number of groups, $n_i$ the size of group $i$, $\bar{\symbf{x}}_i$ the group mean, and $\bar{\symbf{x}}$ the overall mean.
+
+- **Within‐class scatter** matrix
+
+  $$
+  W^{\ast} = \frac{1}{n-g}\sum_{i=1}^g \sum_{j=1}^{n_i} (\symbf{x}_{ij}-\bar{\symbf{x}}_i)(\symbf{x}_{ij}-\bar{\symbf{x}}_i)^\top\,,
+  $$
+
+  with $n = \sum_i n_i$.
+  This is the same as the pooled covariance matrix when the groups have equal covariance matrices (denoted $S_{pooled}$ in the slides).
+
+### Objective
+
+
+- For the first discriminant, find $\symbf{a}$ to maximise the following:
+
+$$
+\frac{\symbf{a}^\top B\,\symbf{a}}{\symbf{a}^\top W\,\symbf{a}}\,, 
+\quad \text{subject to } \|\symbf{a}\|=1,
+$$
+  
+  where $\mathbf{B}=(g-1)B^{\ast}$ and $\mathbf{W}=(n-g)W^{\ast}$.
+- We ignore the constant factor $(n-g)/(g-1)$, as it does not affect the maximisation.
+
+- The solution is given by the eigenvector of $W^{-1}B$ associated with its largest eigenvalue.
+
+- For later discriminants, the same objective is used but with the additional restriction of orthogonality to the previous discriminants:
+
+$$
+\frac{\symbf{a}_k^\top B\,\symbf{a}_k}{\symbf{a}_k^\top W\,\symbf{a}_k}\,,
+\quad \text{subject to } \|\symbf{a}_k\|=1 \text{ and } \symbf{a}_k^\top \symbf{a}_j = 0 \text{ for } j < k.
+$$
+
+- The solution is given by the eigenvector of $W^{-1}B$ associated with the $k$-th largest eigenvalue.
+
+### Classification
+
+- We don't specifically cover this in the slides (and this is not asked in the exam), but to classify new observation $\symbf{z}$ using $r$ discriminants, the following steps are taken:
+
+1. Obtain the first $r$ discriminant functions (first $r$ eigenvectors) $\symbf{a}_1, \ldots, \symbf{a}_r$.
+2. Calculate the $r$-dimensional projection for each class mean:
+  $$
+  \symbf{z}_i = \left( \symbf{a}_1^\top \bar{\symbf{x}}_i, \symbf{a}_2^\top \bar{\symbf{x}}_i, \ldots, \symbf{a}_r^\top \bar{\symbf{x}}_i \right),
+  $$
+  where the $j$-th element of $\bar{\symbf{x}}_i$ is the mean of the $i$-th class for the $j$-th variable.
+3. Project the new observation $\symbf{x}$ onto the discriminants:
+  $$
+  \symbf{z} = \left( \symbf{a}_1^\top \symbf{x}, \symbf{a}_2^\top \symbf{x}, \ldots, \symbf{a}_r^\top \symbf{x} \right).
+  $$
+4. Each projected observation $z$ is then assigned to the class whose projected mean is closest. In other words, classify $z$ to class $i$ if
+
+  $$
+  \|z - \symbf{z}_i\|^2
+  $$
+
+  is minimal among all classes $i$.
+
+## Equivalence of EMC and Fisher’s LDA
+
+Fisher's LDA is a restricted version of the EMC rule, yielding equivalent classification rules when:
+
+- All class‐conditional densities $f_i(\symbf{x})$ are multivariate normal.
+- All covariance matrices $\Sigma_i$ are equal, i.e., $\Sigma_i = \Sigma$ for all $i$.
+- All prior class probabilities $\pi_i$ are equal, i.e., $\pi_i = 1/g$ for $i=1,\ldots,g$.
+- All misclassification costs $c(j|i)$ are equal, i.e., $c(j|i)=c$ for some constant $c$, $i\neq j$ and $c(i|i)=0$.
+
+## From two-group to multi-group
+
+Both EMC and Fisher’s LDA are introduced for the two-group case:
+
+- **Two-group slides** (DA.pptx [slides 2–19]):  
+  - EMC: slides 2–8, 11 (quadratic), 13–15 (error‐rate example using EMC)  
+  - Fisher’s LDA: slides 9–10, 16–19 (example)
+
+They extend naturally to $g>2$:
+
+- **Multi-group slides** (DA.pptx [slides 20–30]):  
+  - EMC: slides 20–21, 29 (package implementation)  
+  - Fisher’s LDA: slides 22, 26–28, 30
+
+
+# LDA from First Principles for Multigroup Classification
+
+In the exam you will implement **multigroup classification using LDA** from first principles. This closely parallels Principal Component Analysis (PCA), in creating new variables as linear combinations of the original variables, but with a different objective:
+
+| Aspect              | PCA                             | LDA                                    |
+|---------------------|---------------------------------|----------------------------------------|
+| Goal                | Maximise variance of projections| Maximise separation between classes    |
+| Criterion           | $\symbf{a}^\top S\,\symbf{a}$ | $\symbf{a}^\top B\,\symbf{a}\,/\,\symbf{a}^\top W\,\symbf{a}$ |
+| Solution            | Eigenvector of $S=X'X$                   | Eigenvector of $W^{-1}B$               |
+
+LDA is like a class-aware version of PCA, where the goal is to find linear combinations of the original variables that best separate the classes rather than just maximising variance.
+
+Implementation follows the same steps:
+
+1. calculate some matrix
+2. obtains its eigenvectors
+3. Take the dot product with the data matrix to obtain the new variables.
+
+Interpretation of the variables relies on the loading vectors (the eigenvectors).
+The new variables may be plotted, or used in downstream analysis, e.g. classification.
+
+## Two-group example
+
+We simulate two groups of data, each with two variables, and compute the first linear discriminant using LDA from first principles.
+
+```{r}
+#| label: simulate-lda
+set.seed(2025)
+library(ggplot2); library(cowplot)
+
+# Simulate two groups, p=2
+n <- 20
+Sigma <- matrix(c(3,0.5,0.5,1), 2, 2)
+means <- list(c(0,-3), c(0, 3))
+dat <- do.call(rbind, lapply(1:2, function(i){
+  data.frame(group = factor(i),
+             MASS::mvrnorm(n, mu = means[[i]], Sigma = Sigma))
+}))
+colnames(dat)[-1] <- c("X1","X2")
+ggplot(dat, aes(x = X1, y = X2, color = group)) +
+  geom_point() +
+  theme_cowplot() +
+  background_grid(major = "xy") +
+  labs(title = "Simulated Data for LDA", x = "X1", y = "X2")
+```
+
+We now obtain the matrix $\symbf{W}^{-1}\symbf{B}$.
+
+```{r}
+# Compute B and W
+X  <- as.matrix(dat[,2:3])
+g  <- length(unique(dat$group))
+n_i <- table(dat$group)
+bar_overall <- colMeans(X)
+bar_group <- dat |>
+  dplyr::group_by(group) |>
+  dplyr::summarise(
+    dplyr::across(starts_with("X"), mean),
+    .groups = 'drop'
+  ) |>
+  dplyr::select(-group) |>
+  as.matrix()
+# `Reduce` is used to sum over the groups.
+# The inner `lapply` call creates a list of matrices for each group, and then `Reduce` sums them up (which is what the `+` operator does).
+B <- Reduce(`+`, lapply(1:g, function(i){
+  n_i[i] * (bar_group[i,] - bar_overall) %*% t(bar_group[i,] - bar_overall)
+})) / (g-1)
+W <- Reduce(`+`, lapply(1:g, function(i){
+  Xi <- X[dat$group==i,]
+  cov(Xi) * (n_i[i]-1)
+})) / (sum(n_i)-g)
+```
+
+We now extract the eigenvectors, which are the loading vectors.
+
+```{r}
+#| results: asis
+# Eigen decomposition
+eig <- eigen(solve(W) %*% B)
+eig$vectors[, 1:2] |> signif(2) |> knitr::kable(
+  col.names = c("LD1", "LD2"),
+  caption = "Eigenvectors of $W^{-1}B$ (Loading Vectors)"
+)
+```
+
+The majority of the first discriminant's weight is on the second variable, as expected, since the two groups are separated along that variable with little contributed by the second variable (as can be seen from the earlier plot and the simulation code).
+
+
+
+If we plot just the first new variable, i.e. the first linear discriminant, we can see how well it separates the two groups.
+
+```{r}
+dat$LD1 <- as.numeric(as.matrix(X) %*% eig$vectors[,1])
+
+# Plot LD1 histogram
+ggplot(dat, aes(x = LD1, fill = group)) +
+  geom_histogram(alpha = 0.6, position = "identity", bins = 20) +
+  theme_cowplot() +
+  labs(title = "LDA Projection (First Discriminant)", x = "LD1", y = "Count")
+```
+
+Out of interest, the first principal component actually also weights heavily on the second variable, as even though the second variable has less within-group variance than the first, the between-group variance is much larger, making the overall variability of variable two larger:
+
+```{r}
+#| results: asis
+eig_obj <- eigen(cov(X))
+eig_obj$vectors[, 1:2] |> 
+  signif(2) |> 
+  knitr::kable(
+    col.names = c("PC1", "PC2"),
+    caption = "Eigenvectors of $X'X$ (Principal Components)"
+  )
+```
+
+Returning to LDA, the plot of the first two linear discriminants is essentially the same as the plot of the raw data but with the axes flipped.
+
+```{r}
+dat$LD2 <- as.numeric(as.matrix(X) %*% eig$vectors[,2])
+ggplot(dat, aes(x = LD1, y = LD2, color = group)) +
+  geom_point() +
+  theme_cowplot() +
+  background_grid(major = "xy") +
+  labs(title = "LDA Projection (First Two Discriminants)", x = "LD1", y = "LD2")
+```
+
+Note that the slides do mention that one can scale the scores to have unit variance.
+This is not necessary, and actually yields plots that may separate the groups less well (as lower-variance variables are scaled up, and lower-variance variables here are less discriminative).
+
+Here is the equivalent 2D plot (no apparent effect here as the separation is perfect along LD1):
+
+```{r}
+dat$LD1 <- scale(dat$LD1)
+dat$LD2 <- scale(dat$LD2)
+ggplot(dat, aes(x = LD1, y = LD2, color = group)) +
+  geom_point() +
+  theme_cowplot() +
+  background_grid(major = "xy") +
+  labs(title = "LDA Projection (First Two Discriminants, Scaled)", x = "LD1", y = "LD2")
+```
+
+## Higher-dimensional, multi-group example
+
+LDA is implemented in exactly the same way as the two-dimensional, two-group example.
+The only thing that is different is the number of groups and the number of variables.
+Here we have ten variables and five groups.
+
+```{r}
+#| label: simulate-lda-10var-5grp
+set.seed(2025)
+library(ggplot2); library(cowplot)
+
+# Simulate five groups, p = 10
+n <- 20       # observations per group
+p <- 10       # number of variables
+
+# Common covariance: diagonal matrix with variance 3 on X1, and 1 on X2–X10
+Sigma <- diag(c(3, rep(1, p - 1)))
+
+# Define group means so that they differ along the first five dimensions
+means <- lapply(1:5, function(i) {
+  mu <- rep(0, p)
+  mu[i] <- 3 * (i - 3)    # shifts: −6, −3, 0, 3, 6 on dimension i
+  mu
+})
+
+# Simulate the data
+dat <- do.call(rbind, lapply(1:5, function(i) {
+  data.frame(
+    group = factor(i),
+    MASS::mvrnorm(n, mu = means[[i]], Sigma = Sigma)
+  )
+}))
+
+# Name the columns X1…X10
+colnames(dat)[-1] <- paste0("X", seq_len(p))
+
+# Peek at the first few rows
+head(dat)
+```
+
+```{r}
+# Compute B and W
+X  <- as.matrix(dat[, -1])
+g  <- length(unique(dat$group))
+n_i <- table(dat$group)
+bar_overall <- colMeans(X)
+bar_group <- dat |>
+  dplyr::group_by(group) |>
+  dplyr::summarise(
+    dplyr::across(starts_with("X"), mean),
+    .groups = 'drop'
+  ) |>
+  dplyr::select(-group) |>
+  as.matrix()
+# `Reduce` is used to sum over the groups.
+# The inner `lapply` call creates a list of matrices for each group, and then `Reduce` sums them up (which is what the `+` operator does).
+B <- Reduce(`+`, lapply(1:g, function(i){
+  n_i[i] * (bar_group[i,] - bar_overall) %*% t(bar_group[i,] - bar_overall)
+})) / (g-1)
+W <- Reduce(`+`, lapply(1:g, function(i){
+  Xi <- X[dat$group==i,]
+  cov(Xi) * (n_i[i]-1)
+})) / (sum(n_i)-g)
+```
+
+```{r}
+#| results: asis
+# Eigen decomposition
+eig <- eigen(solve(W) %*% B)
+eig_mat <- eig$vectors[, 1:2] |>
+  Re()
+display_tbl <- data.frame(
+  "Variable" = paste0("V", seq_len(nrow(eig_mat))),
+  "LD1" = eig_mat[, 1] |> signif(2),
+  "LD2" = eig_mat[, 2] |> signif(2)
+)
+display_tbl |>
+  knitr::kable(
+  col.names = c("Variable", "LD1", "LD2"),
+  caption = "Eigenvectors of $W^{-1}B$ (Loading Vectors)"
+)
+```
+
+LD1 driven by V5 (-0.89).
+LD1 is driven by V4 (-0-.88) and V1 (-0.47).
+
+```{r}
+dat$LD1 <- as.numeric(as.matrix(X) %*% eig_mat[,1])
+dat$LD2 <- as.numeric(as.matrix(X) %*% eig_mat[,2])
+col_vec <- c(
+  "#1b9e77",
+  "#d95f02",
+  "#7570b3",
+  "#e7298a",
+  "#66a61e"
+) |>
+  toupper()
+ggplot(dat, aes(x = LD1, y = LD2, color = group)) +
+  geom_point(size =  3, alpha = 0.8) +
+  theme_cowplot() +
+  background_grid(major = "xy") +
+  labs(title = "LDA Projection (First Two Discriminants)", x = "LD1", y = "LD2") +
+  scale_colour_manual(
+    values = col_vec,
+    name = "Group"
+  )
+```
+
+LD1 separates group 5 from the rest, indicating that group 5 is characterised by high levels of V5.
+
+LD2 separates group 1 from the rest, indicating that group 1 is characterised by low levels of V4 and V1.
+
+Th remaining groups are not well separated by LD1 and LD2.
+
+Out of interest, here is the equivalent plot with scaled scores:
+
+```{r}
+dat$LD1 <- scale(dat$LD1)
+dat$LD2 <- scale(dat$LD2)
+ggplot(dat, aes(x = LD1, y = LD2, color = group)) +
+  geom_point(size =  3, alpha = 0.8) +
+  theme_cowplot() +
+  background_grid(major = "xy") +
+  labs(title = "LDA Projection (First Two Discriminants)", x = "LD1", y = "LD2") +
+  scale_colour_manual(
+    values = col_vec,
+    name = "Group"
+  )
+```
+
+The plot is still similar to before, as the standard deviations are 1.7 and 1.4 for LD1 and LD2, respectively (pre-standardisation, of course), so the scaling does not change the relative contributions of the two discriminants much.
+
+Here is the equivalent plot with the first two principal components:
+
+```{r}
+eig_obj <- eigen(cov(X))
+eig_obj_mat <- eig_obj$vectors[, 1:2] |>
+  Re()
+score_mat <- as.matrix(X) %*% eig_obj_mat
+dat$PC1 <- score_mat[, 1]
+dat$PC2 <- score_mat[, 2]
+ggplot(dat, aes(x = PC1, y = PC2, color = group)) +
+  geom_point(size =  3, alpha = 0.8) +
+  theme_cowplot() +
+  background_grid(major = "xy") +
+  labs(title = "PCA Projection (First Two Components)", x = "PC1", y = "PC2") +
+  scale_colour_manual(
+    values = col_vec,
+    name = "Group"
+  )
+```
+
+# Summary
+
+For the exam, the all you really need to be able to do is repeat the Higher-dimensional, multi-group example above (apart from the simulation):
+
+1. Calculate the between-class scatter matrix $B$ and the within-class scatter matrix $W$.
+2. Obtain the eigenvectors of $W^{-1}B$.
+3. Interpret the eigenvectors as loading vectors.
+4. Calculate the scores by taking the dot product of the data matrix with the eigenvectors.
+5. Plot the first two scores to visualise class separation.
+6. Interpret the plot in terms of class separation and the contributions of the original variables to observed separation.

@@ -21,6 +21,8 @@
 ^docs$
 ^_projr\.yml$
 ^README\.Rmd$
+^SlidesHonsMultL11CA\.qmd$
+^SlidesHonsMultL12DAFishers\.qmd$
 ^SlidesHonsMultL8Reg\.qmd$
 ^SlidesHonsMultL9FA\.qmd$
 ^SlidesL7PCA\.qmd$
@@ -29,6 +31,13 @@
 ^CHANGELOG\.md$
 ^codemeta\.json$
 ^manifest\.csv$
+^Rplots\.pdf$
+^SlidesHonsMultL11CA\.pdf/
+^SlidesHonsMultL11CA\.pdf$
+^SlidesHonsMultL12DAFishers_files/
+^SlidesHonsMultL12DAFishers_files$
+^SlidesHonsMultL12DAFishers\.html/
+^SlidesHonsMultL12DAFishers\.html$
 ^SlidesHonsMultL8Reg\.pdf/
 ^SlidesHonsMultL8Reg\.pdf$
 ^SlidesHonsMultL9FA\.pdf/
