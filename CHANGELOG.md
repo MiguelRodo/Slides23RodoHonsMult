@@ -1,5 +1,8 @@
 # CHANGELOG
 
+- *Minor* (v1.2.0): Miguel Rodo (2025-05-29 09:37:54)
+  - Add Fisher notes and set up better archiving
+
 - Patch (v1.1.2): Miguel Rodo (2025-05-02 14:45:22)
   - Correct minor errors
 - Patch (v1.1.1): Miguel Rodo (2025-04-24 12:16:51)

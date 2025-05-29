@@ -7,7 +7,7 @@
   "codeRepository": "https://github.com/MiguelRodo/Slides23RodoHonsMult/",
   "issueTracker": "https://github.com/MiguelRodo/Slides23RodoHonsMult/issues",
   "license": "{{ License }}",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -33,7 +33,7 @@
   "softwareRequirements": {
     "SystemRequirements": null
   },
-  "fileSize": "1320.254KB",
+  "fileSize": "1477.928KB",
   "citation": [
     {
       "@type": "CreativeWork",
