@@ -1,5 +1,8 @@
 # CHANGELOG
 
+- *Minor* (v1.4.0): Miguel Julio Rodo (2025-05-29 15:43:06)
+  - Add no-code slides
+
 - *Minor* (v1.3.0): Miguel Julio Rodo (2025-05-29 14:41:58)
   - Add slides
 
