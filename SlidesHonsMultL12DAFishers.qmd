@@ -46,51 +46,55 @@ Fisher’s LDA seeks a low‐dimensional projection that maximises class separab
 
 ### Key matrices
 
-- **Between‐class scatter** matrix  
+- **Between‐class covariance** matrix
+
   $$
-  B^{\ast} = \frac{1}{g-1}\sum_{i=1}^g n_i (\bar{\symbf{x}}_i - \bar{\symbf{x}})\,(\bar{\symbf{x}}_i - \bar{\symbf{x}})^\top\,,
+  \symbf{B}^{\ast} = \frac{1}{g-1}\sum_{i=1}^g n_i (\bar{\symbf{x}}_i - \bar{\symbf{x}})\,(\bar{\symbf{x}}_i - \bar{\symbf{x}})^\top\,,
   $$
 
   where $g$ is the number of groups, $n_i$ the size of group $i$, $\bar{\symbf{x}}_i$ the group mean, and $\bar{\symbf{x}}$ the overall mean.
 
-- **Within‐class scatter** matrix
+  - The matrix $\symbf{B}=(g-1)\symbf{B}^{\ast}$ is the "unnormalised" version of the between‐class covariance matrix.
+    - This is sometimes called the between‐class scatter matrix.
+
+- **Within‐class covariance** matrix
 
   $$
-  W^{\ast} = \frac{1}{n-g}\sum_{i=1}^g \sum_{j=1}^{n_i} (\symbf{x}_{ij}-\bar{\symbf{x}}_i)(\symbf{x}_{ij}-\bar{\symbf{x}}_i)^\top\,,
+  \symbf{W}^{\ast} = \frac{1}{n-g}\sum_{i=1}^g \sum_{j=1}^{n_i} (\symbf{x}_{ij}-\bar{\symbf{x}}_i)(\symbf{x}_{ij}-\bar{\symbf{x}}_i)^\top\,,
   $$
 
   with $n = \sum_i n_i$.
-  This is the same as the pooled covariance matrix when the groups have equal covariance matrices (denoted $S_{pooled}$ in the slides).
+  
+  - This is the same as the pooled covariance matrix when the groups have equal covariance matrices (denoted $S_{pooled}$ in the slides), as we assume in Fisher’s LDA.
+  Therefore, we will use the notation $S_{pooled}$ for the within‐class covariance matrix.
+
+  - The matrix $\symbf{W}=(n-g) \symbf{W}^{\ast}$ is the "unnormalised" version of the within‐class covariance matrix.
+    - This is sometimes called the within‐class scatter matrix.
 
 ### Objective
 
-
 - For the first discriminant, find $\symbf{a}$ to maximise the following:
 
-$$
-\frac{\symbf{a}^\top B\,\symbf{a}}{\symbf{a}^\top W\,\symbf{a}}\,, 
-\quad \text{subject to } \|\symbf{a}\|=1,
-$$
-  
-  where $\mathbf{B}=(g-1)B^{\ast}$ and $\mathbf{W}=(n-g)W^{\ast}$.
-- We ignore the constant factor $(n-g)/(g-1)$, as it does not affect the maximisation.
+  $$
+  \frac{\symbf{a}^\top B\,\symbf{a}}{\symbf{a}^\top W\,\symbf{a}}\, \text{ subject to } \symbf{a}^\top\symbf{S}_{pooled}\symbf{a}=1\,.
+  $$
 
-- The solution is given by the eigenvector of $W^{-1}B$ associated with its largest eigenvalue.
+- The solution is given by the eigenvector of $\symbf{W}^{-1}\symbf{B}$ associated with its largest eigenvalue, scaled such that $\symbf{a}^\top\symbf{S}_{pooled}\symbf{a}=1$.
 
 - For later discriminants, the same objective is used but with the additional restriction of orthogonality to the previous discriminants:
 
 $$
 \frac{\symbf{a}_k^\top B\,\symbf{a}_k}{\symbf{a}_k^\top W\,\symbf{a}_k}\,,
-\quad \text{subject to } \|\symbf{a}_k\|=1 \text{ and } \symbf{a}_k^\top \symbf{a}_j = 0 \text{ for } j < k.
+\quad \text{subject to } \symbf{a}^\top\symbf{S}_{pooled}\symbf{a}=1 \text{ and } \symbf{a}_k^\top \symbf{a}_j = 0 \text{ for } j < k.
 $$
 
-- The solution is given by the eigenvector of $W^{-1}B$ associated with the $k$-th largest eigenvalue.
+- The solution is given by the eigenvector of $\symbf{W}^{-1}\symbf{B}$ associated with the $k$-th largest eigenvalue, $\symbf{a}^\top\symbf{S}_{pooled}\symbf{a}=1$.
 
 ### Classification
 
 - We don't specifically cover this in the slides (and this is not asked in the exam), but to classify new observation $\symbf{z}$ using $r$ discriminants, the following steps are taken:
 
-1. Obtain the first $r$ discriminant functions (first $r$ eigenvectors) $\symbf{a}_1, \ldots, \symbf{a}_r$.
+1. Obtain the first $r$ discriminant functions (first $r$ eigenvectors of $\symbf{W}^{-1}\symbf{B}$, each scaled so that $\symbf{a}_i^\top\symbf{S}_{pooled}\symbf{a}_i=1\;\forall i$): $\symbf{a}_1, \ldots, \symbf{a}_r$.
 2. Calculate the $r$-dimensional projection for each class mean:
   $$
   \symbf{z}_i = \left( \symbf{a}_1^\top \bar{\symbf{x}}_i, \symbf{a}_2^\top \bar{\symbf{x}}_i, \ldots, \symbf{a}_r^\top \bar{\symbf{x}}_i \right),
@@ -100,10 +104,10 @@ $$
   $$
   \symbf{z} = \left( \symbf{a}_1^\top \symbf{x}, \symbf{a}_2^\top \symbf{x}, \ldots, \symbf{a}_r^\top \symbf{x} \right).
   $$
-4. Each projected observation $z$ is then assigned to the class whose projected mean is closest. In other words, classify $z$ to class $i$ if
+4. Each projected observation $z$ is then assigned to the class whose projected mean is closest. In other words, classify $\symbf{z}$ to class $i$ if
 
   $$
-  \|z - \symbf{z}_i\|^2
+  \|\symbf{z} - \symbf{z}_i\|^2
   $$
 
   is minimal among all classes $i$.
@@ -139,18 +143,18 @@ In the exam you will implement **multigroup classification using LDA** from firs
 | Aspect              | PCA                             | LDA                                    |
 |---------------------|---------------------------------|----------------------------------------|
 | Goal                | Maximise variance of projections| Maximise separation between classes    |
-| Criterion           | $\symbf{a}^\top S\,\symbf{a}$ | $\symbf{a}^\top B\,\symbf{a}\,/\,\symbf{a}^\top W\,\symbf{a}$ |
-| Solution            | Eigenvector of $S=X'X$                   | Eigenvector of $W^{-1}B$               |
+| Maximisation criterion           | $\symbf{a}^\top S\,\symbf{a}$ | $\symbf{a}^\top B\,\symbf{a}\,/\,\symbf{a}^\top W\,\symbf{a}$ |
+| Solution            | Eigenvector of $S=\symbf{X}'\symbf{X}$                   | Eigenvector of $\symbf{W}^{-1}\symbf{B}$               |
 
 LDA is like a class-aware version of PCA, where the goal is to find linear combinations of the original variables that best separate the classes rather than just maximising variance.
 
 Implementation follows the same steps:
 
-1. calculate some matrix
-2. obtains its eigenvectors
+1. Calculate some matrix
+2. Obtain its eigenvectors
 3. Take the dot product with the data matrix to obtain the new variables.
 
-Interpretation of the variables relies on the loading vectors (the eigenvectors).
+Interpretation of the variables relies on the loading vectors (the scaled eigenvectors).
 The new variables may be plotted, or used in downstream analysis, e.g. classification.
 
 ## Two-group example
@@ -164,8 +168,8 @@ library(ggplot2); library(cowplot)
 
 # Simulate two groups, p=2
 n <- 20
-Sigma <- matrix(c(3,0.5,0.5,1), 2, 2)
-means <- list(c(0,-3), c(0, 3))
+Sigma <- matrix(c(3,0,0,1), 2, 2)
+means <- list(c(-0.5,-3), c(0.5, 3))
 dat <- do.call(rbind, lapply(1:2, function(i){
   data.frame(group = factor(i),
              MASS::mvrnorm(n, mu = means[[i]], Sigma = Sigma))
@@ -181,7 +185,6 @@ ggplot(dat, aes(x = X1, y = X2, color = group)) +
 We now obtain the matrix $\symbf{W}^{-1}\symbf{B}$.
 
 ```{r}
-# Compute B and W
 X  <- as.matrix(dat[,2:3])
 g  <- length(unique(dat$group))
 n_i <- table(dat$group)
@@ -198,33 +201,37 @@ bar_group <- dat |>
 # The inner `lapply` call creates a list of matrices for each group, and then `Reduce` sums them up (which is what the `+` operator does).
 B <- Reduce(`+`, lapply(1:g, function(i){
   n_i[i] * (bar_group[i,] - bar_overall) %*% t(bar_group[i,] - bar_overall)
-})) / (g-1)
+}))
 W <- Reduce(`+`, lapply(1:g, function(i){
   Xi <- X[dat$group==i,]
   cov(Xi) * (n_i[i]-1)
-})) / (sum(n_i)-g)
+}))
 ```
 
-We now extract the eigenvectors, which are the loading vectors.
+We now extract the eigenvectors and scale with respect to $\symbf{W}$ to obtain the loading vectors.
 
 ```{r}
 #| results: asis
 # Eigen decomposition
-eig <- eigen(solve(W) %*% B)
-eig$vectors[, 1:2] |> signif(2) |> knitr::kable(
-  col.names = c("LD1", "LD2"),
-  caption = "Eigenvectors of $W^{-1}B$ (Loading Vectors)"
-)
+eig_obj <- eigen(solve(W) %*% B)
+eig_mat <- eig_obj$vectors |> Re()
+S_pooled <- W / (sum(n_i) - g)
+sd_vec <- diag(t(eig_mat) %*% S_pooled %*% eig_mat) |> sqrt()
+eig_mat <- eig_mat %*% diag(1/sd_vec)
+eig_mat |>
+  signif(2) |>
+  knitr::kable(
+    col.names = c("LD1", "LD2"),
+    caption = "Scaled eigenvectors of $W^{-1}B$ (Loading Vectors)"
+  )
 ```
 
 The majority of the first discriminant's weight is on the second variable, as expected, since the two groups are separated along that variable with little contributed by the second variable (as can be seen from the earlier plot and the simulation code).
 
-
-
 If we plot just the first new variable, i.e. the first linear discriminant, we can see how well it separates the two groups.
 
 ```{r}
-dat$LD1 <- as.numeric(as.matrix(X) %*% eig$vectors[,1])
+dat$LD1 <- as.numeric(as.matrix(X) %*% eig_mat[,1])
 
 # Plot LD1 histogram
 ggplot(dat, aes(x = LD1, fill = group)) +
@@ -249,7 +256,7 @@ eig_obj$vectors[, 1:2] |>
 Returning to LDA, the plot of the first two linear discriminants is essentially the same as the plot of the raw data but with the axes flipped.
 
 ```{r}
-dat$LD2 <- as.numeric(as.matrix(X) %*% eig$vectors[,2])
+dat$LD2 <- as.numeric(as.matrix(X) %*% eig_mat[,2])
 ggplot(dat, aes(x = LD1, y = LD2, color = group)) +
   geom_point() +
   theme_cowplot() +
@@ -257,20 +264,18 @@ ggplot(dat, aes(x = LD1, y = LD2, color = group)) +
   labs(title = "LDA Projection (First Two Discriminants)", x = "LD1", y = "LD2")
 ```
 
-Note that the slides do mention that one can scale the scores to have unit variance.
-This is not necessary, and actually yields plots that may separate the groups less well (as lower-variance variables are scaled up, and lower-variance variables here are less discriminative).
-
-Here is the equivalent 2D plot (no apparent effect here as the separation is perfect along LD1):
+Note that these loading vectors are the same as those from `MASS::lda`:
 
 ```{r}
-dat$LD1 <- scale(dat$LD1)
-dat$LD2 <- scale(dat$LD2)
-ggplot(dat, aes(x = LD1, y = LD2, color = group)) +
-  geom_point() +
-  theme_cowplot() +
-  background_grid(major = "xy") +
-  labs(title = "LDA Projection (First Two Discriminants, Scaled)", x = "LD1", y = "LD2")
+#| results: asis
+MASS::lda(group ~ ., data = dat[, 1:3])$scaling |> signif(2) |>
+  knitr::kable(
+    col.names = c("LD1", "LD2"),
+    caption = "Loading Vectors from `MASS::lda`"
+  )
 ```
+
+`MASS::lda` only returns the first linear discriminant, as there are two groups, which means we can get at most one linear discriminant that actually separates the two groups.
 
 ## Higher-dimensional, multi-group example
 
@@ -321,7 +326,8 @@ bar_overall <- colMeans(X)
 bar_group <- dat |>
   dplyr::group_by(group) |>
   dplyr::summarise(
-    dplyr::across(starts_with("X"), mean),
+    # dplyr::across(starts_with("X"), mean),
+    dplyr::across(everything(), mean),
     .groups = 'drop'
   ) |>
   dplyr::select(-group) |>
@@ -330,19 +336,23 @@ bar_group <- dat |>
 # The inner `lapply` call creates a list of matrices for each group, and then `Reduce` sums them up (which is what the `+` operator does).
 B <- Reduce(`+`, lapply(1:g, function(i){
   n_i[i] * (bar_group[i,] - bar_overall) %*% t(bar_group[i,] - bar_overall)
-})) / (g-1)
+}))
 W <- Reduce(`+`, lapply(1:g, function(i){
   Xi <- X[dat$group==i,]
   cov(Xi) * (n_i[i]-1)
-})) / (sum(n_i)-g)
+}))
 ```
 
 ```{r}
 #| results: asis
 # Eigen decomposition
-eig <- eigen(solve(W) %*% B)
-eig_mat <- eig$vectors[, 1:2] |>
-  Re()
+eig_obj <- eigen(solve(W) %*% B)
+eig_mat <- eig_obj$vectors |> Re()
+S_pooled <- W / (sum(n_i) - g)
+sd_vec <- diag(t(eig_mat) %*% S_pooled %*% eig_mat) |> sqrt()
+eig_mat <- eig_mat %*% diag(1/sd_vec)
+eig_mat <- eig_mat[, 1:2]
+
 display_tbl <- data.frame(
   "Variable" = paste0("V", seq_len(nrow(eig_mat))),
   "LD1" = eig_mat[, 1] |> signif(2),
@@ -351,12 +361,12 @@ display_tbl <- data.frame(
 display_tbl |>
   knitr::kable(
   col.names = c("Variable", "LD1", "LD2"),
-  caption = "Eigenvectors of $W^{-1}B$ (Loading Vectors)"
+  caption = "Scaled Eigenvectors of $W^{-1}B$ (Loading Vectors)"
 )
 ```
 
-LD1 driven by V5 (-0.89).
-LD1 is driven by V4 (-0-.88) and V1 (-0.47).
+LD1 driven by V5 (1.1).
+LD2 is driven by V4 (0.77) and V1 (0.47).
 
 ```{r}
 dat$LD1 <- as.numeric(as.matrix(X) %*% eig_mat[,1])
@@ -384,25 +394,7 @@ LD1 separates group 5 from the rest, indicating that group 5 is characterised by
 
 LD2 separates group 1 from the rest, indicating that group 1 is characterised by low levels of V4 and V1.
 
-Th remaining groups are not well separated by LD1 and LD2.
-
-Out of interest, here is the equivalent plot with scaled scores:
-
-```{r}
-dat$LD1 <- scale(dat$LD1)
-dat$LD2 <- scale(dat$LD2)
-ggplot(dat, aes(x = LD1, y = LD2, color = group)) +
-  geom_point(size =  3, alpha = 0.8) +
-  theme_cowplot() +
-  background_grid(major = "xy") +
-  labs(title = "LDA Projection (First Two Discriminants)", x = "LD1", y = "LD2") +
-  scale_colour_manual(
-    values = col_vec,
-    name = "Group"
-  )
-```
-
-The plot is still similar to before, as the standard deviations are 1.7 and 1.4 for LD1 and LD2, respectively (pre-standardisation, of course), so the scaling does not change the relative contributions of the two discriminants much.
+The remaining groups are not well separated by LD1 and LD2, except that group 4 is close to groups 2 and 3 but overlaps little with them along LD2.
 
 Here is the equivalent plot with the first two principal components:
 
@@ -424,13 +416,27 @@ ggplot(dat, aes(x = PC1, y = PC2, color = group)) +
   )
 ```
 
+We can see that `MASS::lda` produces the same loading vectors as we do:
+
+```{r}
+#| results: asis
+MASS::lda(group ~ ., data = dat[, 1:11])$scaling[, 1:2] |>
+  signif(2) |>
+  knitr::kable(
+    col.names = c("LD1", "LD2"),
+    caption = "Loading Vectors from `MASS::lda`"
+  )
+```
+
+It can now return two loading vectors as we have more than two groups, so we can have more than one linear discriminant that separates the groups.
+
 # Summary
 
-For the exam, the all you really need to be able to do is repeat the Higher-dimensional, multi-group example above (apart from the simulation):
+For the exam, the all you really need to be able to do is repeat the higher-dimensional, multi-group example above (apart from the simulation):
 
-1. Calculate the between-class scatter matrix $B$ and the within-class scatter matrix $W$.
-2. Obtain the eigenvectors of $W^{-1}B$.
-3. Interpret the eigenvectors as loading vectors.
+1. Calculate the between-class scatter matrix $\symbf{B}$ and the within-class scatter matrix $\symbf{W}$.
+2. Obtain the eigenvectors of $\symbf{W}^{-1}\symbf{B}$, and scale them such that $\symbf{a}_i^\top\symbf{S}_{pooled}\symbf{a}_i=1$ for $\symbf{a}_i$ in the direction of the $i$-th eigenvector.
+3. Interpret the scaled eigenvectors, as they are loading vectors.
 4. Calculate the scores by taking the dot product of the data matrix with the eigenvectors.
 5. Plot the first two scores to visualise class separation.
 6. Interpret the plot in terms of class separation and the contributions of the original variables to observed separation.

@@ -5,6 +5,7 @@ directories:
     path: _raw/img/2025
   raw-docs:
     path: _reference
+    ignore-git: no
   cache:
     path: _tmp
   output:
@@ -17,12 +18,16 @@ build:
       content:
       - raw-img-2024
       - raw-img-2025
+      - raw-docs
       - docs
       - output
+      structure: latest
     archive-2025:
       content:
       - raw-img-2024
       - raw-img-2025
+      - raw-docs
+      - docs
       - output
       structure: archive
 

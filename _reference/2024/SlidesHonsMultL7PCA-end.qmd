@@ -1,0 +1,765 @@
+# Theorem three: Total variance {.smaller}
+
+Let $\symbf{X}' = [X_1, X_2, \ldots, X_p]'$ be a random vector with covariance matrix $\symbf{\Sigma}$ that has eigenvalue-eigenvector pairs $(\lambda_1, \symbf{e}_1), \ldots, (\lambda_p, \symbf{e}_p)$, ordered such that $\lambda_1 \geq \lambda_2 \geq \ldots \geq \lambda_p \geq 0$. Define the principal components $Y_i = \symbf{e}'_i\symbf{X}$ for $i = 1, \ldots, p$. Then, the sum of variances of the original variables is equal to the sum of the eigenvalues of $\symbf{\Sigma}$, which is also equal to the sum of variances of the principal components:
+
+$$
+\sum_{i=1}^{p} \sigma_{ii} = \sum_{i=1}^{p} \text{Var}(X_i) = \sum_{i=1}^{p} \lambda_i = \sum_{i=1}^{p} \text{Var}(Y_i).
+$$
+
+# Proof of theorem three {.smaller}
+
+The trace of the covariance matrix $\symbf{\Sigma}$, which is the sum of the variances of the original variables.
+
+Since $\symbf{\Sigma}$ can be decomposed as $\symbf{\Sigma} = \symbf{PDP}'$, where $\symbf{D}$ is the diagonal matrix of eigenvalues and $\symbf{P}$ is the matrix of eigenvectors, we have:
+
+$$
+\text{trace}(\symbf{\Sigma}) = \text{trace}(\symbf{PDP}') = \text{trace}(\symbf{D}) = \sum_{i=1}^{p} \lambda_i = \sum_{i=1}^{p} \text{Var}(Y_i).
+$$
+
+# Contribution per component
+
+Theorem 2 showed that
+
+$$
+\text{trace}(\symbf{\Sigma}) = \sum \lambda_i = \sum \text{Var}(Y_i).
+$$
+
+This implies that the proportion of the total variance due to the $k^{th}$ principal component is
+
+$$
+\frac{\lambda_k}{\sum \lambda_i },\quad k=1,...p,
+$$
+
+and (due to being uncorrelated) the proportion of variance accounted for by the first $r$ principal components is given by
+
+$$
+\frac{\sum_{i=1}^r \lambda_i }{\sum \lambda_i }.
+$$
+
+# The scree plot
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- The scree plot is a graphical representation of the proportion of variance accounted for by each principal component.
+- It plots $(i, \lambda_i/\sum_{j=1}^{p} \lambda_j)$ for $i = 1, \ldots, p$.
+- Typically, we look for the "elbow" in the plot, which indicates the number of principal components to retain.
+- Beyond this point, each additional principal component captures little additional variation.
+
+:::
+
+::: {.column width="50%"}
+
+```{r}
+plot_tbl <- tibble::tibble(
+  pc = 1:7,
+  prop_var = eig_obj$values / sum(eig_obj$values)
+)
+plot_tbl_point <- purrr::map_df(
+  seq(5.5, 5.502, length.out = 9), function(x) {
+    plot_tbl |>
+      dplyr::filter(pc == 2) |>
+      dplyr::mutate(size_point = x)
+  }
+)
+p <-  ggplot(
+  data = plot_tbl
+  ) +
+    geom_line(
+      aes(x = pc, y = prop_var),
+      stat = "identity",
+      colour = "dodgerblue"
+    ) +
+    geom_point(
+      data = plot_tbl_point |> dplyr::slice(5:9),
+      aes(x = pc, y = prop_var, size = size_point),
+      colour = "mediumseagreen",
+      alpha = 0.9,
+      shape = 1,
+      show.legend = FALSE
+    ) +
+    geom_point(
+      aes(x = pc, y = prop_var),
+      colour = "dodgerblue",
+      alpha = 0.9,
+      size = 1.5
+    ) +
+    labs(
+      x = "Principal component index",
+      y = "Proportion of variance"
+    ) +
+    cowplot::theme_cowplot() +
+    cowplot::background_grid(major = "xy") +
+    theme(
+      panel.background = element_rect(fill = "white"),
+      plot.background = element_rect(fill = "white")
+    ) +
+    scale_x_continuous(
+      breaks = 1:7
+    )
+path_p_scree <- projr::projr_path_get("cache", "fig", "p-scree.pdf")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_scree,
+  units = "cm",
+  base_height = 7,
+  base_width = 8 * (7/6)
+)
+```
+
+```{r}
+#| results: asis
+knitr::include_graphics(path_p_scree)
+```
+
+:::
+
+::::
+
+# Theorem 4: Correlation with original variables
+
+For $Y_i$ and $X_k$ the $i$-th principal component and the $k$-th original variable, respectively, we have that
+
+$$
+\rho_{Y_i,X_k} = \frac{\sqrt{\lambda_i}e_{ik}}{\sqrt{\sigma_{kk}}}.
+$$
+
+
+# Proof of theorem 3
+
+Let $\symbf{a}_k'$ equal 1 in position $k$ and 0 otherwise, so that $X_k = \symbf{f}_k'\symbf{X}$. We note that
+
+$$
+\text{Cov}(X_k,Y_i) = \text{Cov}(\symbf{a}_k'\symbf{X},\symbf{e}_i'\symbf{X})=\symbf{a}_k'\symbf{\Sigma}\symbf{e}_i=\symbf{a}_k'\symbf{PDP'}\symbf{e}_i=\lambda_i\symbf{a}_k'\symbf{e}_i=\lambda_ie_{ik}.
+$$
+
+We know that $\text{Var}(Y_i)= \lambda_i$ and $\text{Var}(X_k)=\sigma_{kk}$, so
+
+$$
+\rho_{Y_i,X_k}=\frac{\text{Cov}(Y_i,X_k)}{\sqrt{\text{Var}(Y_i)}\sqrt{\text{Var}
+(X_k)}}= \frac{\sqrt{\lambda_i}e_{ik}}{\sqrt{\sigma_{kk}}}
+$$
+
+# Example {.smaller}
+
+::::{.columns}
+
+:::{.column width="70%"}
+
+- From our previous example where we had two sets of correlated variables, we obtain the following correlation matrix: 
+
+```{r}
+#| results: asis
+P <- eig_obj$vectors
+D <- diag(eig_obj$values)
+var_mat <- diag(diag(vcov_mat))
+numerator <- P %*% sqrt(D)
+corr_mat <- var_mat %*% numerator
+rownames(corr_mat) <- paste0("V", 1:7)
+colnames(corr_mat) <- paste0("PC", 1:7)
+corr_mat |> signif(2) |> knitr::kable()
+```
+
+:::
+
+:::{.column width="30%"}
+
+- As all variables have unit variance, the only things that matter are the eigenvalue and the eigenvector.
+  - High loading and high eigenvalue $\rightarrow$ high correlation.
+- Higher variance (hypothetically) decorrelates PCs and original variables.
+
+:::
+
+::::
+
+# Constant-density contours I {.smaller}
+
+By the definition of the MVN PDF, the density of $X$ is constant on the ellipsoid defined by the equation
+
+$$
+(\symbf{x} - \mu)'\Sigma^{-1}(\symbf{x} - \mu) = c^2.
+$$
+
+The ellipsoid's shape, size and orientation are determined by the eigendecomposition of $\symbf{\Sigma}$.
+
+WLOG, we assume $\symbf{\mu} = \symbf{0}$. Then, the ellipsoid is defined by
+
+$$
+c^2 = x'\Sigma^{-1}x = \frac{1}{\lambda_1}(\symbf{e}_1'\symbf{x})^2 + \frac{1}{\lambda_2}(\symbf{e}_2'\symbf{x})^2 + \ldots + \frac{1}{\lambda_p}(\symbf{e}_p'\symbf{x})^2
+$$
+
+after multiplying out.
+
+# Constant-density contours (cont.) {.smaller}
+
+The axes of the ellipse are then given by
+
+$$
+\pm c\sqrt{\lambda_i}\symbf{e}_i, \quad i = 1,2,\ldots,p.
+$$
+
+The eigenvectors therefore define the direction and the eigenvalues the length of the axes of the ellipsoid.
+
+Furthermore, if we set $y_i = \symbf{e}_i'\symbf{x}$ (the $i$-th principal componet for $\symbf{x}$), we have
+
+$$
+c^2 = \frac{1}{\lambda_1}y_1^2 + \ldots + \frac{1}{\lambda_p}y_p^2.
+$$
+
+The equation is therefore satisfied by the principal components of $\symbf{x}$.
+
+# Variance standardisation
+
+- Before applying PCA, one can standardise the variances to have unit variance.
+- This may be appropriate when:
+  - the variances have different units (e.g. weight in kg vs annual income in rands), or
+  - the variances have different scales (e.g. some genes are extremely rare whereas others are abundantly expressed), or
+  - we wish to eliminate any effect of differences in variance on downstream analyses, e.g. when applying penalised regression.
+- Similar comments go for logging the data, or applying other transformations.
+- All results go through in exactly the same way, with adjustments made in interpreting exactly what variables the principal components capture.
+
+# Standardisation example
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+We have the following covariance matrix:
+
+```{r}
+cov_mat <- matrix(
+  c(1, 4, 4, 100), nrow = 2
+)
+cov_mat
+```
+
+which produces the following eigendecomposition:
+
+```{r}
+eigen(cov_mat) |> lapply(function(x) signif(x, 2))
+```
+
+:::
+
+:::{.column width="50%"}
+
+The associated correlation matrix:
+
+```{r}
+diag_mat_sd_inv <- diag(diag(cov_mat), nrow = nrow(cov_mat)) |> sqrt() |> solve()
+rho_mat <- diag_mat_sd_inv %*% cov_mat %*% diag_mat_sd_inv
+rho_mat 
+```
+
+has the following eigendecomposition:
+
+```{r}
+eigen(rho_mat) |> lapply(function(x) signif(x, 2))
+```
+
+The eigenvectors are in very different directions.
+
+:::
+
+::::
+
+# Sample principal components {.smaller}
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+In practice, we do not know $\symbf{\Sigma}$ and must estimate it by the sample covariance matrix $\symbf{S}=n^{-1}\symbf{X}'\symbf{X}$ (assuming $\symbf{X}$ is mean-centred; adjust otherwise).
+
+For example, sample covariance matrix of the height and weight data is:
+
+```{r}
+#| echo: true
+#| results: asis
+cov_mat <- hw_tbl |>
+  as.matrix() |>
+  cov()
+cov_mat |> signif(2) |> knitr::kable()
+```
+
+:::
+
+:::{.column width="50%"}
+
+- The eigen decomposition is then:
+
+```{r}
+#| echo: true
+eigen(cov_mat) |>
+  lapply(function(x) signif(x, 2))
+```
+
+So, the first principal component is given by projections onto $[1, 1]$.
+
+:::
+
+::::
+
+
+# Sample principal components (cont.) {.smaller}
+
+If $\symbf{X} \sim \mathcal{N}(\symbf{0}, \symbf{\Sigma})$, then we have that that
+
+$$
+Y_i \sim \mathcal{N}(0, \lambda_i) \quad \text{and} \quad \symbf{Y} \sim \mathcal{N}_p(\symbf{0}, \symbf{\Lambda}).
+$$
+
+In the height and weight example then, we estimate this to be
+
+$$
+\symbf{Y} \sim \mathcal{N}_p(\symbf{0}, \begin{bmatrix} 1.71 & 0 \\ 0 & 0.31 \end{bmatrix}).
+$$
+
+# Approximating a matrix $\symbf{X}$
+
+Suppose we have a matrix $\symbf{X}$ of size $n \times p$ with rank $t$ and we wish to approximate it with a matrix $\hat{\symbf{X}}$ of rank $s < t$.
+
+In other words, we wish to find a matrix
+
+$$
+\hat{\symbf{X}} = \symbf{A}\symbf{B},
+$$
+
+where $\symbf{A}$ is of size $n \times s$ and $\symbf{B}$ is of size $s \times p$, such that
+
+$$
+\symbf{X} \approx \hat{\symbf{X}}.
+$$
+
+We want a rank $s$ approximation to the matrix $\symbf{X}$.
+
+# Approximation example 
+
+In the height and weight dataset, we obtained a size variable (the first principal component) that was an equally-weighted combination of weight and height, as follows:
+
+$$
+\text{size} = \frac{1}{\sqrt{2}}\text{height} + \frac{1}{\sqrt{2}}\text{weight}. = \begin{pmatrix} \text{height} && \text{weight} \end{pmatrix} \begin{pmatrix} \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} \end{pmatrix}.
+$$
+
+We'll show that can approximate the original height and weight variables using the size variable:
+
+$$
+[\text{height}, \text{weight}] \approx \text{size} \begin{pmatrix} \frac{1}{\sqrt{2}} & \frac{1}{\sqrt{2}} \end{pmatrix}  = \begin{pmatrix} 1/\sqrt{2} \text{size} & 1/\sqrt{2} \text{size} \end{pmatrix}.
+$$
+
+We therefore have a "rule" for mapping size onto weight and height.
+
+# Approximation example (cont.) {.smaller}
+
+Suppose that a given observation has height 0.7 and weight 0.5.
+
+This implies a first principal component (size) of
+
+$$
+\text{size} = \frac{1}{\sqrt{2}}\times 0.7 + \frac{1}{\sqrt{2}}\times 0.5 = 0.85.
+$$
+
+We can approximate the height and weight as follows:
+
+$$
+\begin{pmatrix} \hat{\text{height}} & \hat{\text{weight}} \end{pmatrix} \approx \begin{pmatrix} 1/\sqrt{2} \times 0.85 & 1/\sqrt{2} \times 0.85 \end{pmatrix} = \begin{pmatrix} 0.6 & 0.6 \end{pmatrix}.
+$$
+
+Considering the standard deviation is (by construction) 1, the error (0.1 in both cases) is small.
+
+If weight and height were very different, the error would be larger (why?).
+
+# Why are about approximation?
+
+Whether or not PCA is a good approximation matters because
+
+a) we may actually want to reconstitute the original data after compression (e.g. image compression),
+b) we want to know we're not losing too much information and
+c) it helps provide some intuition about what we're doing.
+
+# Minimising the least squares error of the approximation
+
+We wish to find a matrix $\hat{\symbf{X}}$ of rank $s$ that that minimises the least squares error:
+
+$$
+\text{min}_{\hat{\symbf{X}}} \sum_{i=1}^{n} \sum_{j=1}^{p} (x_{ij} - \hat{x}_{ij})^2 = \text{min}_{\hat{\symbf{X}}} \text{trace}( (\symbf{X} - \hat{\symbf{X}})(\symbf{X} - \hat{\symbf{X}})').
+$$
+
+We are going to
+
+1. prove that SVD can be used to find $\hat{\symbf{X}}$, and
+2. that the PCA and SVD are equivalent in this context.
+
+# Theorem 5a: SVD approximation
+
+Let $\symbf{X}$ be a matrix of size $n \times p$ with rank $t$ and SVD $\symbf{X} = \symbf{U}\symbf{D}\symbf{V}'$. Then the best rank $s$ approximation to $\symbf{X}$ is given by
+
+$$
+\hat{\symbf{X}} = \symbf{U}\symbf{D}\symbf{J}_s\symbf{V}',
+$$
+
+where $\symbf{J}_s$ is the matrix of size $p \times p$ with the first $s$ diagonal elements equal to 1 and the rest equal to 0.
+
+This is equivalent to
+
+$$
+\hat{\symbf{X}} = \sum_{i=1}^{s} d_i\symbf{u}_i\symbf{v}_i',
+$$
+
+where $\symbf{u}_i$ and $\symbf{v}_i$ are the left- and right-singular vectors and $d_i$ is the $i$-th singular value of $\symbf{X}$.
+
+# Proof of Theorem 5a {.smaller} 
+
+\begin{align*}
+& \text{We use } UU^* = I_m \text{ and } VV^* = I_k \text{ to write the sum of squares as} \\
+& \text{tr}[(A - B)(A - B)'] = \text{tr}[UU'(A - B)VV'(A - B)'] \text{ (by orthonormality)}, \\
+& = \text{tr}[U'(A - B)VV'(A - B)U] \text{ (by cyclic trace property)}, \\
+& = \text{tr}[U'(A - B)V(U'(A - B)V)'] \text{ (as }\mathrm{tr}(AB)=B'A'\text{)},\\
+& = \text{tr}[(U'AV-U'BV)(U'AV-U'BV)^*] \text{ (multiplying in)}. \\
+& \text{As } U'AV=U'UDV'V=D \text{ and letting } C = U'BV, \text{ from above we have that} \\
+& \text{tr}[(A - B)(A - B)'] = \text{tr}[(D - C)(D - C)'] \\
+& = \sum_{i,j=1}^{m} (d_{ij} - c_{ij})^2, \\
+& = \sum_{i=1}^{m} (d_i - c_{ii})^2 + \sum_{i\neq j} c_{ij}^2 \text{ (as D is diagonal).}
+\end{align*}
+
+# Proof of Theorem 5a (cont.) {.smaller} 
+
+The quantity $\sum_{i=1}^{m} (d_i - c_{ii})^2 + \sum_{i\neq j} c_{ij}^2$ is minimised when 
+
+1. $c_{ij} = 0$ for $i \neq j$, 
+2. $c_{ii} = d_i$ for $i \leq s$, and
+3. $c_{ii}=0$ otherwise.
+
+We choose the $s$ largest singular values as these reduce the error terms along the diagonals the most.
+We cannot choose more than $s$ as we $\symbf{U}'\symbf{B}\symbf{V}$ is diagonal, meaning the number of non-zero diagonal elements is its rank and its rank must be $s$ or less.
+
+This implies that 
+
+$\symbf{U}'\symbf{B}\symbf{V} = \symbf{D}\symbf{J}_s \Rightarrow \symbf{B} = \symbf{U}\symbf{D}\symbf{J}_s\symbf{V}'.$
+
+# Theorem 5b: PCA leads to same approximation as the SVD {.smaller}
+
+The PCA approximation to $\symbf{X}$ is given by $\tilde{\symbf{X}}=\symbf{Y}\symbf{J}_k\symbf{P}'$, where $\symbf{J}_k$ is the matrix of size $p \times p$ with the first $k$ diagonal elements equal to 1 and the rest equal to 0.
+
+This is the same as the SVD approximation, i.e.
+
+$$
+\hat{\symbf{X}} = \symbf{U}\symbf{D}\symbf{J}_k\symbf{V}' = \tilde{\symbf{X}} = \symbf{Y}\symbf{J}_k\symbf{P}'.
+$$
+
+# Theorom 5b: proof {.smaller}
+
+The principal components are given by
+
+$$
+\symbf{Y} = \symbf{X}\symbf{P}.
+$$
+
+The first $k$ principal components are given by
+
+$$
+\symbf{Y}\symbf{J}_k = \symbf{X}\symbf{P}\symbf{J}_k,
+$$
+
+setting the last $p-k$ columns of $\symbf{P}$ to 0.
+
+This implies that the approximation to $\symbf{X}$ is given by 
+
+$$
+\tilde{\symbf{X}} = \symbf{Y}\symbf{J}_k\symbf{P}'.
+$$
+
+# Theorom 5b: proof (cont.) {.smaller}
+
+The columns of $\symbf{P}$ are the eigenvectors of $\symbf{X}'\symbf{X}$, which are the same as the right singular vectors of $\symbf{X}$, i.e.
+
+$$
+\symbf{P} = \symbf{V}.
+$$
+
+This implies that
+
+$$
+\tilde{\symbf{X}} = \symbf{Y}\symbf{J}_k\symbf{P} = \symbf{XV}\symbf{J}_k\symbf{V}' = \symbf{U}\symbf{D}\symbf{VV}'\symbf{J}_k\symbf{V}' = \symbf{U}\symbf{D}\symbf{J}_k\symbf{V}' = \hat{\symbf{X}}.
+$$
+
+# Example
+
+:::: {.columns}
+
+::: {.column width="57%"}
+
+We read in data of measurements Painted Turtles [@jolicoeur_mosimann60]:
+
+```{r}
+#| eval: false
+#| echo: true
+if (!requireNamespace(
+  "remotes", quietly = TRUE
+  )) {
+  install.packages("remotes")
+}
+"MiguelRodo/DataTidy23RodoHonsMult@2024" |>
+  remotes::install_github()
+```
+
+:::
+
+::: {.column width="43%"}
+
+```{r}
+#| echo: true
+data(
+  "data_tidy_turtle",
+  package = "DataTidy23RodoHonsMult"
+)
+data_tidy_turtle
+```
+
+:::
+
+::::
+
+# Measurements highly correlated
+
+::::{.columns}
+
+:::{.column width="50%"}
+
+```{r}
+#| include: false
+plot_tbl_turtle <- data_tidy_turtle |>
+  tidyr::pivot_longer(
+    length:width,
+    names_to = "x_var",
+    values_to = "x_val"
+  )
+p <- ggplot(
+  plot_tbl_turtle,
+  aes(x = x_val, y = height, col = gender)
+) +
+  geom_point(alpha = 0.75) +
+  scale_colour_manual(
+    values = c(male = "dodgerblue", female = "mediumseagreen")
+   ) +
+  facet_wrap(~x_var, scales = "free", ncol =1 ) +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  theme( 
+    panel.background = element_rect(fill = "white"), 
+    plot.background = element_rect(fill = "white")
+  ) +
+  labs(
+    x = "Measurement",
+    y = "Height"
+  ) +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_blank()
+  ) +
+  theme(
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+  ) +
+  theme(
+    strip.background = element_rect(fill = "white", colour = "gray25")
+  )
+path_p_turtle <- projr::projr_path_get("cache", "fig", "p-turtle.png")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_turtle,
+  units = "cm",
+  base_height = 7,
+  base_width = 5
+)
+```
+
+```{r}
+#| results: "asis"
+knitr::include_graphics(path_p_turtle)
+```
+
+:::
+
+:::{.column width="50%"}
+
+- Due to the correlation, we may likely summarise the data very well using principal components.
+- We'll use the `prcomp` function in R, and do it from first principles.
+
+:::
+
+::::
+
+# Using the `prcomp` function I {.smaller}
+
+::::{.columns}
+
+:::{.column width="70%"}
+
+```{r}
+#| echo: true
+pr_obj <- prcomp(
+  ~log(length) + log(width) + log(height),
+  data = data_tidy_turtle,
+  retx = TRUE
+)
+pr_obj
+```
+
+:::
+
+:::{.column width="30%"}
+
+- The first principal component has a markedly higher standard deviation.
+- It is weighted roughly evenly across the variables, indicating it is a general "size" variable.
+
+:::
+
+::::
+
+# Using the `prcomp` function II {.smaller}
+
+::::{.columns}
+
+:::{.column width="70%"}
+
+```{r}
+#| echo: true
+summary(pr_obj)
+```
+
+:::
+
+:::{.column width="30%"}
+
+- The `summary` function provides the per-component standard deviation and variance, as well as the cumulative variance.
+
+:::
+
+::::
+
+# Using the `prcomp` function III {.smaller}
+
+::::{.columns}
+
+:::{.column width="70%"}
+
+```{r}
+#| echo: true
+plot(pr_obj)
+```
+
+:::
+
+:::{.column width="30%"}
+
+- The `plot` command provides the scree plot.
+- Clearly, unless we're specifically interested in non-size variables we should only retain the first principal component.
+
+:::
+
+::::
+
+# Using the `prcomp` function IV {.smaller}
+
+Here are the principal components:
+
+```{r}
+#| echo: true
+pr_obj$x |> head() |> signif(2)
+```
+
+# From first principles I {.smaller}
+
+Using the SVD, we can obtain the same results as the `prcomp` function.
+
+Removing gender, logging and centering the data:
+
+```{r}
+#| echo: true
+data_turtle_mat <- data_tidy_turtle |>
+  dplyr::select(-gender) |>
+  dplyr::mutate(across(everything(), log)) |>
+  dplyr::mutate(across(everything(), function(x) x - mean(x))) |>
+  as.matrix()
+```
+
+We then calculate the SVD:
+
+```{r}
+#| echo: true
+svd_turtle <- svd(data_turtle_mat)
+```
+
+# From first principles II {.smaller}
+
+The eigenvalues are the squares of the singular values:
+
+```{r}
+#| echo: true
+svd_turtle$d^2 |> signif(3)
+```
+
+The right-singular vectors are the eigenvectors of the covariance matrix, and hence are the loading vectors, implying the principal components are given by:
+
+```{r}
+#| echo: true
+(data_turtle_mat %*% svd_turtle$v) |> head() |> signif(2)
+```
+
+# Biplots
+
+- Since each data point has many variables, graphical display is cumbersome.
+- However, we may use PCA to provide an approximate graphical display of the data.
+- It will show both:
+  - Each observation, and
+  - Each variable.
+- Hence, "bi"plot.
+
+# Definition of a biplot
+
+Suppose we have a rank $s$ matrix $\hat{\symbf{X}}:n\times p$.
+Then we can write
+
+$$
+\hat{\symbf{X}} = \symbf{A}\symbf{B},
+$$
+
+where $\symbf{A}$ is of size $n \times s$ and $\symbf{B}$ is of size $s \times p$.
+
+The biplot is a plot of the rows of $\symbf{A}$ and the columns of $\symbf{B}$.
+
+Typically, we plot the rows as points and the columns as vectors.
+
+# A PCA biplot
+
+The PCA approximation to a matrix $\symbf{X}$ is given by
+
+$$
+\symbf{Y}\symbf{J}_k\symbf{P}'=\symbf{Y}\symbf{J}_k\symbf{J}_k\symbf{P}'=\symbf{A}\symbf{B},
+$$
+
+where $\symbf{A}=\symbf{Y}\symbf{J}_k$ and $\symbf{B}=\symbf{J}_k\symbf{P}'$.
+
+Typically, we set $k=2$ and ignore the all-zero columns/rows of $\symbf{A}$ and $\symbf{B}$.
+
+The rows of $\symbf{Y}$ are the scores (representing the observations) and the rows of $\symbf{P}'$ are the loadings (representing the variables).
+
+# Interpreting a biplot
+
+- An observation has (approximately) an above-average value of a variable if it is close to the tip of the vector representing that variable.
+- Two variables are (approximately) correlated if their vectors are close together.
+  - They are (approximately) uncorrelated if they are orthogonal.
+
+\centering
+
+\includegraphics[width=0.65\textwidth]{_raw/img/2024/biplot.png}
+
+# Resources
+
+- Source code is on [GitHub](https://github.com/MiguelRodo/Slides23RodoHonsMult/blob/2024/SlidesHonsMultL7PCA.qmd).
+  - Suppressed code (e.g. to create figures) is available there.
+
+## References
+

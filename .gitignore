@@ -11,19 +11,14 @@ Test.qmd
 # Start of projr section: do not edit by hand (until `# End of projr section`)
 _raw/img/2024/**
 _raw/img/2025/**
-_reference/**
 _tmp/**
 _output/**
 docs/**
 BUILDLOG.md
 Rplots.pdf
-SlidesHonsMultL11CA.pdf/**
+SlidesHonsMultL11CA.log
 SlidesHonsMultL12DAFishers_files/**
 SlidesHonsMultL12DAFishers.html/**
-SlidesHonsMultL8Reg.pdf/**
-SlidesHonsMultL9FA.pdf/**
-SlidesL7PCA_files/**
-SlidesL7PCA.html/**
 # End of projr section
 
 *_files

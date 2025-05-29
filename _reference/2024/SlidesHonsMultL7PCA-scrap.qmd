@@ -1,0 +1,812 @@
+# Projection onto a vector ("line")
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+- Suppose that we wish to project the vector $\symbf{b}$ onto the vector $\symbf{a}$.
+  - The projection is the nearest point to $\symbf{b}$ on the line spanned by $\symbf{a}$.
+- The projection of $\symbf{b}$ onto $\symbf{a}$ is given by:
+
+$$
+\text{proj}_{\symbf{a}}(\symbf{b}) = \frac{\symbf{a}^T \symbf{b}}{\symbf{a}^T \symbf{a}} \symbf{a}
+$$
+
+- Here is a diagram of such a projection. Suppose that we want to project the vector $\begin{pmatrix} 2 \\ 1 \end{pmatrix}$ onto the vector $\begin{pmatrix} 1 \\ 1 \end{pmatrix}$.
+
+:::
+
+::: {.column width="50%"}
+
+```{r}
+#| echo: false
+a <- c(2, 2)
+b <- c(2, 1)
+proj <- as.numeric((a %*% b) / (a %*% a)) * a
+plot_tbl <- tibble::tibble(
+  x = c(0, a[1], 0, b[1], 0, proj[1]),
+  y = c(0, a[2], 0, b[2], 0, proj[2]),
+  label = rep(c("a", "b", "proj(a, b)"), each = 2)
+)
+plot_tbl <- tibble::tibble(
+  x_start = rep(0, 3),
+  y_start = rep(0, 3),
+  x_end = c(a[1], b[1], proj[1]),
+  y_end = c(a[2], b[2], proj[2]),
+  label = rep(c("a", "b", "proj(a, b)"), each = 1)
+)
+plot_tbl_error <- tibble::tibble(
+  x_start = b[1],
+  y_start = b[2],
+  x_end = proj[1],
+  y_end = proj[2],
+  label = "error"
+)
+p <- ggplot(
+  plot_tbl,
+  aes(x = x, y = y, label = label, group = label)
+) +
+  ggrepel::geom_text_repel(
+    data = plot_tbl |> dplyr::filter(label %in% c("a", "b")),
+    mapping = aes(x = x_end, y = y_end),
+    nudge_x = -0.25, nudge_y = 0.15,
+    col = "gray25", min.segment.length = 2
+  ) +
+  ggrepel::geom_text_repel(
+    data = plot_tbl |> dplyr::filter(label == "proj(a, b)"),
+    mapping = aes(x = x_end, y = y_end),
+    nudge_x = -0.33, nudge_y = 0.23,
+    col = "gray25", min.segment.length = 2
+  ) +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  geom_segment(
+    data = plot_tbl |> dplyr::filter(label != "proj(a, b)"),
+    aes(x = x_start, y = y_start, xend = x_end, yend = y_end),
+    arrow = grid::arrow(length = unit(0.3, "cm"))
+  ) +
+  geom_segment(
+    data = plot_tbl |> dplyr::filter(label == "proj(a, b)"),
+    aes(x = x_start, y = y_start, xend = x_end, yend = y_end),
+    arrow = grid::arrow(length = unit(0.3, "cm")), col = "dodgerblue"
+  ) +
+  geom_segment(
+    data = plot_tbl_error,
+    aes(x = x_start, y = y_start, xend = x_end, yend = y_end),
+    col = "red", linetype = "dotted"
+  ) +
+  theme( 
+    panel.background = element_rect(fill = "white"), 
+    plot.background = element_rect(fill = "white"),
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    axis.text = element_blank()
+  ) +
+  coord_equal()
+path_p_proj_init <- projr::projr_path_get("cache", "fig", "p-proj-init.png")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_proj_init,
+  units = "cm",
+  base_height = 6,
+  base_width = 6
+)
+```
+
+\centering
+```{r}
+knitr::include_graphics(path_p_proj_init)
+```
+
+:::
+
+::::
+
+# Projecting onto a unit vector
+
+- If $\symbf{a}$ is a unit vector, then the projection of $\symbf{b}$ onto $\symbf{a}$ is given by:
+
+$$
+\text{proj}_{\symbf{a}}(\symbf{b}) = (\symbf{a}^T \symbf{b})\symbf{a}.
+$$
+
+- This means that the length of the projection is the dot product of $\symbf{a}$ and $\symbf{b}$.
+  - This is a linear combination of the elements of $\symbf{b}$: $\sum_{i=1}^p a_i b_i$.
+- Note that the length of $\symbf{a}$ does not affect the projection.
+
+# Two-variable example
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Suppose we have a dataset with two correlated variables, perhaps weight and height.
+- Then, the scatterplot of these may look something like this:
+
+```{r}
+set.seed(2106)
+plot_tbl <- tibble::tibble(
+  height = rnorm(100, 160, 10)
+) |>
+  dplyr::mutate(
+    weight = height / 2.5 + rnorm(100, 0, 3.5 * height / 160)
+  ) |>
+  dplyr::mutate(
+    across(everything(), function(x) (x - mean(x)) / sd(x))
+  ) |>
+  dplyr::arrange(height)
+hw_tbl <- plot_tbl
+p <- ggplot(
+  aes(x = height, y = weight),
+  data = plot_tbl
+) +
+  geom_vline(
+    xintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  geom_hline(
+    yintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  theme( 
+    panel.background = element_rect(fill = "white"), 
+    plot.background = element_rect(fill = "white")
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  ) +
+  labs(
+    x = "Height",
+    y = "Weight"
+  ) +
+  geom_point(alpha = 0.85, col = "dodgerblue")
+path_p_height_weight <- projr::projr_path_get("cache", "fig", "p-height-weight.png")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_height_weight,
+  units = "cm",
+  base_height = 5,
+  base_width = 5
+)
+```
+
+\centering
+
+```{r}
+knitr::include_graphics(path_p_height_weight)
+```
+
+:::
+
+::: {.column width="50%"}
+
+- We could combine these two variables into a single variable, representing size: $a_1 \times \text{height} + a_2 \times \text{weight}$.
+  - If we restrict $a_1^2 + a_2^2 = 1$, then this equivalent to projecting the height and weight vector ($\symbf{b} = [\text{height}, \text{weight}]$) onto the line spanned by the vector $\symbf{a} = [a_1, a_2]$.
+  - Since the projection is independent of the length of whatever you're projecting onto, this is equivalent to projecting onto any vector in the same direction as $[a_1, a_2]$.
+
+:::
+
+::::
+
+# Two-variable example (cont.) {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- The new variable is then the *length and sign of the projection*.
+- For example, suppose we have the point $[1.2, 0.3]$:
+
+```{r}
+set.seed(2106)
+plot_tbl <- tibble::tibble(
+  height = rnorm(100, 160, 10)
+) |>
+  dplyr::mutate(
+    weight = height / 2.5 + rnorm(100, 0, 3.5 * height / 160)
+  ) |>
+  dplyr::mutate(
+    across(everything(), function(x) (x - mean(x)) / sd(x))
+  ) |>
+  dplyr::arrange(height)
+proj_list <- list(c(1 / sqrt(2), 1 / sqrt(2)), c(1, 0), c(0, 1))[1]
+plot_tbl_ind <- tibble::tibble(
+  height = 1.2,
+  weight = 0.3
+)
+plot_tbl_proj_ind <- proj_list |>
+  purrr::map_df(~ mutate_proj(plot_tbl_ind, .x))
+
+p <- ggplot(
+  data = plot_tbl
+) +
+  geom_vline(
+    xintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  geom_hline(
+    yintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  theme(
+    panel.background = element_rect(fill = "white"),
+    plot.background = element_rect(fill = "white")
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  ) +
+  labs(
+    x = "Height",
+    y = "Weight"
+  ) +
+  geom_point(aes(x = height, y = weight), alpha = 0.1, col = "dodgerblue") +
+  geom_point(
+    data = plot_tbl_proj_ind,
+    aes(x = height, y = weight), col = "mediumseagreen"
+  ) +
+  geom_segment(
+    data = plot_tbl_proj_ind,
+    aes(x = height, y = weight, xend = proj_x, yend = proj_y, group = proj),
+    col = "gray25", arrow = arrow(length = unit(0.3, "cm")), linetype = "solid"
+  ) +
+  geom_abline(
+    data = plot_tbl_proj_ind |>
+      dplyr::mutate(slope = a2 / a1) |>
+      dplyr::filter(slope %in% c(0,1)),
+    aes(intercept = 0, slope = slope),
+    col = "purple"
+  ) +
+  coord_cartesian(xlim = c(0, 2.5), ylim = c(0, 2.5)) +
+  ggrepel::geom_text_repel(
+    data = plot_tbl_proj_ind |>
+      dplyr::mutate(a1 = a1 |> signif(2), a2 = a2 |> signif(2)),
+    aes(x = a1, y = a2, label = proj),
+    nudge_x = 0.1, nudge_y = 0.1
+  )
+path_p_height_weight_ind <- projr::projr_path_get("cache", "fig", "p-height-weight-ind.png")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_height_weight_ind,
+  units = "cm",
+  base_height = 5,
+  base_width = 5
+)
+```
+
+\centering
+
+```{r}
+#| results: asis
+knitr::include_graphics(path_p_height_weight_ind)
+```
+
+:::
+
+::: {.column width="50%"}
+
+- If we set $\symbf{a} = [1/\sqrt{2}, 1/\sqrt{2}]$, then the new variable is $1/\sqrt{2} \times 1.2 + 1/\sqrt{2} \times 0.3$.
+- We go from the matrix of vairables
+
+```{r}
+tibble::tibble(height = 1.2, weight = 0.3) |> as.data.frame()
+```
+
+- to
+
+```{r}
+tibble::tibble(size = 1.2 / sqrt(2) + 0.3 / sqrt(2)) |> as.data.frame()
+```
+
+:::
+
+::::
+
+
+
+# Projections and axes
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- If we set $\symbf{a} = [1, 0]$, then the "new" variable is the height.
+- If we set $\symbf{a} = [0, 1]$, then the "new" variable is the weight.
+
+- The point of these last two is that original coordinates are, in a sense, themselves projections.
+- So, if we consider $[1, 0]$ and $[0, 1]$ as axes, then we can consider $[1/\sqrt{2}, 1/\sqrt{2}]$ as a new axis.
+
+:::
+
+::: {.column width="50%"}
+
+
+```{r}
+set.seed(2106)
+plot_tbl <- tibble::tibble(
+  height = rnorm(100, 160, 10)
+) |>
+  dplyr::mutate(
+    weight = height / 2.5 + rnorm(100, 0, 3.5 * height / 160)
+  ) |>
+  dplyr::mutate(
+    across(everything(), function(x) (x - mean(x)) / sd(x))
+  ) |>
+  dplyr::arrange(height)
+proj_list <- list(c(1 / sqrt(2), 1 / sqrt(2)), c(1, 0), c(0, 1))[2:3]
+plot_tbl_ind <- tibble::tibble(
+  height = 1.2,
+  weight = 0.3
+)
+plot_tbl_proj_ind <- proj_list |>
+  purrr::map_df(~ mutate_proj(plot_tbl_ind, .x))
+
+p <- ggplot(
+  data = plot_tbl
+) +
+  geom_vline(
+    xintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  geom_hline(
+    yintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  theme(
+    panel.background = element_rect(fill = "white"),
+    plot.background = element_rect(fill = "white")
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  ) +
+  labs(
+    x = "Height",
+    y = "Weight"
+  ) +
+  geom_point(aes(x = height, y = weight), alpha = 0.1, col = "dodgerblue") +
+  geom_point(
+    data = plot_tbl_proj_ind,
+    aes(x = height, y = weight), col = "mediumseagreen"
+  ) +
+  geom_segment(
+    data = plot_tbl_proj_ind,
+    aes(x = height, y = weight, xend = proj_x, yend = proj_y, group = proj),
+    col = "gray25", arrow = arrow(length = unit(0.3, "cm")), linetype = "solid"
+  ) +
+  geom_abline(
+    data = plot_tbl_proj_ind |>
+      dplyr::mutate(slope = a2 / a1) |>
+      dplyr::filter(slope %in% c(0,1)),
+    aes(intercept = 0, slope = slope),
+    col = "purple"
+  ) +
+  geom_vline(
+    xintercept = 0,
+    col = "purple"
+  ) +
+  coord_cartesian(xlim = c(0, 2.5), ylim = c(0, 2.5)) +
+  ggrepel::geom_text_repel(
+    data = plot_tbl_proj_ind |>
+      dplyr::mutate(a1 = a1 |> signif(2), a2 = a2 |> signif(2)),
+    aes(x = a1, y = a2, label = proj),
+    nudge_x = 0.1, nudge_y = 0.1
+  )
+path_p_height_weight_ind_orig <- projr::projr_path_get("cache", "fig", "p-height-weight-ind-orig.png")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_height_weight_ind_orig,
+  units = "cm",
+  base_height = 5,
+  base_width = 5
+)
+```
+
+\centering
+
+```{r}
+#| results: asis
+knitr::include_graphics(path_p_height_weight_ind_orig)
+```
+
+:::
+
+::::
+
+# Alternate axes example
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Clearly, if we just have one axis (e.g. $[1/\sqrt{2}, -1/\sqrt{2}]$) and two original variables (e.g. height and weight), then we cannot represent the data exactly.
+- An additional linearly independent coordinate axis (e.g.  $[1/\sqrt{2}, -1/\sqrt{2}]$) would then provide us two values for each point, and be an alternative way to represent the data exactly.
+
+:::
+
+::: {.column width="50%"}
+
+```{r}
+set.seed(2106)
+plot_tbl <- tibble::tibble(
+  height = rnorm(100, 160, 10)
+) |>
+  dplyr::mutate(
+    weight = height / 2.5 + rnorm(100, 0, 3.5 * height / 160)
+  ) |>
+  dplyr::mutate(
+    across(everything(), function(x) (x - mean(x)) / sd(x))
+  ) |>
+  dplyr::arrange(height)
+proj_list <- list(c(1 / sqrt(2), 1 / sqrt(2)), c(1 / sqrt(2), -1 / sqrt(2)))
+plot_tbl_ind <- tibble::tibble(
+  height = 1.2,
+  weight = 0.3
+)
+plot_tbl_proj_ind <- proj_list |>
+  purrr::map_df(~ mutate_proj(plot_tbl_ind, .x))
+
+p <- ggplot(
+  data = plot_tbl
+) +
+  geom_vline(
+    xintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  geom_hline(
+    yintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  theme(
+    panel.background = element_rect(fill = "white"),
+    plot.background = element_rect(fill = "white")
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  ) +
+  labs(
+    x = "Height",
+    y = "Weight"
+  ) +
+  geom_point(aes(x = height, y = weight), alpha = 0.1, col = "dodgerblue") +
+  geom_point(
+    data = plot_tbl_proj_ind,
+    aes(x = height, y = weight), col = "mediumseagreen"
+  ) +
+  geom_segment(
+    data = plot_tbl_proj_ind,
+    aes(x = height, y = weight, xend = proj_x, yend = proj_y, group = proj),
+    col = "gray25", arrow = arrow(length = unit(0.3, "cm")), linetype = "solid"
+  ) +
+  geom_abline(
+    data = plot_tbl_proj_ind |>
+      dplyr::mutate(slope = a2 / a1) ,
+    aes(intercept = 0, slope = slope),
+    col = "purple"
+  ) +
+  coord_cartesian(xlim = c(-2.5, 2.5), ylim = c(-2.5, 2.5)) +
+  ggrepel::geom_text_repel(
+    data = plot_tbl_proj_ind |>
+      dplyr::mutate(a1 = a1 |> signif(2), a2 = a2 |> signif(2)),
+    aes(x = a1, y = a2, label = proj),
+    nudge_x = 0.1, nudge_y = 0.1
+  )
+path_p_height_weight_ind_alt <- projr::projr_path_get("cache", "fig", "p-height-weight-ind-alt.png")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_height_weight_ind_alt,
+  units = "cm",
+  base_height = 5,
+  base_width = 5
+)
+```
+
+
+\centering
+
+```{r}
+#| results: asis
+knitr::include_graphics(path_p_height_weight_ind_alt)
+```
+
+:::
+
+::::
+
+
+# How do we choose $a_1$ and $a_2$? {.smaller}
+
+- Consider projecting onto the lines $[0.5, 2]$, $[1, -1]$ and $[1, 1]$:
+
+```{r}
+proj_list <- list(c(0.5, 2), c(1, 1), c(1, -1))
+plot_tbl_proj <- purrr::map_df(proj_list, ~mutate_proj(plot_tbl, .x))
+
+p <- ggplot(
+  data = plot_tbl_proj
+) +
+  geom_vline(
+    xintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  geom_hline(
+    yintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  theme( 
+    panel.background = element_rect(fill = "white"), 
+    plot.background = element_rect(fill = "white")
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  ) +
+  labs(
+    x = "Height",
+    y = "Weight"
+  ) +
+  geom_point(aes(x = height, y = weight), alpha = 0.85, col = "dodgerblue") +
+  geom_segment(
+    data = plot_tbl_proj |>
+      dplyr::group_by(proj) |>
+      dplyr::slice(seq(1, 100, length.out = 5) |> round()) |>
+      dplyr::ungroup(),
+    aes(x = height, y = weight, xend = proj_x, yend = proj_y, group = proj),
+    col = "gray25", arrow = arrow(length = unit(0.3, "cm")), linetype = "solid"
+  ) +
+  geom_abline(
+    data = plot_tbl_proj |>
+      dplyr::group_by(proj) |>
+      dplyr::slice(1) |>
+      dplyr::ungroup() |>
+      dplyr::mutate(slope = a2 / a1),
+    aes(intercept = 0, slope = slope),
+  ) +
+  facet_wrap(~proj, ncol = 3)
+path_p_proj <- projr::projr_path_get("cache", "fig", "p-proj.png")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_proj,
+  units = "cm",
+  base_height = 6,
+  base_width = 12
+)
+```
+
+\begin{figure}
+\centering
+\includegraphics[width=0.55\textwidth]{`r path_p_proj`}
+\end{figure}
+
+::::{.columns}
+
+::: {.column width="50%"}
+- Height and weight increase together, so $a_1$ and $a_2$ should both be positive.
+- Beyond that, we want to choose $a_1$ and $a_2$ so that the projection captures the most variation in the data.
+:::
+
+::: {.column width="50%"}
+- The variability of the (lengths of the) projections is 1.3 (0.5, 2), 0.3 (1, -1) and 1.7 (1, 1), respectively.
+- The projection onto $[1, 1]$ captures the most variation.
+:::
+
+::::
+
+# Further motivation for capturing variation
+
+- On its own grounds, imagine that you could retain only one of two variables: one has zero variance (all the observations are the same) and the other has some positive variance. Clearly, you would choose the latter.
+
+\pause
+
+- Later, we will see that capturing maximal variation:
+  - Minimises the distance from the original data to the projection.
+  - Allows us to reconstruct the original variables with minimal error.
+
+# Objective function: the first principal component
+
+- Assume that our data $\symbf{X} \in \mathcal{R}^p$ are distributed with mean $\symbf{\symbf{\mu}}$ and covariance matrix $\symbf{\Sigma}$.
+- We seek to find the linear combination of the variables that captures the most variation.
+- For the first principal component, we seek to find $\symbf{a}_1$ such that
+
+$$
+\text{Var}(\symbf{a}_1'\symbf{X}) = \symbf{a}_1^T\symbf{\Sigma}\symbf{a}_1
+$$
+
+- is maximized, subject to the constraint that $||\symbf{a}_1|| = 1$.
+  - This is necessary as otherwise we could meaninglessly increase the variation without bound by making $\symbf{a}_1$ longer.
+- Applied to the previous example, the first principal component would be a linear combination of height and weight that captures the most variation.
+
+# First principal component for health and weight data
+
+```{r}
+set.seed(2106)
+plot_tbl <- tibble::tibble(
+  height = rnorm(100, 160, 10)
+) |>
+  dplyr::mutate(
+    weight = height / 2.5 + rnorm(100, 0, 3.5 * height / 160)
+  ) |>
+  dplyr::mutate(
+    across(everything(), function(x) (x - mean(x)) / sd(x))
+  ) |>
+  dplyr::arrange(height)
+proj_list <- list(c(1 / sqrt(2), 1 / sqrt(2)), c(1 / sqrt(2), -1 / sqrt(2)))[1]
+plot_tbl_ind <- tibble::tibble(
+  height = 1.2,
+  weight = 0.3
+)
+plot_tbl_proj_ind <- proj_list |>
+  purrr::map_df(~ mutate_proj(plot_tbl_ind, .x))
+
+p <- ggplot(
+  data = plot_tbl
+) +
+  geom_vline(
+    xintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  geom_hline(
+    yintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  theme(
+    panel.background = element_rect(fill = "white"),
+    plot.background = element_rect(fill = "white")
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  ) +
+  labs(
+    x = "Height",
+    y = "Weight"
+  ) +
+  geom_point(aes(x = height, y = weight), alpha = 0.1, col = "dodgerblue") +
+  geom_point(
+    data = plot_tbl_proj_ind,
+    aes(x = height, y = weight), col = "mediumseagreen"
+  ) +
+  geom_segment(
+    data = plot_tbl_proj_ind,
+    aes(x = height, y = weight, xend = proj_x, yend = proj_y, group = proj),
+    col = "gray25", arrow = arrow(length = unit(0.3, "cm")), linetype = "solid"
+  ) +
+  geom_abline(
+    data = plot_tbl_proj_ind |>
+      dplyr::mutate(slope = a2 / a1) ,
+    aes(intercept = 0, slope = slope),
+    col = "purple"
+  ) +
+  coord_cartesian(xlim = c(-2.5, 2.5), ylim = c(-2.5, 2.5)) +
+  ggrepel::geom_text_repel(
+    data = plot_tbl_proj_ind |>
+      dplyr::mutate(a1 = a1 |> signif(2), a2 = a2 |> signif(2)),
+    aes(x = a1, y = a2, label = proj),
+    nudge_x = 0.1, nudge_y = 0.1
+  )
+path_p_height_weight_ex_1 <- projr::projr_path_get("cache", "fig", "p-height-weight-ex-1.png")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_height_weight_ex_1,
+  units = "cm",
+  base_height = 8,
+  base_width = 8
+)
+```
+
+\centering
+
+```{r}
+#| results: asis
+knitr::include_graphics(path_p_height_weight_ex_1)
+```
+
+# Objective function: the second principal component
+
+- The second principal component is the linear combination of the variables that captures the most variation, subject to the constraint that it is orthogonal to the first principal component.
+- In other words, for the second principal component we seek to find $\symbf{a}_2$ such that
+
+$$
+\text{Var}(\symbf{a}_2'\symbf{X}) = \symbf{a}_2^T\symbf{\Sigma}\symbf{a}_2
+$$
+
+- is maximized, subject to the constraints that $||\symbf{a}_2|| = 1$ and $\symbf{a}_2^T\symbf{a}_1 = 0$.
+
+# Second principal component for health and weight data
+
+```{r}
+set.seed(2106)
+plot_tbl <- tibble::tibble(
+  height = rnorm(100, 160, 10)
+) |>
+  dplyr::mutate(
+    weight = height / 2.5 + rnorm(100, 0, 3.5 * height / 160)
+  ) |>
+  dplyr::mutate(
+    across(everything(), function(x) (x - mean(x)) / sd(x))
+  ) |>
+  dplyr::arrange(height)
+proj_list <- list(c(1 / sqrt(2), 1 / sqrt(2)), c(1 / sqrt(2), -1 / sqrt(2)))
+plot_tbl_ind <- tibble::tibble(
+  height = 1.2,
+  weight = 0.3
+)
+plot_tbl_proj_ind <- proj_list |>
+  purrr::map_df(~ mutate_proj(plot_tbl_ind, .x))
+
+p <- ggplot(
+  data = plot_tbl
+) +
+  geom_vline(
+    xintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  geom_hline(
+    yintercept = 0, col = "gray50", linetype = "solid"
+  ) +
+  cowplot::theme_cowplot() +
+  cowplot::background_grid(major = "xy") +
+  theme(
+    panel.background = element_rect(fill = "white"),
+    plot.background = element_rect(fill = "white")
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank()
+  ) +
+  labs(
+    x = "Height",
+    y = "Weight"
+  ) +
+  geom_point(aes(x = height, y = weight), alpha = 0.1, col = "dodgerblue") +
+  geom_point(
+    data = plot_tbl_proj_ind,
+    aes(x = height, y = weight), col = "mediumseagreen"
+  ) +
+  geom_segment(
+    data = plot_tbl_proj_ind,
+    aes(x = height, y = weight, xend = proj_x, yend = proj_y, group = proj),
+    col = "gray25", arrow = arrow(length = unit(0.3, "cm")), linetype = "solid"
+  ) +
+  geom_abline(
+    data = plot_tbl_proj_ind |>
+      dplyr::mutate(slope = a2 / a1) ,
+    aes(intercept = 0, slope = slope),
+    col = "purple"
+  ) +
+  coord_cartesian(xlim = c(-2.5, 2.5), ylim = c(-2.5, 2.5)) +
+  ggrepel::geom_text_repel(
+    data = plot_tbl_proj_ind |>
+      dplyr::mutate(a1 = a1 |> signif(2), a2 = a2 |> signif(2)),
+    aes(x = a1, y = a2, label = proj),
+    nudge_x = 0.1, nudge_y = 0.1
+  )
+path_p_height_weight_ex_2 <- projr::projr_path_get("cache", "fig", "p-height-weight-ex-2.png")
+cowplot::save_plot(
+  plot = p,
+  filename = path_p_height_weight_ex_2,
+  units = "cm",
+  base_height = 8,
+  base_width = 8
+)
+```
+
+\centering
+
+```{r}
+#| results: asis
+knitr::include_graphics(path_p_height_weight_ex_2)
+```
+
+# Objective function for all principal components
+
+- For the $k$-th principal component (for $k\leq p$), we seek to find $\symbf{a}_k$ such that
+
+$$
+\text{Var}(\symbf{a}_k'\symbf{X}) = \symbf{a}_k^T\symbf{\Sigma}\symbf{a}_k
+$$
+
+- is maximized, subject to the constraints that $||\symbf{a}_k|| = 1$ and $\symbf{a}_k^T\symbf{a}_j = 0$ for $j < k$.
+
+\pause

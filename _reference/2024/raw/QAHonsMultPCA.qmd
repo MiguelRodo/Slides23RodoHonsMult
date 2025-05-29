@@ -1,0 +1,95 @@
+---
+title: Principal component analysis
+subtitle: Questions and answers
+author: Miguel Rodo
+bibliography: zotero.bib
+format:
+  pdf:
+    embed-resources: true
+    table-of-contents: false
+    urlcolor: cyan
+    linkcolor: blue
+    filecolor: magenta
+    include-in-header:
+      file: preamble-qa.tex
+nocite: |
+    @johnson_wichern07
+---
+
+# Questions and answers
+
+- What does multivariate analysis help uncover?
+  - Patterns and relationships within datasets containing multiple variables
+
+- What is an example of multivariate analysis in meteorology?
+  - Analyzing temperature, humidity, wind speed, and more to understand weather systems
+
+- What are linear combinations used as a basis for multivariate analysis?
+  - $\symbf{x}_1\symbf{u}_1 + \symbf{x}_2\symbf{u}_2 + \ldots + \symbf{x}_p\symbf{u}_p$
+
+- What are some advantages of using linear combinations?
+  - Simplicity, strong theoretical results, robustness, speed and interpretability
+
+- What are two main types of multivariate analysis based on variables involved?
+  - $\symbf{X} \sim \symbf{X}$: PCA, factor analysis, correspondence analysis 
+  - $\symbf{Y} \sim \symbf{X}$: Multiple/multivariate regression, canonical correlation analysis, discrimination and classification
+
+- What does principal component analysis (PCA) allow you to do?
+  - Represent data more compactly and interpret relationships between variables
+
+- What are some example applications of PCA?
+  - Market analysis, image compression, bioinformatics
+
+- What is the formula for projecting vector $\symbf{b}$ onto vector $\symbf{a}$?
+  - $\text{proj}_{\symbf{a}}(\symbf{b}) = \frac{\symbf{a}^T \symbf{b}}{\symbf{a}^T \symbf{a}} \symbf{a}$
+
+- If $\symbf{a}$ is a unit vector, what is the projection of $\symbf{b}$ onto $\symbf{a}$?
+  - $\text{proj}_{\symbf{a}}(\symbf{b}) = (\symbf{a}^T \symbf{b})\symbf{a}$
+
+- In a two-variable height and weight example, what does projecting onto the vector $[1/\sqrt{2}, 1/\sqrt{2}]$ represent? 
+  - A general "size" variable combining height and weight equally
+
+- What do the original variable axes represent in terms of projections?
+  - Height is the projection onto [1,0], weight is the projection onto [0,1]
+
+- How can height and weight be represented using two orthogonal projection directions?
+  - Projecting onto $[1/\sqrt{2}, 1/\sqrt{2}]$ and $[1/\sqrt{2}, -1/\sqrt{2}]$ gives an alternative coordinate system
+
+- For the $k$-th principal component, what is the objective function being maximized?
+  - $\text{Var}(\symbf{a}_k'\symbf{X}) = \symbf{a}_k^T\symbf{\Sigma}\symbf{a}_k$ subject to $||\symbf{a}_k|| = 1$ and $\symbf{a}_k^T\symbf{a}_j = 0$ for $j < k$  
+
+- What does Theorem 1 state about maximizing quadratic forms $\symbf{x}'\symbf{B}\symbf{x}/\symbf{x}'\symbf{x}$ for points $\symbf{x}$ on the unit sphere?
+  - The maximum is attained at the largest eigenvalue $\lambda_1$ of $\symbf{B}$ when $\symbf{x}$ equals the corresponding eigenvector $\symbf{e}_1$
+
+- For a random vector $\symbf{X}$ with covariance matrix $\symbf{\Sigma}$, what is the $i$-th principal component $Y_i$ according to Theorem 2?  
+  - $Y_i = \symbf{e}_i'\symbf{X}$ where $\symbf{e}_i$ is the eigenvector of $\symbf{\Sigma}$ corresponding to its $i$-th largest eigenvalue $\lambda_i$
+
+- What is the variance of the $i$-th principal component $Y_i$?
+  - $\mathrm{Var}[Y_i] = \lambda_i$ where $\lambda_i$ is the $i$-th largest eigenvalue of $\symbf{\Sigma}$
+
+- What is the sum of the variances of the original variables $X_i$ equal to, according to Theorem 3?
+  - The sum of the eigenvalues of the covariance matrix $\symbf{\Sigma}$, which equals the sum of variances of the principal components $Y_i$
+
+- What does a scree plot show?
+  - The proportion of total variance accounted for by each principal component
+
+- What is the formula for the correlation between the $i$-th principal component $Y_i$ and the $k$-th original variable $X_k$?
+  - $\rho_{Y_i,X_k} = \frac{\sqrt{\lambda_i}e_{ik}}{\sqrt{\sigma_{kk}}}$ where $e_{ik}$ is the $k$-th element of the $i$-th eigenvector of $\symbf{\Sigma}$
+
+- How does standardizing variables to have unit variance before PCA change the results?
+  - The principal components will be different linear combinations that don't depend on the original variable scales
+
+- When estimating PCA from sample data, what is used to estimate the covariance matrix $\symbf{\Sigma}$? 
+  - The sample covariance matrix $\symbf{S}=n^{-1}\symbf{X}'\symbf{X}$ where $\symbf{X}$ is mean-centered
+
+- What are the two main uses of approximating a data matrix $\symbf{X}$ with a lower rank matrix $\hat{\symbf{X}}$?
+  - Data compression and understanding key patterns while minimizing information loss
+
+- What does the singular value decomposition (SVD) provide the best rank $s$ approximation to a matrix $\symbf{X}$ according to Theorem 5a?
+  - $\hat{\symbf{X}} = \symbf{U}\symbf{D}\symbf{J}_s\symbf{V}' = \sum_{i=1}^{s} d_i\symbf{u}_i\symbf{v}_i'$ where $d_i, \symbf{u}_i, \symbf{v}_i$ are the $i$-th singular value, left singular vector, right singular vector
+
+- How is the PCA rank $s$ approximation $\tilde{\symbf{X}}$ related to the SVD approximation $\hat{\symbf{X}}$?
+  - They are equivalent, $\tilde{\symbf{X}} = \symbf{Y}\symbf{J}_k\symbf{P}' = \symbf{U}\symbf{D}\symbf{J}_k\symbf{V}' = \hat{\symbf{X}}$ 
+
+- What is a biplot?
+  - A graphical display of both the observations (as points) and variables (as vectors) based on a low-rank PCA approximation to the data matrix
