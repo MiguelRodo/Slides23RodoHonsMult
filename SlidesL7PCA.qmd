@@ -11,6 +11,8 @@ format:
     filecolor: magenta
 nocite: |
     @johnson_wichern07
+execute:
+  echo: false
 ---
 
 ```{r }
@@ -898,7 +900,7 @@ $$
 assuming that $\mathbf{X}$ is mean‐centred (adjust otherwise). For example, the sample covariance matrix of the height and weight data is:
 
 ```{r}
-#| echo: true
+#| echo: false
 cov_mat <- hw_tbl |>
   as.matrix() |>
   cov()
@@ -908,7 +910,7 @@ cov_mat |> signif(2) |> knitr::kable()
 The eigen decomposition of this matrix is then:
 
 ```{r}
-#| echo: true
+#| echo: false
 eigen(cov_mat) |>
   lapply(function(x) signif(x, 2))
 ```
@@ -1071,7 +1073,7 @@ We begin by reading in data of measurements on Painted Turtles [@jolicoeur_mosim
 
 ```{r}
 #| eval: false
-#| echo: true
+#| echo: false
 if (!requireNamespace("remotes", quietly = TRUE)) {
   install.packages("remotes")
 }
@@ -1082,7 +1084,7 @@ if (!requireNamespace("remotes", quietly = TRUE)) {
 Then we load the data:
 
 ```{r}
-#| echo: true
+#| echo: false
 data("data_tidy_turtle", package = "DataTidy23RodoHonsMult")
 data_tidy_turtle
 ```
@@ -1146,7 +1148,7 @@ Due to the high correlation, the data can likely be summarised well using princi
 ## Using the prcomp function I
 
 ```{r}
-#| echo: true
+#| echo: false
 pr_obj <- prcomp(
   ~log(length) + log(width) + log(height),
   data = data_tidy_turtle,
@@ -1160,7 +1162,7 @@ Here, the first principal component has a markedly higher standard deviation and
 ## Using the prcomp function II
 
 ```{r}
-#| echo: true
+#| echo: false
 summary(pr_obj)
 ```
 
@@ -1169,7 +1171,7 @@ The summary provides the per-component standard deviation, variance, and cumulat
 ## Using the prcomp function III
 
 ```{r}
-#| echo: true
+#| echo: false
 plot(pr_obj)
 ```
 
@@ -1180,14 +1182,14 @@ This plot (the scree plot) shows the proportion of variance accounted for by eac
 Here are the first few principal components:
 
 ```{r}
-#| echo: true
+#| echo: false
 pr_obj$x |> head() |> signif(2)
 ```
 
 Using the SVD, we can obtain the same results as the `prcomp` function. First, remove the gender variable, log-transform and centre the data:
 
 ```{r}
-#| echo: true
+#| echo: false
 data_turtle_mat <- data_tidy_turtle |>
   dplyr::select(-gender) |>
   dplyr::mutate(across(everything(), log)) |>
@@ -1198,21 +1200,21 @@ data_turtle_mat <- data_tidy_turtle |>
 Then, calculate the SVD:
 
 ```{r}
-#| echo: true
+#| echo: false
 svd_turtle <- svd(data_turtle_mat)
 ```
 
 The eigenvalues of the covariance matrix are the squares of the singular values:
 
 ```{r}
-#| echo: true
+#| echo: false
 svd_turtle$d^2 |> signif(3)
 ```
 
 The right-singular vectors are the eigenvectors (i.e. the loading vectors), so that the principal components are given by:
 
 ```{r}
-#| echo: true
+#| echo: false
 (data_turtle_mat %*% svd_turtle$v) |> head() |> signif(2)
 ```
 

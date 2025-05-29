@@ -14,20 +14,6 @@ directories:
     path: docs
 build:
   github:
-    latest-2025:
-      content:
-      - raw-img-2024
-      - raw-img-2025
-      - raw-docs
-      - docs
-      - output
-      structure: latest
-    archive-2025:
-      content:
-      - raw-img-2024
-      - raw-img-2025
-      - raw-docs
-      - docs
-      - output
-      structure: archive
+    docs-nocode-2025:
+      content: docs
 

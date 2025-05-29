@@ -15,6 +15,8 @@ format:
       file: preamble-reg.tex
 nocite: |
     @johnson_wichern07
+execute:
+  echo: false
 ---
 
 # Linear regression
@@ -349,7 +351,7 @@ We model the sales price of a house against its size and assessed value.
 We load the data as follows:
 
 ```{r}
-#| echo: true
+#| echo: false
 data(
   "data_tidy_house_price", 
    package = "DataTidy23RodoHonsMult"
@@ -370,7 +372,7 @@ data_tidy_house_price[1:4, ] |> knitr::kable()
 We extract the response matrix, $\symbf{y}$:
 
 ```{r}
-#| echo: true
+#| echo: false
 y_vec <- data_tidy_house_price |> 
   dplyr::pull(selling_price)
 ```
@@ -378,7 +380,7 @@ y_vec <- data_tidy_house_price |>
 We extract the data for the predictor matrix, $\symbf{X}$, and prepend a column of 1s:
 
 ```{r}
-#| echo: true
+#| echo: false
 X_mat <- cbind(
   1,
   data_tidy_house_price |>
@@ -402,7 +404,7 @@ colnames(X_mat)[1] <- "intercept"
 To fit the model, we first obtain the estimated regression coefficients:
 
 ```{r}
-#| echo: true
+#| echo: false
 beta_vec <- (
   solve(t(X_mat) %*% X_mat) %*%
   t(X_mat)
@@ -425,7 +427,7 @@ beta_vec |> signif(2) |> knitr::kable()
 This matches the output from the `lm` function:
 
 ```{r}
-#| echo: true
+#| echo: false
 #| results: asis
 lm(
   selling_price ~ .,
@@ -449,7 +451,7 @@ lm(
 To assess the model, we calculate the $R^2$ statistic:
 
 ```{r}
-#| echo: true
+#| echo: false
 SST <- sum((y_vec - mean(y_vec))^2)
 SSE <- (y_vec - X_mat %*% beta_vec)^2 |>
   sum()
@@ -476,7 +478,7 @@ R2 |> signif(2)
 Consider a dataset of four wood-pulp variables and four paper properties:
 
 ```{r}
-#| echo: true
+#| echo: false
 data(
   "data_tidy_paper", 
   package = "DataTidy23RodoHonsMult"
@@ -498,7 +500,7 @@ data_tidy_paper[1:4, ] |> knitr::kable()
 We extract the response matrix, $\symbf{Y}$:
 
 ```{r}
-#| echo: true
+#| echo: false
 Y_mat <- data_tidy_paper |> 
   dplyr::select(-starts_with("pulp")) |> 
   as.matrix()
@@ -518,7 +520,7 @@ Y_mat[1:4, ] |> signif(2) |> knitr::kable()
 We extract the data for the predictor matrix, $\symbf{X}$, and prepend a column of 1s:
 
 ```{r}
-#| echo: true
+#| echo: false
 X_mat <- as.matrix(cbind(1,
   data_tidy_paper |>
     dplyr::select(starts_with("pulp"))
@@ -544,7 +546,7 @@ X_mat[1:3, , drop = FALSE] |> signif(2) |> knitr::kable()
 We first obtain the estimated regression coefficients:
 
 ```{r}
-#| echo: true
+#| echo: false
 B_mat <- (
   solve(t(X_mat) %*% X_mat) %*%
   t(X_mat)) %*% Y_mat
@@ -564,7 +566,7 @@ B_mat[, 1:3] |> signif(2) |> knitr::kable()
 This matches the output from the `lm` function (exc. fourth column for space):
 
 ```{r}
-#| echo: true
+#| echo: false
 #| results: asis
 lm(
   cbind(paper_1, paper_2, paper_3, paper_4) ~ .,
@@ -685,7 +687,7 @@ $$
 Consider the dataset of four wood-pulp variables and four paper properties:
 
 ```{r}
-#| echo: true
+#| echo: false
 data(
   "data_tidy_paper", 
   package = "DataTidy23RodoHonsMult"
@@ -710,7 +712,7 @@ data_tidy_paper[1:4, ] |> knitr::kable()
 We extract the response matrix, $\symbf{Y}$:
 
 ```{r}
-#| echo: true
+#| echo: false
 Y_mat <- data_tidy_paper[, "paper_1", drop = FALSE] |>
   as.matrix()
 colnames(Y_mat) <- "paper_1"
@@ -730,7 +732,7 @@ Y_mat[1:4, ] |> signif(2) |> knitr::kable()
 We extract the data for the predictor matrix, $\symbf{X}$, and prepend a column of 1s:
 
 ```{r}
-#| echo: true
+#| echo: false
 X_mat <- as.matrix(cbind(1,
   data_tidy_paper |>
     dplyr::select(starts_with("pulp"))
@@ -758,7 +760,7 @@ X_mat[1:3, , drop = FALSE] |> signif(2) |> knitr::kable()
 We first estimate the coefficients:
 
 ```{r}
-#| echo: true
+#| echo: false
 beta_vec <- 
   (solve(t(X_mat) %*% X_mat) %*%
     t(X_mat)) %*% Y_mat
@@ -779,7 +781,7 @@ beta_vec |> signif(2) |> knitr::kable()
 To get the 95% confidence interval for the $\beta_{\mathrm{pulp_1}}$ coefficient, we first get the standard error:
 
 ```{r}
-#| echo: true
+#| echo: false
 XtX_mat <- t(X_mat) %*% X_mat
 XtX_mat_inv <- solve(XtX_mat)
 var_resp <- sum((Y_mat - X_mat %*% beta_vec)^2) /
@@ -803,7 +805,7 @@ sd_beta_pulp1 |> signif(2)
 We then get the relevant $t$-distributed quantile:
 
 ```{r}
-#| echo: true
+#| echo: false
 t_beta_pulp1 <- qt(0.975, nrow(Y_mat) - ncol(X_mat))
 t_beta_pulp1 |> signif(2)
 ```
@@ -811,7 +813,7 @@ t_beta_pulp1 |> signif(2)
 The confidence interval is then:
 
 ```{r}
-#| echo: true
+#| echo: false
 (beta_vec[2] + c(-1, 1) * t_beta_pulp1 * sd_beta_pulp1) |>
   signif(2)
 ```
@@ -825,7 +827,7 @@ The confidence interval is then:
 The test statistic is given by
 
 ```{r}
-#| echo: true
+#| echo: false
 t_stat <- beta_vec[2] / sd_beta_pulp1
 t_stat |> signif(2)
 ```
@@ -833,7 +835,7 @@ t_stat |> signif(2)
 The p-value is therefore:
 
 ```{r}
-#| echo: true
+#| echo: false
 (pt(-abs(t_stat),
   nrow(Y_mat) - ncol(X_mat)) * 2
 ) |> signif(2)
@@ -856,7 +858,7 @@ We now test the hypothesis that $\symbf{\beta}^{(1)} = \beta_1=\beta_3=\beta_4=0
 We first extract $\symbf{C}_11$:
 
 ```{r}
-#| echo: true
+#| echo: false
 C11_mat <- XtX_mat_inv[2:5, 2:5]
 C11_mat <- C11_mat[-2, -2]
 C11_mat |> signif(2)
@@ -871,7 +873,7 @@ C11_mat |> signif(2)
 We now extract the relevant estimates:
 
 ```{r}
-#| echo: true
+#| echo: false
 beta_vec_1 <- beta_vec[
   c(2, 4:5), , drop = FALSE
 ]
@@ -894,7 +896,7 @@ beta_vec_1 |> signif()
 The test statistic is then:
 
 ```{r}
-#| echo: true
+#| echo: false
 f_stat <- (t(beta_vec_1) %*%
   solve(C11_mat) %*%
   beta_vec_1) / length(beta_vec_1) /
@@ -911,7 +913,7 @@ f_stat |> signif(2)
 This yields the following p-value:
 
 ```{r}
-#| echo: true
+#| echo: false
 pf(f_stat, length(beta_vec_1),
   nrow(Y_mat) - ncol(X_mat),
   lower.tail = FALSE
@@ -1031,7 +1033,7 @@ Using the paper dataset, we will test whether pulp_2 or pulp_3 have an effect on
 Loading the data as follows:
 
 ```{r}
-#| echo: true
+#| echo: false
 data(
   "data_tidy_paper", 
   package = "DataTidy23RodoHonsMult"
@@ -1052,7 +1054,7 @@ data_tidy_paper[1:4, ] |> knitr::kable()
 We extract the response matrix, $\symbf{Y}$:
 
 ```{r}
-#| echo: true
+#| echo: false
 Y_mat <- data_tidy_paper |> 
   dplyr::select(-starts_with("pulp")) |> 
   as.matrix()
@@ -1072,7 +1074,7 @@ Y_mat[1:4, ] |> signif(2) |> knitr::kable()
 We extract the data for the predictor matrix, $\symbf{X}$, and prepend a column of 1s:
 
 ```{r}
-#| echo: true
+#| echo: false
 X_mat <- as.matrix(cbind(1,
   data_tidy_paper |>
     dplyr::select(starts_with("pulp"))
@@ -1098,7 +1100,7 @@ X_mat[1:3, , drop = FALSE] |> signif(2) |> knitr::kable()
 We extract the data for the predictor matrix excluding pulp_2 and pulp_3, $\symbf{X}^{(2)}$:
 
 ```{r}
-#| echo: true
+#| echo: false
 X_mat_2 <- X_mat[
   , -(3:4), drop = FALSE
 ]
@@ -1116,14 +1118,14 @@ X_mat_2[1:3, , drop = FALSE] |> signif(2) |> knitr::kable()
 We obtain estimated regression coefficients under both the full and reduced models:
 
 ```{r}
-#| echo: true
+#| echo: false
 B_mat <- (
   solve(t(X_mat) %*% X_mat) %*%
   t(X_mat)) %*% Y_mat
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 B_mat_2 <- (
   solve(t(X_mat_2) %*% X_mat_2) %*%
   t(X_mat_2)) %*% Y_mat
@@ -1142,7 +1144,7 @@ B_mat_2 <- (
 We now calculate the sample variance-covariance matrices under the full and reduced models:
 
 ```{r}
-#| echo: true
+#| echo: false
 Sigma_mat <-
   t((Y_mat - X_mat %*% B_mat)) %*%
     (Y_mat - X_mat %*% B_mat) /
@@ -1150,7 +1152,7 @@ Sigma_mat <-
 ```
 
 ```{r}
-#| echo: true
+#| echo: false
 Sigma_mat_2 <-
   t((Y_mat - X_mat_2 %*% B_mat_2)) %*%
     (Y_mat - X_mat_2 %*% B_mat_2) /
@@ -1164,7 +1166,7 @@ Sigma_mat_2 <-
 - This yields the following test statistic:
 
 ```{r}
-#| echo: true
+#| echo: false
 n <- nrow(Y_mat)
 r <- ncol(Y_mat)
 q <- ncol(X_mat) - ncol(X_mat_2)
@@ -1181,7 +1183,7 @@ test_stat |> signif(2)
 with p-value
 
 ```{r}
-#| echo: true
+#| echo: false
 pchisq(test_stat, r * (p - q), lower.tail = FALSE) |>
   signif(2)
 ```

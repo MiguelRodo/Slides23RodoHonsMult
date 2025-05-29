@@ -8,6 +8,8 @@ format:
     code-fold: true
     code-summary: "Show/Hide Code"
     embed-resources: true
+execute:
+  echo: false
 ---
 
 ::: {.note}

@@ -13,6 +13,8 @@ format:
       file: preamble-reg.tex
 nocite: |
     @johnson_wichern07
+execute:
+  echo: false
 ---
 
 # Introduction to correspondence analysis (CA)
@@ -612,11 +614,19 @@ data_tidy_smoke_long <- data_tidy_smoke_long |>
 
 # Examining the raw data using CA concepts
 
+<!--
+
 ![](_raw/img/2024/smoke_example_intro.png)
+
+-->
 
 # Calculating the solution to the least-squares problem
 
+<!--
+
 ![](_raw/img/2024/smoke_example.png)
+
+-->
 
 # Displaying the results of a correspondence analysis
 
@@ -709,7 +719,7 @@ where each row of $\symbf{F}$ is a lower-dimensional representation of a row in 
 # `ca.plot` function
 
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: false
 library(ca)
 ?plot.ca
@@ -717,10 +727,14 @@ library(ca)
 
 # Example: symmetric plot
 
+<!--
+
 ```{r}
 #| results: asis
 pander::pandoc.image("_raw/img/2024/ca_example_2.png")
 ```
+
+-->
 
 # Example: asymmetric plot I
 
@@ -731,24 +745,36 @@ pander::pandoc.image("_raw/img/2024/ca_example-asymmetric_biplots_1.png")
 
 # Example: asymmetric plot II
 
+<!--
+
 ```{r}
 #| results: asis
 pander::pandoc.image("_raw/img/2024/ca_example-asymmetric_biplots_2.png")
 ```
+
+-->
 
 # Example: asymmetric plot III
 
+<!--
+
 ```{r}
 #| results: asis
 pander::pandoc.image("_raw/img/2024/ca_example-asymmetric_biplots_2.png")
 ```
 
+-->
+
 # Example: quality of approximation
+
+<!--
 
 ```{r}
 #| results: asis
 pander::pandoc.image("_raw/img/2024/ca_example-quality.png")
 ```
+
+-->
 
 # Multiple correspondence analysis (MCA)
 
@@ -766,17 +792,25 @@ pander::pandoc.image("_raw/img/2024/ca-multilevel_2.png")
 
 # MCA: example application
 
+<!--
+
 ```{r}
 #| results: asis
 pander::pandoc.image("_raw/img/2024/ca-multilevel_3.png")
 ```
 
+-->
+
 # MCA: example plot
+
+<!--
 
 ```{r}
 #| results: asis
 pander::pandoc.image("_raw/img/2024/ca-multilevel_4.png")
 ```
+
+-->
 
 # Summary
 
