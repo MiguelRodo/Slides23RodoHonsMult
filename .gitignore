@@ -15,15 +15,13 @@ _tmp/**
 _output/**
 docs/**
 BUILDLOG.md
-SlidesHonsMultL11CA.pdf
-SlidesHonsMultL12DAFishers.html
-SlidesHonsMultL11CA.pdf/**
-SlidesHonsMultL12DAFishers_files/**
-SlidesHonsMultL12DAFishers.html/**
-SlidesHonsMultL8Reg.pdf/**
-SlidesHonsMultL9FA.pdf/**
+SlidesL11CA.pdf/**
+SlidesL12DAFishers_files/**
+SlidesL12DAFishers.html/**
 SlidesL7PCA_files/**
 SlidesL7PCA.html/**
+SlidesL8Reg.pdf/**
+SlidesL9FA.pdf/**
 # End of projr section
 
 *_files
