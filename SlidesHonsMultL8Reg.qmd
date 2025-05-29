@@ -352,7 +352,7 @@ We load the data as follows:
 #| echo: true
 data(
   "data_tidy_house_price", 
-  package = "DataTidy23RodoHonsMult"
+   package = "DataTidy23RodoHonsMult"
 )
 ```
 

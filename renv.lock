@@ -1,7 +1,11 @@
 {
   "R": {
-    "Version": "4.4.1",
+    "Version": "4.4.2",
     "Repositories": [
+      {
+        "Name": "BioCcontainers",
+        "URL": "https://bioconductor.org/packages/3.20/container-binaries/bioconductor_docker"
+      },
       {
         "Name": "BioCsoft",
         "URL": "https://bioconductor.org/packages/3.20/bioc"
@@ -32,6 +36,28 @@
     "Version": "3.20"
   },
   "Packages": {
+    "DataTidy23RodoHonsMult": {
+      "Package": "DataTidy23RodoHonsMult",
+      "Version": "0.11.1",
+      "Source": "GitHub",
+      "Title": "Tidy data for demonstration and assessment for UCT statistics honours multivariate course",
+      "Authors@R": "person(\"Miguel\", \"Rodo\", , \"miguel.rodo@uct.ac.za\", role = c(\"aut\", \"cre\"))",
+      "Maintainer": "Miguel Rodo <miguel.rodo@uct.ac.za>",
+      "Description": "Tidy data for demonstration and assessment for UCT statistics honours multivariate course",
+      "License": "{{ License }}",
+      "URL": "https://github.com/MiguelRodo/DataTidy23RodoHonsMult/#readme",
+      "BugReports": "https://github.com/MiguelRodo/DataTidy23RodoHonsMult/issues",
+      "Encoding": "UTF-8",
+      "Roxygen": "list(markdown = TRUE)",
+      "RoxygenNote": "7.3.2",
+      "Author": "Miguel Rodo [aut, cre]",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "MiguelRodo",
+      "RemoteRepo": "DataTidy23RodoHonsMult",
+      "RemoteRef": "2025",
+      "RemoteSha": "ce2fcb77be44e56955235d9f686541773607f5be"
+    },
     "MASS": {
       "Package": "MASS",
       "Version": "7.3-65",

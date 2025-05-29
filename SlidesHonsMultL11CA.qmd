@@ -612,11 +612,11 @@ data_tidy_smoke_long <- data_tidy_smoke_long |>
 
 # Examining the raw data using CA concepts
 
-![](_data_raw/img/smoke_example_intro.png)
+![](_raw/img/2024/smoke_example_intro.png)
 
 # Calculating the solution to the least-squares problem
 
-![](_data_raw/img/smoke_example.png)
+![](_raw/img/2024/smoke_example.png)
 
 # Displaying the results of a correspondence analysis
 
@@ -685,7 +685,7 @@ where each row of $\symbf{F}$ is a lower-dimensional representation of a row in 
 
 \begin{figure}
 \centering
-\includegraphics[width=\textwidth]{_data_raw/img/dual-axis-example.png}
+\includegraphics[width=\textwidth]{_raw/img/2024/dual-axis-example.png}
 \end{figure}
 
 :::
@@ -719,70 +719,70 @@ library(ca)
 
 ```{r}
 #| results: asis
-pander::pandoc.image("_data_raw/img/ca_example_2.png")
+pander::pandoc.image("_raw/img/2024/ca_example_2.png")
 ```
 
 # Example: asymmetric plot I
 
 ```{r}
 #| results: asis
-pander::pandoc.image("_data_raw/img/ca_example-asymmetric_biplots_1.png")
+pander::pandoc.image("_raw/img/2024/ca_example-asymmetric_biplots_1.png")
 ```
 
 # Example: asymmetric plot II
 
 ```{r}
 #| results: asis
-pander::pandoc.image("_data_raw/img/ca_example-asymmetric_biplots_2.png")
+pander::pandoc.image("_raw/img/2024/ca_example-asymmetric_biplots_2.png")
 ```
 
 # Example: asymmetric plot III
 
 ```{r}
 #| results: asis
-pander::pandoc.image("_data_raw/img/ca_example-asymmetric_biplots_2.png")
+pander::pandoc.image("_raw/img/2024/ca_example-asymmetric_biplots_2.png")
 ```
 
 # Example: quality of approximation
 
 ```{r}
 #| results: asis
-pander::pandoc.image("_data_raw/img/ca_example-quality.png")
+pander::pandoc.image("_raw/img/2024/ca_example-quality.png")
 ```
 
 # Multiple correspondence analysis (MCA)
 
 ```{r}
 #| results: asis
-pander::pandoc.image("_data_raw/img/ca-multilevel_1.png")
+pander::pandoc.image("_raw/img/2024/ca-multilevel_1.png")
 ```
 
 # MCA: example introduction
 
 ```{r}
 #| results: asis
-pander::pandoc.image("_data_raw/img/ca-multilevel_2.png")
+pander::pandoc.image("_raw/img/2024/ca-multilevel_2.png")
 ```
 
 # MCA: example application
 
 ```{r}
 #| results: asis
-pander::pandoc.image("_data_raw/img/ca-multilevel_3.png")
+pander::pandoc.image("_raw/img/2024/ca-multilevel_3.png")
 ```
 
 # MCA: example plot
 
 ```{r}
 #| results: asis
-pander::pandoc.image("_data_raw/img/ca-multilevel_4.png")
+pander::pandoc.image("_raw/img/2024/ca-multilevel_4.png")
 ```
 
 # Summary
 
 ```{r}
 #| results: asis
-pander::pandoc.image("_data_raw/img/summary.png")
+pander::pandoc.image("_raw/img/2024/summary.png")
 ```
 
 

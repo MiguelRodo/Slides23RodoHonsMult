@@ -15,10 +15,15 @@ _tmp/**
 _output/**
 docs/**
 BUILDLOG.md
-Rplots.pdf
-SlidesHonsMultL11CA.log
+SlidesHonsMultL11CA.pdf
+SlidesHonsMultL12DAFishers.html
+SlidesHonsMultL11CA.pdf/**
 SlidesHonsMultL12DAFishers_files/**
 SlidesHonsMultL12DAFishers.html/**
+SlidesHonsMultL8Reg.pdf/**
+SlidesHonsMultL9FA.pdf/**
+SlidesL7PCA_files/**
+SlidesL7PCA.html/**
 # End of projr section
 
 *_files
