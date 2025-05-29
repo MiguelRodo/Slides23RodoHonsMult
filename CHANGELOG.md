@@ -1,5 +1,8 @@
 # CHANGELOG
 
+- *Minor* (v1.3.0): Miguel Julio Rodo (2025-05-29 14:41:58)
+  - Add slides
+
 - *Minor* (v1.2.0): Miguel Rodo (2025-05-29 09:37:54)
   - Add Fisher notes and set up better archiving
 
